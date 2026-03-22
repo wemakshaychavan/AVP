@@ -6,7 +6,14 @@
 <title>AVP — AI Vendor Protocol</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Outfit:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
 <style>
+.material-icons-outlined {
+  font-family: 'Material Icons Outlined';
+  font-size: inherit;
+  vertical-align: middle;
+  font-style: normal;
+}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
   --bg:#07080a;
@@ -385,6 +392,73 @@ nav{
   background:var(--bg);border:1px solid var(--border);color:var(--text-dim);
 }
 
+/* ---- FLOW DIAGRAM ---- */
+.flow-diagram{padding:4rem 0 0}
+.flow-diagram-box{
+  margin-top:3rem;background:var(--bg-card);border:1px solid var(--border);
+  border-radius:16px;padding:3rem;position:relative;overflow:hidden;
+}
+.flow-diagram-box::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:var(--gradient-accent);
+}
+.fd-main{display:flex;align-items:flex-start;justify-content:center;gap:1.5rem;flex-wrap:wrap}
+.fd-node{
+  background:var(--bg-elevated);border:1px solid var(--border);
+  border-radius:12px;padding:1.5rem 1.8rem;text-align:center;
+  min-width:180px;max-width:240px;transition:all 0.3s;flex-shrink:0;
+}
+.fd-node:hover{border-color:var(--border-bright);transform:translateY(-2px)}
+.fd-node-icon{
+  width:48px;height:48px;border-radius:10px;margin:0 auto 0.8rem;
+  display:flex;align-items:center;justify-content:center;font-size:1.3rem;
+}
+.fd-node.buyer .fd-node-icon{background:var(--accent-dim);color:var(--accent);border:1px solid rgba(0,212,170,0.3)}
+.fd-node.vendor .fd-node-icon{background:var(--purple-dim);color:var(--purple);border:1px solid rgba(139,92,246,0.3)}
+.fd-node.registry .fd-node-icon{background:var(--signal-dim);color:var(--signal);border:1px solid rgba(255,107,53,0.3)}
+.fd-node h5{font-size:0.9rem;font-weight:600;margin-bottom:0.25rem}
+.fd-node p{font-size:0.7rem;color:var(--text-dim);font-weight:300;line-height:1.4}
+.fd-node .fd-badge{
+  font-family:var(--mono);font-size:0.6rem;color:var(--accent);
+  background:var(--accent-dim);padding:0.15rem 0.5rem;border-radius:4px;
+  display:inline-block;margin-top:0.5rem;
+}
+.fd-arrow-col{
+  display:flex;flex-direction:column;align-items:center;gap:0.2rem;
+  padding-top:2rem;min-width:90px;
+}
+.fd-arrow-h{width:70px;height:2px;background:var(--border-bright);position:relative}
+.fd-arrow-h::after{
+  content:'';position:absolute;right:-1px;top:-4px;
+  border-left:7px solid var(--border-bright);border-top:5px solid transparent;border-bottom:5px solid transparent;
+}
+.fd-arrow-h.left::after{right:auto;left:-1px;border-left:none;border-right:7px solid var(--border-bright)}
+.fd-arrow-lbl{font-family:var(--mono);font-size:0.55rem;color:var(--text-muted);white-space:nowrap}
+.fd-arrow-lbl.highlight{color:var(--accent)}
+.fd-steps-bar{
+  display:grid;grid-template-columns:repeat(6,1fr);gap:0;margin-top:2.5rem;
+  border-top:1px solid var(--border);padding-top:1.5rem;
+}
+.fd-step-cell{text-align:center;padding:0.5rem;position:relative}
+.fd-step-cell::after{
+  content:'';position:absolute;top:20%;right:0;width:1px;height:60%;background:var(--border);
+}
+.fd-step-cell:last-child::after{display:none}
+.fd-step-cell .num{font-family:var(--mono);font-size:0.5rem;color:var(--accent);letter-spacing:0.1em;margin-bottom:0.15rem}
+.fd-step-cell h6{font-size:0.7rem;font-weight:500;margin-bottom:0.1rem}
+.fd-step-cell p{font-size:0.6rem;color:var(--text-muted);font-weight:300}
+@media(max-width:900px){
+  .fd-main{flex-direction:column;align-items:center}
+  .fd-arrow-col{flex-direction:row;padding-top:0;min-width:auto}
+  .fd-arrow-h{width:2px;height:30px}
+  .fd-arrow-h::after{right:auto;left:-4px;top:auto;bottom:-1px;
+    border-left:5px solid transparent;border-right:5px solid transparent;
+    border-top:7px solid var(--border-bright);border-bottom:none;}
+  .fd-arrow-h.left::after{border-bottom:7px solid var(--border-bright);border-top:none;top:-1px;bottom:auto;
+    border-left:5px solid transparent;border-right:5px solid transparent;}
+  .fd-steps-bar{grid-template-columns:repeat(3,1fr)}
+}
+
 /* ---- ROADMAP ---- */
 .roadmap{padding:8rem 0}
 .timeline{
@@ -504,6 +578,34 @@ footer{
   font-size:0.75rem;color:var(--text-muted);font-weight:300;
 }
 
+/* ---- PLANNED ---- */
+.planned{padding:8rem 0}
+.planned-grid{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:1.5rem;margin-top:3rem;
+}
+.planned-card{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:12px;padding:1.8rem;display:flex;gap:1.2rem;
+  align-items:flex-start;transition:all 0.3s;
+}
+.planned-card:hover{border-color:var(--border-bright);transform:translateY(-2px)}
+.planned-icon{
+  width:44px;height:44px;min-width:44px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.2rem;border:1px solid var(--border);background:var(--bg-elevated);
+  color:var(--accent);
+}
+.planned-card h4{font-size:0.95rem;font-weight:600;margin-bottom:0.3rem}
+.planned-card p{font-size:0.8rem;color:var(--text-dim);font-weight:300;line-height:1.5}
+.planned-status{
+  font-family:var(--mono);font-size:0.6rem;display:inline-block;
+  padding:0.15rem 0.5rem;border-radius:4px;margin-top:0.5rem;
+  letter-spacing:0.05em;text-transform:uppercase;
+}
+.planned-status.planned{background:var(--purple-dim);color:var(--purple)}
+.planned-status.in-progress{background:var(--accent-dim);color:var(--accent)}
+.planned-status.research{background:var(--signal-dim);color:var(--signal)}
+
 /* ---- ANIMATIONS ---- */
 .reveal{opacity:0;transform:translateY(30px);transition:all 0.8s cubic-bezier(0.16,1,0.3,1)}
 .reveal.visible{opacity:1;transform:translateY(0)}
@@ -517,6 +619,7 @@ footer{
 @media(max-width:900px){
   .what-grid,.for-grid{grid-template-columns:1fr}
   .features-grid,.community-grid{grid-template-columns:1fr 1fr}
+  .planned-grid{grid-template-columns:1fr 1fr}
   .stats-grid{grid-template-columns:repeat(2,1fr)}
   .flow-container{flex-direction:column}
   .flow-step::after{display:none}
@@ -525,6 +628,7 @@ footer{
 }
 @media(max-width:600px){
   .features-grid,.community-grid{grid-template-columns:1fr}
+  .planned-grid{grid-template-columns:1fr}
   .footer-grid{grid-template-columns:1fr}
   .stats-grid{grid-template-columns:1fr 1fr}
   .nav-links{display:none}
@@ -549,6 +653,7 @@ footer{
     <a href="#code">Code</a>
     <a href="#architecture">Architecture</a>
     <a href="#roadmap">Roadmap</a>
+    <a href="#planned">Planned</a>
     <a href="https://github.com/wemakshaychavan/AVP" class="nav-cta">GitHub</a>
   </div>
 </nav>
@@ -655,35 +760,35 @@ footer{
     </div>
     <div class="flow-container">
       <div class="flow-step reveal">
-        <div class="flow-icon">&#x1f50d;</div>
+        <div class="flow-icon"><span class="material-icons-outlined">search</span></div>
         <div class="flow-num">01</div>
         <h4>Discovery</h4>
         <p>Buyer agent finds vendors via the registry or well-known URIs</p>
         <span class="flow-endpoint">/.well-known/avp.json</span>
       </div>
       <div class="flow-step reveal reveal-delay-1">
-        <div class="flow-icon">&#x1f91d;</div>
+        <div class="flow-icon"><span class="material-icons-outlined">handshake</span></div>
         <div class="flow-num">02</div>
         <h4>Handshake</h4>
         <p>Mutual authentication with Ed25519 signatures and session tokens</p>
         <span class="flow-endpoint">/avp/handshake</span>
       </div>
       <div class="flow-step reveal reveal-delay-2">
-        <div class="flow-icon">&#x1f4e8;</div>
+        <div class="flow-icon"><span class="material-icons-outlined">description</span></div>
         <div class="flow-num">03</div>
         <h4>Request</h4>
         <p>Buyer sends structured RFP with requirements, budget, and timeline</p>
         <span class="flow-endpoint">/avp/rfp</span>
       </div>
       <div class="flow-step reveal reveal-delay-3">
-        <div class="flow-icon">&#x1f4ac;</div>
+        <div class="flow-icon"><span class="material-icons-outlined">forum</span></div>
         <div class="flow-num">04</div>
         <h4>Negotiate</h4>
         <p>Multi-round AI negotiation with counter-proposals and human escalation</p>
         <span class="flow-endpoint">/avp/negotiate</span>
       </div>
       <div class="flow-step reveal reveal-delay-4">
-        <div class="flow-icon">&#x2705;</div>
+        <div class="flow-icon"><span class="material-icons-outlined">task_alt</span></div>
         <div class="flow-num">05</div>
         <h4>Settle</h4>
         <p>Finalize agreement with signed settlement recorded on the registry</p>
@@ -703,32 +808,32 @@ footer{
     </div>
     <div class="features-grid">
       <div class="feature-card reveal">
-        <span class="feature-icon">&#x1f310;</span>
+        <span class="feature-icon"><span class="material-icons-outlined">public</span></span>
         <h4>Decentralized Discovery</h4>
         <p>Vendors host their own agents. No single point of failure. Registry is an index, not a gateway. Direct peer-to-peer communication.</p>
       </div>
       <div class="feature-card reveal reveal-delay-1">
-        <span class="feature-icon">&#x1f512;</span>
+        <span class="feature-icon"><span class="material-icons-outlined">lock</span></span>
         <h4>Zero-Trust Security</h4>
         <p>Ed25519 request signing, JWT sessions, mutual authentication. Every message is cryptographically verified. No trust assumptions.</p>
       </div>
       <div class="feature-card reveal reveal-delay-2">
-        <span class="feature-icon">&#x1f3af;</span>
+        <span class="feature-icon"><span class="material-icons-outlined">track_changes</span></span>
         <h4>Structured Negotiation</h4>
         <p>Formal state machine for multi-round negotiation. Counter-proposals, acceptance, rejection, and human escalation built into the protocol.</p>
       </div>
       <div class="feature-card reveal reveal-delay-1">
-        <span class="feature-icon">&#x1f91d;</span>
+        <span class="feature-icon"><span class="material-icons-outlined">verified_user</span></span>
         <h4>Business Verification</h4>
         <p>Four-tier trust system: unverified, domain-verified, business-verified, and premium. Real document verification with human review.</p>
       </div>
       <div class="feature-card reveal reveal-delay-2">
-        <span class="feature-icon">&#x1f4ca;</span>
+        <span class="feature-icon"><span class="material-icons-outlined">insights</span></span>
         <h4>Trust Scoring</h4>
         <p>Reputation computed from transaction history, response quality, dispute rate, peer reviews, and protocol compliance. Transparent algorithm.</p>
       </div>
       <div class="feature-card reveal reveal-delay-3">
-        <span class="feature-icon">&#x1f527;</span>
+        <span class="feature-icon"><span class="material-icons-outlined">integration_instructions</span></span>
         <h4>SDK & Integrations</h4>
         <p>Node.js, Python, and Go SDKs. Plug into Salesforce, HubSpot, Slack, Stripe. WordPress plugin. Chrome extension. Embeddable widget.</p>
       </div>
@@ -948,6 +1053,112 @@ vendor.<span class="fn">run</span>(<span class="prop">port</span>=<span class="n
   </div>
 </section>
 
+<!-- FLOW DIAGRAM -->
+<section class="flow-diagram">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label reveal">System Flow</div>
+      <h2 class="section-title reveal reveal-delay-1">How Agents Communicate</h2>
+      <p class="section-desc reveal reveal-delay-2">End-to-end flow between buyer, vendor, and the trust registry.</p>
+    </div>
+    <div class="flow-diagram-box reveal reveal-delay-3">
+      <div class="fd-main">
+        <!-- Buyer Node -->
+        <div class="fd-node buyer">
+          <div class="fd-node-icon"><span class="material-icons-outlined">storefront</span></div>
+          <h5>Buyer Agent</h5>
+          <p>Discovers vendors, sends RFPs, compares proposals, negotiates terms</p>
+          <span class="fd-badge">buyer.com</span>
+        </div>
+
+        <!-- Arrows: Buyer <-> Vendor -->
+        <div class="fd-arrow-col">
+          <div class="fd-arrow-lbl highlight">1. Discovery</div>
+          <div class="fd-arrow-h"></div>
+          <div class="fd-arrow-lbl">GET /.well-known/avp.json</div>
+          <div style="height:12px"></div>
+          <div class="fd-arrow-lbl highlight">3. RFP + Negotiate</div>
+          <div class="fd-arrow-h"></div>
+          <div class="fd-arrow-lbl">POST /avp/rfp</div>
+          <div style="height:12px"></div>
+          <div class="fd-arrow-lbl highlight">5. Proposal</div>
+          <div class="fd-arrow-h left"></div>
+          <div class="fd-arrow-lbl">JSON Response</div>
+          <div style="height:12px"></div>
+          <div class="fd-arrow-lbl highlight">6. Settlement</div>
+          <div class="fd-arrow-h"></div>
+          <div class="fd-arrow-lbl">POST /avp/settle</div>
+        </div>
+
+        <!-- Vendor Node -->
+        <div class="fd-node vendor">
+          <div class="fd-node-icon"><span class="material-icons-outlined">apartment</span></div>
+          <h5>Vendor Agent</h5>
+          <p>Exposes capabilities, generates proposals, negotiates, finalizes deals</p>
+          <span class="fd-badge" style="background:var(--purple-dim);color:var(--purple)">vendor.com</span>
+        </div>
+
+        <!-- Arrows: Vendor <-> Registry -->
+        <div class="fd-arrow-col">
+          <div class="fd-arrow-lbl highlight">2. Verify</div>
+          <div class="fd-arrow-h"></div>
+          <div class="fd-arrow-lbl">Trust Score Lookup</div>
+          <div style="height:12px"></div>
+          <div class="fd-arrow-lbl highlight">4. Auth</div>
+          <div class="fd-arrow-h left"></div>
+          <div class="fd-arrow-lbl">Ed25519 + JWT</div>
+          <div style="height:12px"></div>
+          <div class="fd-arrow-lbl highlight">7. Record</div>
+          <div class="fd-arrow-h"></div>
+          <div class="fd-arrow-lbl">Settlement Log</div>
+        </div>
+
+        <!-- Registry Node -->
+        <div class="fd-node registry">
+          <div class="fd-node-icon"><span class="material-icons-outlined">verified</span></div>
+          <h5>AVP Registry</h5>
+          <p>Trust scores, identity verification, settlement records, agent index</p>
+          <span class="fd-badge" style="background:var(--signal-dim);color:var(--signal)">registry.avp.org</span>
+        </div>
+      </div>
+
+      <!-- Step-by-step bar -->
+      <div class="fd-steps-bar">
+        <div class="fd-step-cell">
+          <div class="num">01</div>
+          <h6>Discover</h6>
+          <p>Find agents via well-known URI or registry</p>
+        </div>
+        <div class="fd-step-cell">
+          <div class="num">02</div>
+          <h6>Verify</h6>
+          <p>Check trust score and business identity</p>
+        </div>
+        <div class="fd-step-cell">
+          <div class="num">03</div>
+          <h6>Handshake</h6>
+          <p>Mutual auth with Ed25519 signatures</p>
+        </div>
+        <div class="fd-step-cell">
+          <div class="num">04</div>
+          <h6>Request</h6>
+          <p>Send structured RFP with requirements</p>
+        </div>
+        <div class="fd-step-cell">
+          <div class="num">05</div>
+          <h6>Negotiate</h6>
+          <p>Multi-round proposals and counters</p>
+        </div>
+        <div class="fd-step-cell">
+          <div class="num">06</div>
+          <h6>Settle</h6>
+          <p>Sign agreement and record on registry</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- STATS BAR -->
 <section class="stats-bar">
   <div class="container">
@@ -1028,6 +1239,99 @@ vendor.<span class="fn">run</span>(<span class="prop">port</span>=<span class="n
   </div>
 </section>
 
+<!-- PLANNED -->
+<section class="planned" id="planned">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label reveal">Coming Soon</div>
+      <h2 class="section-title reveal reveal-delay-1">Planned Features</h2>
+      <p class="section-desc reveal reveal-delay-2">What we're building next to make AVP production-ready for businesses.</p>
+    </div>
+    <div class="planned-grid">
+      <div class="planned-card reveal">
+        <div class="planned-icon"><span class="material-icons-outlined">gavel</span></div>
+        <div>
+          <h4>Compliance &amp; Regulatory</h4>
+          <p>GDPR-compliant data handling, SOC2 alignment, data residency controls, and right-to-erasure for negotiation data.</p>
+          <span class="planned-status in-progress">In Progress</span>
+        </div>
+      </div>
+      <div class="planned-card reveal reveal-delay-1">
+        <div class="planned-icon"><span class="material-icons-outlined">speed</span></div>
+        <div>
+          <h4>SLA Framework</h4>
+          <p>Response time guarantees, uptime expectations, graceful degradation, and health check endpoints for agent monitoring.</p>
+          <span class="planned-status in-progress">In Progress</span>
+        </div>
+      </div>
+      <div class="planned-card reveal reveal-delay-2">
+        <div class="planned-icon"><span class="material-icons-outlined">webhook</span></div>
+        <div>
+          <h4>Webhooks &amp; Events</h4>
+          <p>Real-time event notifications for RFP receipt, proposal updates, negotiation changes, and settlement completion.</p>
+          <span class="planned-status planned">Planned</span>
+        </div>
+      </div>
+      <div class="planned-card reveal reveal-delay-3">
+        <div class="planned-icon"><span class="material-icons-outlined">currency_exchange</span></div>
+        <div>
+          <h4>Multi-currency &amp; Localization</h4>
+          <p>Native multi-currency support in proposals, timezone-aware scheduling, and language preferences in capability declarations.</p>
+          <span class="planned-status planned">Planned</span>
+        </div>
+      </div>
+      <div class="planned-card reveal">
+        <div class="planned-icon"><span class="material-icons-outlined">article</span></div>
+        <div>
+          <h4>Contract Templates</h4>
+          <p>Standard agreement JSON schemas, terms &amp; conditions framework, and digital signature integration for settlements.</p>
+          <span class="planned-status planned">Planned</span>
+        </div>
+      </div>
+      <div class="planned-card reveal reveal-delay-1">
+        <div class="planned-icon"><span class="material-icons-outlined">history</span></div>
+        <div>
+          <h4>Audit Trail</h4>
+          <p>Immutable transaction logging, configurable retention periods, and compliance-ready export in standard formats.</p>
+          <span class="planned-status planned">Planned</span>
+        </div>
+      </div>
+      <div class="planned-card reveal reveal-delay-2">
+        <div class="planned-icon"><span class="material-icons-outlined">science</span></div>
+        <div>
+          <h4>Sandbox Mode</h4>
+          <p>Dedicated test environment with mock responses, test agent identifiers, and isolated sandbox registry for development.</p>
+          <span class="planned-status in-progress">In Progress</span>
+        </div>
+      </div>
+      <div class="planned-card reveal reveal-delay-3">
+        <div class="planned-icon"><span class="material-icons-outlined">analytics</span></div>
+        <div>
+          <h4>Analytics API</h4>
+          <p>Usage metrics, conversion tracking, response time monitoring, and vendor performance dashboards via API.</p>
+          <span class="planned-status research">Research</span>
+        </div>
+      </div>
+      <div class="planned-card reveal">
+        <div class="planned-icon"><span class="material-icons-outlined">balance</span></div>
+        <div>
+          <h4>Dispute Resolution</h4>
+          <p>Formal escalation flows, third-party arbitration support, evidence submission format, and resolution tracking.</p>
+          <span class="planned-status research">Research</span>
+        </div>
+      </div>
+      <div class="planned-card reveal reveal-delay-1">
+        <div class="planned-icon"><span class="material-icons-outlined">swap_horiz</span></div>
+        <div>
+          <h4>Data Portability</h4>
+          <p>Standard export formats, cross-registry migration tools, and clear vendor data ownership policies.</p>
+          <span class="planned-status research">Research</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- COMMUNITY -->
 <section class="community" id="community">
   <div class="container">
@@ -1038,22 +1342,22 @@ vendor.<span class="fn">run</span>(<span class="prop">port</span>=<span class="n
     </div>
     <div class="community-grid">
       <div class="community-card reveal">
-        <div class="icon">&#x1f4bb;</div>
+        <div class="icon"><span class="material-icons-outlined">code</span></div>
         <h4>GitHub</h4>
         <p>Star the repo, submit issues, contribute code. All protocol development happens in the open.</p>
         <a href="https://github.com/wemakshaychavan/AVP" class="community-link">github.com/wemakshaychavan/AVP &rarr;</a>
       </div>
       <div class="community-card reveal reveal-delay-1">
-        <div class="icon">&#x1f4ac;</div>
+        <div class="icon"><span class="material-icons-outlined">chat</span></div>
         <h4>Discord</h4>
         <p>Join the conversation. Ask questions, share ideas, get help with implementation.</p>
-        <a href="#" class="community-link">Join Discord &rarr;</a>
+        <a href="#community" class="community-link">Join Discord &rarr;</a>
       </div>
       <div class="community-card reveal reveal-delay-2">
-        <div class="icon">&#x1f4d6;</div>
+        <div class="icon"><span class="material-icons-outlined">menu_book</span></div>
         <h4>Documentation</h4>
         <p>Complete protocol spec, API reference, SDK guides, tutorials, and architecture docs.</p>
-        <a href="#" class="community-link">Read the Docs &rarr;</a>
+        <a href="https://github.com/wemakshaychavan/AVP/tree/main/docs" class="community-link">Read the Docs &rarr;</a>
       </div>
     </div>
   </div>
@@ -1082,24 +1386,24 @@ vendor.<span class="fn">run</span>(<span class="prop">port</span>=<span class="n
       </div>
       <div class="footer-col">
         <h5>Protocol</h5>
-        <a href="#">Specification</a>
-        <a href="#">API Reference</a>
-        <a href="#">JSON Schemas</a>
-        <a href="#">OpenAPI Spec</a>
+        <a href="https://github.com/wemakshaychavan/AVP/blob/main/docs/PROTOCOL-SPEC.md">Specification</a>
+        <a href="https://github.com/wemakshaychavan/AVP/blob/main/docs/API-REFERENCE.md">API Reference</a>
+        <a href="https://github.com/wemakshaychavan/AVP/tree/main/docs">JSON Schemas</a>
+        <a href="https://github.com/wemakshaychavan/AVP/tree/main/docs">OpenAPI Spec</a>
       </div>
       <div class="footer-col">
         <h5>SDKs</h5>
-        <a href="#">Node.js</a>
-        <a href="#">Python</a>
-        <a href="#">Go</a>
-        <a href="#">Chrome Extension</a>
+        <a href="https://github.com/wemakshaychavan/AVP">Node.js</a>
+        <a href="https://github.com/wemakshaychavan/AVP">Python</a>
+        <a href="https://github.com/wemakshaychavan/AVP">Go</a>
+        <a href="https://github.com/wemakshaychavan/AVP">Chrome Extension</a>
       </div>
       <div class="footer-col">
         <h5>Community</h5>
         <a href="https://github.com/wemakshaychavan/AVP">GitHub</a>
-        <a href="#">Discord</a>
-        <a href="#">Blog</a>
-        <a href="#">Governance</a>
+        <a href="#community">Discord</a>
+        <a href="https://github.com/wemakshaychavan/AVP">Blog</a>
+        <a href="https://github.com/wemakshaychavan/AVP/blob/main/docs/GOVERNANCE.md">Governance</a>
       </div>
     </div>
     <div class="footer-bottom">
