@@ -689,6 +689,81 @@ footer{
 .planned-status.in-progress{background:var(--accent-dim);color:var(--accent)}
 .planned-status.research{background:var(--signal-dim);color:var(--signal)}
 
+/* ---- DEPLOY OPTIONS ---- */
+.deploy{padding:8rem 0}
+.deploy-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;margin-top:3rem;
+}
+.deploy-card{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:12px;padding:1.8rem;transition:all 0.3s;position:relative;overflow:hidden;
+}
+.deploy-card:hover{border-color:var(--border-bright);transform:translateY(-3px)}
+.deploy-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:var(--gradient-accent);opacity:0;transition:opacity 0.3s;
+}
+.deploy-card:hover::before{opacity:1}
+.deploy-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.8rem}
+.deploy-card h4{font-size:0.95rem;font-weight:600}
+.deploy-time{
+  font-family:var(--mono);font-size:0.65rem;color:var(--accent);
+  background:var(--accent-dim);padding:0.15rem 0.5rem;border-radius:4px;
+}
+.deploy-card p{font-size:0.78rem;color:var(--text-dim);font-weight:300;line-height:1.5;margin-bottom:0.8rem}
+.deploy-meta{display:flex;gap:0.8rem;font-family:var(--mono);font-size:0.6rem;color:var(--text-muted)}
+.deploy-meta span{display:flex;align-items:center;gap:0.3rem}
+.deploy-highlight{
+  background:var(--bg-card);border:2px solid var(--accent);
+  border-radius:16px;padding:2.5rem;margin-top:2rem;
+  display:flex;align-items:center;gap:2.5rem;
+}
+.deploy-highlight-text{flex:1}
+.deploy-highlight-text h4{font-size:1.2rem;font-weight:700;margin-bottom:0.5rem}
+.deploy-highlight-text p{font-size:0.9rem;color:var(--text-dim);font-weight:300;line-height:1.6}
+.deploy-cmd{
+  background:var(--bg);border:1px solid var(--border);
+  border-radius:10px;padding:1.2rem 1.8rem;font-family:var(--mono);
+  font-size:0.8rem;white-space:pre;min-width:280px;
+}
+.deploy-cmd .prompt{color:var(--accent)}
+.deploy-cmd .cmd{color:var(--text)}
+@media(max-width:900px){
+  .deploy-grid{grid-template-columns:1fr 1fr}
+  .deploy-highlight{flex-direction:column;text-align:center}
+  .deploy-cmd{min-width:auto;width:100%}
+}
+@media(max-width:600px){
+  .deploy-grid{grid-template-columns:1fr}
+}
+
+/* ---- PROTOCOL STACK ---- */
+.proto-stack{padding:4rem 0 0}
+.proto-stack-box{
+  margin-top:2rem;max-width:700px;margin-left:auto;margin-right:auto;
+}
+.proto-layer{
+  padding:1.2rem 2rem;text-align:center;border:1px solid var(--border);
+  margin-bottom:-1px;transition:all 0.3s;
+}
+.proto-layer:first-child{border-radius:12px 12px 0 0}
+.proto-layer:last-child{border-radius:0 0 12px 12px}
+.proto-layer:hover{z-index:1;border-color:var(--border-bright)}
+.proto-layer h5{font-size:0.9rem;font-weight:600;margin-bottom:0.15rem}
+.proto-layer p{font-size:0.7rem;color:var(--text-dim);font-weight:300}
+.proto-layer.avp{background:rgba(0,212,170,0.08);border-color:rgba(0,212,170,0.3)}
+.proto-layer.avp h5{color:var(--accent)}
+.proto-layer.a2a{background:rgba(59,130,246,0.06);border-color:rgba(59,130,246,0.2)}
+.proto-layer.a2a h5{color:var(--blue)}
+.proto-layer.mcp{background:rgba(139,92,246,0.06);border-color:rgba(139,92,246,0.2)}
+.proto-layer.mcp h5{color:var(--purple)}
+.proto-layer.http{background:var(--bg-elevated)}
+.proto-layer.http h5{color:var(--text-dim)}
+.proto-stack-note{
+  text-align:center;margin-top:1.5rem;font-size:0.8rem;color:var(--text-dim);
+  font-weight:300;font-style:italic;
+}
+
 /* ---- ANIMATIONS ---- */
 .reveal{opacity:0;transform:translateY(30px);transition:all 0.8s cubic-bezier(0.16,1,0.3,1)}
 .reveal.visible{opacity:1;transform:translateY(0)}
@@ -735,10 +810,9 @@ footer{
     <a href="#how-it-works">How It Works</a>
     <a href="#features">Features</a>
     <a href="#integrations">Integrations</a>
-    <a href="#code">Code</a>
-    <a href="#architecture">Architecture</a>
-    <a href="#roadmap">Roadmap</a>
-    <a href="#planned">Planned</a>
+    <a href="#deploy">Deploy</a>
+    <a href="api-docs.html">API Docs</a>
+    <a href="strategy.html">Strategy</a>
     <a href="https://github.com/wemakshaychavan/AVP" class="nav-cta">GitHub</a>
   </div>
 </nav>
@@ -1573,6 +1647,36 @@ vendor.<span class="fn">run</span>(<span class="prop">port</span>=<span class="n
   </div>
 </section>
 
+<!-- PROTOCOL STACK -->
+<section class="proto-stack">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label reveal">Positioning</div>
+      <h2 class="section-title reveal reveal-delay-1">Where AVP Fits</h2>
+      <p class="section-desc reveal reveal-delay-2">AVP is the commerce layer in the AI protocol stack — complementary to MCP and A2A.</p>
+    </div>
+    <div class="proto-stack-box reveal reveal-delay-3">
+      <div class="proto-layer avp">
+        <h5>AVP &mdash; Business Commerce</h5>
+        <p>Discovery, RFP, Negotiation, Settlement &bull; AI-to-AI business transactions</p>
+      </div>
+      <div class="proto-layer a2a">
+        <h5>A2A &mdash; Agent Communication</h5>
+        <p>General agent-to-agent task delegation &bull; Google's Agent-to-Agent Protocol</p>
+      </div>
+      <div class="proto-layer mcp">
+        <h5>MCP &mdash; Tool &amp; Data Integration</h5>
+        <p>Connect AI to tools, databases, APIs &bull; Anthropic's Model Context Protocol</p>
+      </div>
+      <div class="proto-layer http">
+        <h5>HTTP / HTTPS</h5>
+        <p>Transport layer</p>
+      </div>
+    </div>
+    <p class="proto-stack-note reveal reveal-delay-4">AVP doesn't compete with MCP or A2A &mdash; it's the specialized business layer that sits above them.</p>
+  </div>
+</section>
+
 <!-- STATS BAR -->
 <section class="stats-bar">
   <div class="container">
@@ -1592,6 +1696,77 @@ vendor.<span class="fn">run</span>(<span class="prop">port</span>=<span class="n
       <div class="reveal reveal-delay-3">
         <div class="stat-num">3</div>
         <div class="stat-label">SDK Languages</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DEPLOYMENT -->
+<section class="deploy" id="deploy">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label reveal">Deploy</div>
+      <h2 class="section-title reveal reveal-delay-1">Zero-Friction Deployment</h2>
+      <p class="section-desc reveal reveal-delay-2">No dedicated server required. Deploy an AVP agent in minutes using the infrastructure you already have.</p>
+    </div>
+    <div class="deploy-grid">
+      <div class="deploy-card reveal">
+        <div class="deploy-card-header">
+          <h4><span class="material-icons-outlined" style="font-size:1rem;vertical-align:middle;margin-right:0.3rem;color:var(--accent)">cloud</span> AVP Gateway</h4>
+          <span class="deploy-time">~1 min</span>
+        </div>
+        <p>Managed hosted service. Sign up, configure capabilities via dashboard, go live. No code required. Like Stripe for AI commerce.</p>
+        <div class="deploy-meta"><span>Free tier available</span><span>Best for: Everyone</span></div>
+      </div>
+      <div class="deploy-card reveal reveal-delay-1">
+        <div class="deploy-card-header">
+          <h4><span class="material-icons-outlined" style="font-size:1rem;vertical-align:middle;margin-right:0.3rem;color:var(--purple)">web</span> WordPress Plugin</h4>
+          <span class="deploy-time">~2 min</span>
+        </div>
+        <p>Install, activate, configure via admin panel. AVP agent runs on your existing WordPress hosting. Reaches 40%+ of the web.</p>
+        <div class="deploy-meta"><span>$0 additional</span><span>Best for: Non-technical</span></div>
+      </div>
+      <div class="deploy-card reveal reveal-delay-2">
+        <div class="deploy-card-header">
+          <h4><span class="material-icons-outlined" style="font-size:1rem;vertical-align:middle;margin-right:0.3rem;color:var(--signal)">bolt</span> Cloudflare Workers</h4>
+          <span class="deploy-time">~5 min</span>
+        </div>
+        <p>Edge-deployed, 0ms cold start, global. Single-file TypeScript agent. Best performance-to-cost ratio.</p>
+        <div class="deploy-meta"><span>Free tier: 100K req/day</span><span>Best for: Developers</span></div>
+      </div>
+      <div class="deploy-card reveal">
+        <div class="deploy-card-header">
+          <h4><span class="material-icons-outlined" style="font-size:1rem;vertical-align:middle;margin-right:0.3rem;color:var(--blue)">rocket_launch</span> Vercel / Netlify</h4>
+          <span class="deploy-time">~10 min</span>
+        </div>
+        <p>Serverless functions with git-push deploy. Edge Functions for zero cold starts. File-based routing maps to AVP endpoints.</p>
+        <div class="deploy-meta"><span>Free tier available</span><span>Best for: JS/TS teams</span></div>
+      </div>
+      <div class="deploy-card reveal reveal-delay-1">
+        <div class="deploy-card-header">
+          <h4><span class="material-icons-outlined" style="font-size:1rem;vertical-align:middle;margin-right:0.3rem;color:var(--accent)">functions</span> AWS Lambda / GCP / Azure</h4>
+          <span class="deploy-time">~30 min</span>
+        </div>
+        <p>Enterprise-grade serverless with full cloud ecosystem. IaC templates (CDK, Terraform) for production deployments.</p>
+        <div class="deploy-meta"><span>Pay-per-request</span><span>Best for: Enterprise</span></div>
+      </div>
+      <div class="deploy-card reveal reveal-delay-2">
+        <div class="deploy-card-header">
+          <h4><span class="material-icons-outlined" style="font-size:1rem;vertical-align:middle;margin-right:0.3rem;color:var(--purple)">deployed_code</span> Docker (Fly.io)</h4>
+          <span class="deploy-time">~15 min</span>
+        </div>
+        <p>Full-control container deployment. Any language, any library. Global edge with Fly.io or simple hosting on Railway.</p>
+        <div class="deploy-meta"><span>From $5/mo</span><span>Best for: Full control</span></div>
+      </div>
+    </div>
+    <div class="deploy-highlight reveal">
+      <div class="deploy-highlight-text">
+        <h4>One-Command Deployment</h4>
+        <p>Get a fully functional AVP agent running with a single command. SDKs handle discovery, auth, negotiation, and settlement out of the box.</p>
+      </div>
+      <div class="deploy-cmd">
+<span class="prompt">$</span> <span class="cmd">npx create-avp-agent</span>
+<span class="prompt">$</span> <span class="cmd">pip install avp &amp;&amp; avp init</span>
       </div>
     </div>
   </div>
