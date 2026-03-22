@@ -338,6 +338,49 @@ nav{
 .feature-card h4{font-size:1.05rem;font-weight:600;margin-bottom:0.6rem}
 .feature-card p{font-size:0.85rem;color:var(--text-dim);font-weight:300;line-height:1.6}
 
+/* ---- INTEGRATIONS ---- */
+.integrations{padding:8rem 0}
+.integrations-categories{margin-top:3rem}
+.int-category{margin-bottom:3rem}
+.int-category:last-child{margin-bottom:0}
+.int-category-header{
+  display:flex;align-items:center;gap:0.8rem;margin-bottom:1.2rem;
+}
+.int-category-header .material-icons-outlined{color:var(--accent);font-size:1.3rem}
+.int-category-header h4{font-size:1rem;font-weight:600;letter-spacing:-0.01em}
+.int-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;
+}
+.int-card{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:10px;padding:1.2rem;text-align:center;
+  transition:all 0.3s;position:relative;
+}
+.int-card:hover{border-color:var(--border-bright);transform:translateY(-2px)}
+.int-card-icon{
+  width:40px;height:40px;border-radius:8px;margin:0 auto 0.6rem;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--bg-elevated);border:1px solid var(--border);
+  font-size:1.1rem;color:var(--text-dim);
+}
+.int-card h5{font-size:0.8rem;font-weight:500;margin-bottom:0.3rem}
+.int-card p{font-size:0.65rem;color:var(--text-muted);font-weight:300;line-height:1.4}
+.int-status{
+  font-family:var(--mono);font-size:0.5rem;display:inline-block;
+  padding:0.1rem 0.4rem;border-radius:3px;margin-top:0.5rem;
+  letter-spacing:0.05em;text-transform:uppercase;font-weight:500;
+}
+.int-status.dev{background:var(--accent-dim);color:var(--accent)}
+.int-status.planned{background:var(--purple-dim);color:var(--purple)}
+.int-status.community{background:var(--signal-dim);color:var(--signal)}
+.int-status.available{background:rgba(40,200,64,0.15);color:#28c840}
+@media(max-width:900px){
+  .int-grid{grid-template-columns:repeat(3,1fr)}
+}
+@media(max-width:600px){
+  .int-grid{grid-template-columns:repeat(2,1fr)}
+}
+
 /* ---- FOR VENDORS / BUYERS ---- */
 .for-section{padding:8rem 0}
 .for-grid{
@@ -691,6 +734,7 @@ footer{
     <a href="#benefits">Benefits</a>
     <a href="#how-it-works">How It Works</a>
     <a href="#features">Features</a>
+    <a href="#integrations">Integrations</a>
     <a href="#code">Code</a>
     <a href="#architecture">Architecture</a>
     <a href="#roadmap">Roadmap</a>
@@ -955,6 +999,258 @@ footer{
         <h4>SDK & Integrations</h4>
         <p>Node.js, Python, and Go SDKs. Plug into Salesforce, HubSpot, Slack, Stripe. WordPress plugin. Chrome extension. Embeddable widget.</p>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- INTEGRATIONS -->
+<section class="integrations" id="integrations">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label reveal">Ecosystem</div>
+      <h2 class="section-title reveal reveal-delay-1">Integrations</h2>
+      <p class="section-desc reveal reveal-delay-2">Connect AVP with the tools your business already uses.</p>
+    </div>
+    <div class="integrations-categories">
+
+      <!-- CRM & Sales -->
+      <div class="int-category reveal">
+        <div class="int-category-header">
+          <span class="material-icons-outlined">contact_page</span>
+          <h4>CRM &amp; Sales</h4>
+        </div>
+        <div class="int-grid">
+          <div class="int-card">
+            <div class="int-card-icon"><span class="material-icons-outlined">cloud</span></div>
+            <h5>Salesforce</h5>
+            <p>Auto-create leads from RFPs, sync proposals to opportunities</p>
+            <span class="int-status planned">Planned</span>
+          </div>
+          <div class="int-card">
+            <div class="int-card-icon"><span class="material-icons-outlined">hub</span></div>
+            <h5>HubSpot</h5>
+            <p>Pipeline sync, contact creation, deal tracking from settlements</p>
+            <span class="int-status planned">Planned</span>
+          </div>
+          <div class="int-card">
+            <div class="int-card-icon"><span class="material-icons-outlined">apps</span></div>
+            <h5>Zoho CRM</h5>
+            <p>Lead capture, proposal tracking, vendor management</p>
+            <span class="int-status community">Community</span>
+          </div>
+          <div class="int-card">
+            <div class="int-card-icon"><span class="material-icons-outlined">filter_alt</span></div>
+            <h5>Pipedrive</h5>
+            <p>Deal pipeline automation from negotiations</p>
+            <span class="int-status community">Community</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Communication -->
+      <div class="int-category reveal">
+        <div class="int-category-header">
+          <span class="material-icons-outlined">forum</span>
+          <h4>Communication</h4>
+        </div>
+        <div class="int-grid">
+          <div class="int-card">
+            <div class="int-card-icon"><span class="material-icons-outlined">tag</span></div>
+            <h5>Slack</h5>
+            <p>RFP alerts, negotiation updates, human escalation notifications</p>
+            <span class="int-status dev">In Dev</span>
+          </div>
+          <div class="int-card">
+            <div class="int-card-icon"><span class="material-icons-outlined">groups</span></div>
+            <h5>Microsoft Teams</h5>
+            <p>Channel notifications, approval workflows, deal alerts</p>
+            <span class="int-status planned">Planned</span>
+          </div>
+          <div class="int-card">
+            <div class="int-card-icon"><span class="material-icons-outlined">email</span></div>
+            <h5>Email (SMTP)</h5>
+            <p>Proposal summaries, settlement confirmations, digest reports</p>
+            <span class="int-status planned">Planned</span>
+          </div>
+          <div class="int-card">
+            <div class="int-card-icon"><span class="material-icons-outlined">send</span></div>
+            <h5>SendGrid</h5>
+            <p>Transactional emails for proposals and settlements</p>
+            <span class="int-status community">Community</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payments & Legal -->
+      <div class="int-category reveal">
+        <div class="int-category-header">
+          <span class="material-icons-outlined">payments</span>
+          <h4>Payments &amp; Legal</h4>
+        </div>
+        <div class="int-grid">
+          <div class="int-card">
+            <div class="int-card-icon"><span class="material-icons-outlined">credit_card</span></div>
+            <h5>Stripe</h5>
+            <p>Milestone payments, invoicing from signed settlements</p>
+            <span class="int-status planned">Planned</span>
+          </div>
+          <div class="int-card">
+            <div class="int-card-icon"><span class="material-icons-outlined">currency_rupee</span></div>
+            <h5>Razorpay</h5>
+            <p>India-focused payment processing for settlements</p>
+            <span class="int-status community">Community</span>
+          </div>
+          <div class="int-card">
+            <div class="int-card-icon"><span class="material-icons-outlined">draw</span></div>
+            <h5>DocuSign</h5>
+            <p>Legal contract signing from AVP settlements</p>
+            <span class="int-status planned">Planned</span>
+          </div>
+          <div class="int-card">
+            <div class="int-card-icon"><span class="material-icons-outlined">description</span></div>
+            <h5>PandaDoc</h5>
+            <p>Document generation and e-signatures</p>
+            <span class="int-status community">Community</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Project Management -->
+      <div class="int-category reveal">
+        <div class="int-category-header">
+          <span class="material-icons-outlined">task_alt</span>
+          <h4>Project Management</h4>
+        </div>
+        <div class="int-grid">
+          <div class="int-card">
+            <div class="int-card-icon"><span class="material-icons-outlined">view_kanban</span></div>
+            <h5>Jira</h5>
+            <p>Auto-create projects and epics from signed settlements</p>
+            <span class="int-status planned">Planned</span>
+          </div>
+          <div class="int-card">
+            <div class="int-card-icon"><span class="material-icons-outlined">linear_scale</span></div>
+            <h5>Linear</h5>
+            <p>Issue tracking synced to project milestones</p>
+            <span class="int-status community">Community</span>
+          </div>
+          <div class="int-card">
+            <div class="int-card-icon"><span class="material-icons-outlined">checklist</span></div>
+            <h5>Asana</h5>
+            <p>Task creation from settlement deliverables</p>
+            <span class="int-status community">Community</span>
+          </div>
+          <div class="int-card">
+            <div class="int-card-icon"><span class="material-icons-outlined">calendar_month</span></div>
+            <h5>Monday.com</h5>
+            <p>Timeline tracking against agreed schedules</p>
+            <span class="int-status community">Community</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI & Platforms -->
+      <div class="int-category reveal">
+        <div class="int-category-header">
+          <span class="material-icons-outlined">psychology</span>
+          <h4>AI &amp; Platforms</h4>
+        </div>
+        <div class="int-grid">
+          <div class="int-card">
+            <div class="int-card-icon"><span class="material-icons-outlined">smart_toy</span></div>
+            <h5>OpenAI / GPT</h5>
+            <p>Power proposal generation and negotiation logic</p>
+            <span class="int-status planned">Planned</span>
+          </div>
+          <div class="int-card">
+            <div class="int-card-icon"><span class="material-icons-outlined">auto_awesome</span></div>
+            <h5>Anthropic / Claude</h5>
+            <p>AI-driven RFP analysis and response generation</p>
+            <span class="int-status planned">Planned</span>
+          </div>
+          <div class="int-card">
+            <div class="int-card-icon"><span class="material-icons-outlined">share</span></div>
+            <h5>MCP Protocol</h5>
+            <p>Expose AVP as a tool for any MCP-compatible AI assistant</p>
+            <span class="int-status planned">Planned</span>
+          </div>
+          <div class="int-card">
+            <div class="int-card-icon"><span class="material-icons-outlined">link</span></div>
+            <h5>LangChain</h5>
+            <p>AVP tools and agents for LangChain pipelines</p>
+            <span class="int-status community">Community</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- CMS & Browser -->
+      <div class="int-category reveal">
+        <div class="int-category-header">
+          <span class="material-icons-outlined">language</span>
+          <h4>CMS &amp; Browser</h4>
+        </div>
+        <div class="int-grid">
+          <div class="int-card">
+            <div class="int-card-icon"><span class="material-icons-outlined">web</span></div>
+            <h5>WordPress</h5>
+            <p>One-click AVP agent plugin for any WordPress site</p>
+            <span class="int-status dev">In Dev</span>
+          </div>
+          <div class="int-card">
+            <div class="int-card-icon"><span class="material-icons-outlined">storefront</span></div>
+            <h5>Shopify</h5>
+            <p>E-commerce vendor agent app for Shopify stores</p>
+            <span class="int-status community">Community</span>
+          </div>
+          <div class="int-card">
+            <div class="int-card-icon"><span class="material-icons-outlined">extension</span></div>
+            <h5>Chrome Extension</h5>
+            <p>Discover AVP agents on any website while browsing</p>
+            <span class="int-status dev">In Dev</span>
+          </div>
+          <div class="int-card">
+            <div class="int-card-icon"><span class="material-icons-outlined">open_in_browser</span></div>
+            <h5>Firefox Add-on</h5>
+            <p>AVP discovery for Firefox users</p>
+            <span class="int-status community">Community</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Compliance & Analytics -->
+      <div class="int-category reveal">
+        <div class="int-category-header">
+          <span class="material-icons-outlined">shield</span>
+          <h4>Compliance &amp; Analytics</h4>
+        </div>
+        <div class="int-grid">
+          <div class="int-card">
+            <div class="int-card-icon"><span class="material-icons-outlined">monitoring</span></div>
+            <h5>Grafana</h5>
+            <p>Agent health dashboards and latency monitoring</p>
+            <span class="int-status community">Community</span>
+          </div>
+          <div class="int-card">
+            <div class="int-card-icon"><span class="material-icons-outlined">insights</span></div>
+            <h5>Mixpanel</h5>
+            <p>Conversion funnel analytics and user behavior</p>
+            <span class="int-status community">Community</span>
+          </div>
+          <div class="int-card">
+            <div class="int-card-icon"><span class="material-icons-outlined">verified_user</span></div>
+            <h5>Vanta</h5>
+            <p>Automated SOC2 compliance evidence collection</p>
+            <span class="int-status community">Community</span>
+          </div>
+          <div class="int-card">
+            <div class="int-card-icon"><span class="material-icons-outlined">policy</span></div>
+            <h5>OneTrust</h5>
+            <p>GDPR consent and data privacy management</p>
+            <span class="int-status community">Community</span>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </section>
