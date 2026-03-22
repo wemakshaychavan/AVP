@@ -532,17 +532,6 @@ code{
     </div>
   </div>
 
-  <!-- Settlement -->
-  <div class="nav-group">
-    <div class="nav-group-title" onclick="toggleGroup(this)">
-      Settlement
-      <span class="material-icons-outlined">expand_more</span>
-    </div>
-    <div class="nav-items">
-      <a href="#settle" class="nav-item"><span class="method-badge badge-post">POST</span> /avp/settle</a>
-    </div>
-  </div>
-
   <!-- Capabilities -->
   <div class="nav-group">
     <div class="nav-group-title" onclick="toggleGroup(this)">
@@ -749,7 +738,6 @@ code{
     <span style="color:var(--blue)">"handshake"</span>: <span style="color:var(--accent)">"/avp/handshake"</span>,
     <span style="color:var(--blue)">"rfp"</span>: <span style="color:var(--accent)">"/avp/rfp"</span>,
     <span style="color:var(--blue)">"negotiate"</span>: <span style="color:var(--accent)">"/avp/negotiate"</span>,
-    <span style="color:var(--blue)">"settle"</span>: <span style="color:var(--accent)">"/avp/settle"</span>,
     <span style="color:var(--blue)">"capabilities"</span>: <span style="color:var(--accent)">"/avp/capabilities"</span>,
     <span style="color:var(--blue)">"status"</span>: <span style="color:var(--accent)">"/avp/status"</span>
   },
@@ -854,7 +842,7 @@ code{
           <tr><td>session_id</td><td><span class="type">string</span> <span class="required">required</span></td><td>Active session ID from the handshake response</td></tr>
           <tr><td>requirements</td><td><span class="type">object[]</span> <span class="required">required</span></td><td>Array of requirement objects describing what the buyer needs</td></tr>
           <tr><td>budget</td><td><span class="type">object</span> <span class="optional">optional</span></td><td>Budget constraints including max amount, currency, and billing period</td></tr>
-          <tr><td>timeline</td><td><span class="type">object</span> <span class="optional">optional</span></td><td>Desired start date, contract duration, and delivery deadlines</td></tr>
+          <tr><td>timeline</td><td><span class="type">object</span> <span class="optional">optional</span></td><td>Desired start date, engagement duration, and delivery deadlines</td></tr>
           <tr><td>evaluation_criteria</td><td><span class="type">object[]</span> <span class="optional">optional</span></td><td>Weighted criteria the buyer will use to evaluate proposals</td></tr>
           <tr><td>metadata</td><td><span class="type">object</span> <span class="optional">optional</span></td><td>Arbitrary key-value pairs for agent-specific context</td></tr>
         </tbody>
@@ -990,7 +978,7 @@ code{
         <span class="method-pill post">POST</span>
         <span class="endpoint-path">/avp/negotiate/accept</span>
       </div>
-      <p class="endpoint-desc">Accepts the current vendor proposal or counter-proposal. This locks in the terms and moves the transaction to the settlement phase. Once accepted, terms cannot be renegotiated.</p>
+      <p class="endpoint-desc">Accepts the current vendor proposal or counter-proposal. This locks in the agreed terms and completes the negotiation. Once accepted, both parties can proceed with their own business processes outside the protocol.</p>
 
       <table class="param-table">
         <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
@@ -1011,9 +999,9 @@ code{
     <span style="color:var(--blue)">"total_amount"</span>: <span style="color:var(--signal)">11250.00</span>,
     <span style="color:var(--blue)">"currency"</span>: <span style="color:var(--accent)">"USD"</span>,
     <span style="color:var(--blue)">"billing_period"</span>: <span style="color:var(--accent)">"monthly"</span>,
-    <span style="color:var(--blue)">"contract_duration"</span>: <span style="color:var(--accent)">"12 months"</span>
+    <span style="color:var(--blue)">"duration"</span>: <span style="color:var(--accent)">"12 months"</span>
   },
-  <span style="color:var(--blue)">"settlement_url"</span>: <span style="color:var(--accent)">"/avp/settle"</span>,
+  <span style="color:var(--blue)">"message"</span>: <span style="color:var(--accent)">"Negotiation complete. Parties may now proceed with their own business processes."</span>,
   <span style="color:var(--blue)">"vendor_signature"</span>: <span style="color:var(--accent)">"sig_vendor_8a9b0c1d2e3f..."</span>
 }</pre>
     </div>
@@ -1077,57 +1065,6 @@ code{
   <span style="color:var(--blue)">"expected_response"</span>: <span style="color:var(--accent)">"2026-03-23T14:40:00Z"</span>,
   <span style="color:var(--blue)">"notification_sent"</span>: <span style="color:var(--purple)">true</span>,
   <span style="color:var(--blue)">"channel"</span>: <span style="color:var(--accent)">"email"</span>
-}</pre>
-    </div>
-  </div>
-
-  <!-- ==================== SETTLEMENT ==================== -->
-  <div class="api-section" id="settlement-section">
-    <span class="section-anchor" id="settle"></span>
-    <h2><span class="material-icons-outlined">verified</span> Settlement</h2>
-    <p>Settlement finalizes a negotiated deal, creating a binding agreement between buyer and vendor agents. This step handles payment authorization, contract generation, and service activation.</p>
-
-    <div class="endpoint-block">
-      <div class="endpoint-header">
-        <span class="method-pill post">POST</span>
-        <span class="endpoint-path">/avp/settle</span>
-      </div>
-      <p class="endpoint-desc">Finalizes the accepted proposal into a binding agreement. The buyer provides payment details and the vendor confirms the agreement with a signed contract hash. Services begin provisioning upon successful settlement.</p>
-
-      <table class="param-table">
-        <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
-        <tbody>
-          <tr><td>session_id</td><td><span class="type">string</span> <span class="required">required</span></td><td>Active session ID</td></tr>
-          <tr><td>negotiation_id</td><td><span class="type">string</span> <span class="required">required</span></td><td>The accepted negotiation</td></tr>
-          <tr><td>payment_method</td><td><span class="type">object</span> <span class="required">required</span></td><td>Payment details (type, token, billing address)</td></tr>
-          <tr><td>billing_contact</td><td><span class="type">object</span> <span class="optional">optional</span></td><td>Billing contact information</td></tr>
-          <tr><td>auto_renew</td><td><span class="type">boolean</span> <span class="optional">optional</span></td><td>Whether to auto-renew at contract end (default: false)</td></tr>
-        </tbody>
-      </table>
-
-      <div class="response-label"><span class="status status-200">200</span> Response</div>
-      <pre style="font-family:var(--mono);font-size:0.78rem;line-height:1.7;color:var(--text-dim);background:var(--bg);padding:1rem;border-radius:6px;overflow-x:auto;border:1px solid var(--border)">{
-  <span style="color:var(--blue)">"settlement_id"</span>: <span style="color:var(--accent)">"stl_1a2b3c4d5e6f"</span>,
-  <span style="color:var(--blue)">"status"</span>: <span style="color:var(--accent)">"confirmed"</span>,
-  <span style="color:var(--blue)">"contract"</span>: {
-    <span style="color:var(--blue)">"contract_id"</span>: <span style="color:var(--accent)">"ctr_7g8h9i0j1k2l"</span>,
-    <span style="color:var(--blue)">"hash"</span>: <span style="color:var(--accent)">"sha256:a1b2c3d4e5f6g7h8i9j0..."</span>,
-    <span style="color:var(--blue)">"start_date"</span>: <span style="color:var(--accent)">"2026-04-01T00:00:00Z"</span>,
-    <span style="color:var(--blue)">"end_date"</span>: <span style="color:var(--accent)">"2027-03-31T23:59:59Z"</span>,
-    <span style="color:var(--blue)">"total_value"</span>: <span style="color:var(--signal)">135000.00</span>,
-    <span style="color:var(--blue)">"currency"</span>: <span style="color:var(--accent)">"USD"</span>,
-    <span style="color:var(--blue)">"auto_renew"</span>: <span style="color:var(--purple)">false</span>
-  },
-  <span style="color:var(--blue)">"payment"</span>: {
-    <span style="color:var(--blue)">"status"</span>: <span style="color:var(--accent)">"authorized"</span>,
-    <span style="color:var(--blue)">"first_charge_date"</span>: <span style="color:var(--accent)">"2026-04-01T00:00:00Z"</span>
-  },
-  <span style="color:var(--blue)">"provisioning"</span>: {
-    <span style="color:var(--blue)">"status"</span>: <span style="color:var(--accent)">"in_progress"</span>,
-    <span style="color:var(--blue)">"estimated_ready"</span>: <span style="color:var(--accent)">"2026-03-22T15:00:00Z"</span>
-  },
-  <span style="color:var(--blue)">"vendor_signature"</span>: <span style="color:var(--accent)">"sig_stl_vendor_x8y9z0..."</span>,
-  <span style="color:var(--blue)">"buyer_signature"</span>: <span style="color:var(--accent)">"sig_stl_buyer_a1b2c3..."</span>
 }</pre>
     </div>
   </div>
@@ -1385,7 +1322,7 @@ code{
   <span style="color:var(--blue)">"trust_score"</span>: <span style="color:var(--signal)">0.94</span>,
   <span style="color:var(--blue)">"metrics"</span>: {
     <span style="color:var(--blue)">"total_transactions"</span>: <span style="color:var(--signal)">1247</span>,
-    <span style="color:var(--blue)">"successful_settlements"</span>: <span style="color:var(--signal)">1198</span>,
+    <span style="color:var(--blue)">"successful_negotiations"</span>: <span style="color:var(--signal)">1198</span>,
     <span style="color:var(--blue)">"avg_negotiation_rounds"</span>: <span style="color:var(--signal)">3.2</span>,
     <span style="color:var(--blue)">"avg_response_time_ms"</span>: <span style="color:var(--signal)">145</span>,
     <span style="color:var(--blue)">"dispute_rate"</span>: <span style="color:var(--signal)">0.012</span>
@@ -1435,14 +1372,14 @@ code{
       <span style="color:var(--blue)">"reviewer"</span>: <span style="color:var(--accent)">"agent://buyer.corp.io/procurement"</span>,
       <span style="color:var(--blue)">"rating"</span>: <span style="color:var(--signal)">5</span>,
       <span style="color:var(--blue)">"comment"</span>: <span style="color:var(--accent)">"Fast negotiations, fair pricing, excellent SLA adherence"</span>,
-      <span style="color:var(--blue)">"transaction_id"</span>: <span style="color:var(--accent)">"stl_abc123"</span>,
+      <span style="color:var(--blue)">"transaction_id"</span>: <span style="color:var(--accent)">"neg_abc123"</span>,
       <span style="color:var(--blue)">"created_at"</span>: <span style="color:var(--accent)">"2026-03-20T09:15:00Z"</span>
     },
     {
       <span style="color:var(--blue)">"reviewer"</span>: <span style="color:var(--accent)">"agent://startup.dev/infra-bot"</span>,
       <span style="color:var(--blue)">"rating"</span>: <span style="color:var(--signal)">4</span>,
       <span style="color:var(--blue)">"comment"</span>: <span style="color:var(--accent)">"Good service, pricing slightly above market average"</span>,
-      <span style="color:var(--blue)">"transaction_id"</span>: <span style="color:var(--accent)">"stl_def456"</span>,
+      <span style="color:var(--blue)">"transaction_id"</span>: <span style="color:var(--accent)">"neg_def456"</span>,
       <span style="color:var(--blue)">"created_at"</span>: <span style="color:var(--accent)">"2026-03-18T16:42:00Z"</span>
     }
   ],
@@ -1457,13 +1394,13 @@ code{
         <span class="method-pill post">POST</span>
         <span class="endpoint-path">/v1/trust/<span class="param">{agent_id}</span>/review</span>
       </div>
-      <p class="endpoint-desc">Submits a peer review for an agent after a completed transaction. Reviews must reference a valid settlement ID. Only one review is allowed per settlement.</p>
+      <p class="endpoint-desc">Submits a peer review for an agent after a completed negotiation. Reviews must reference a valid negotiation ID. Only one review is allowed per negotiation.</p>
 
       <table class="param-table">
         <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
         <tbody>
           <tr><td>agent_id</td><td><span class="type">string</span> <span class="required">required</span></td><td>Agent being reviewed (path parameter)</td></tr>
-          <tr><td>settlement_id</td><td><span class="type">string</span> <span class="required">required</span></td><td>The settlement this review is for</td></tr>
+          <tr><td>negotiation_id</td><td><span class="type">string</span> <span class="required">required</span></td><td>The negotiation this review is for</td></tr>
           <tr><td>rating</td><td><span class="type">integer</span> <span class="required">required</span></td><td>Rating from 1 to 5</td></tr>
           <tr><td>comment</td><td><span class="type">string</span> <span class="optional">optional</span></td><td>Free-text review comment (max 500 chars)</td></tr>
           <tr><td>dimensions</td><td><span class="type">object</span> <span class="optional">optional</span></td><td>Granular ratings: pricing_fairness, response_speed, sla_adherence (each 1-5)</td></tr>
@@ -1512,16 +1449,12 @@ code{
     <span style="color:var(--blue)">"handshakes"</span>: <span style="color:var(--signal)">134</span>,
     <span style="color:var(--blue)">"rfps_received"</span>: <span style="color:var(--signal)">98</span>,
     <span style="color:var(--blue)">"negotiations_started"</span>: <span style="color:var(--signal)">76</span>,
-    <span style="color:var(--blue)">"settlements_completed"</span>: <span style="color:var(--signal)">52</span>,
-    <span style="color:var(--blue)">"total_revenue"</span>: {
-      <span style="color:var(--blue)">"amount"</span>: <span style="color:var(--signal)">284750.00</span>,
-      <span style="color:var(--blue)">"currency"</span>: <span style="color:var(--accent)">"USD"</span>
-    }
+    <span style="color:var(--blue)">"negotiations_accepted"</span>: <span style="color:var(--signal)">52</span>
   },
   <span style="color:var(--blue)">"timeseries"</span>: [
-    {<span style="color:var(--blue)">"timestamp"</span>: <span style="color:var(--accent)">"2026-03-21T15:00:00Z"</span>, <span style="color:var(--blue)">"requests"</span>: <span style="color:var(--signal)">185</span>, <span style="color:var(--blue)">"settlements"</span>: <span style="color:var(--signal)">2</span>},
-    {<span style="color:var(--blue)">"timestamp"</span>: <span style="color:var(--accent)">"2026-03-21T16:00:00Z"</span>, <span style="color:var(--blue)">"requests"</span>: <span style="color:var(--signal)">203</span>, <span style="color:var(--blue)">"settlements"</span>: <span style="color:var(--signal)">3</span>},
-    {<span style="color:var(--blue)">"timestamp"</span>: <span style="color:var(--accent)">"2026-03-21T17:00:00Z"</span>, <span style="color:var(--blue)">"requests"</span>: <span style="color:var(--signal)">197</span>, <span style="color:var(--blue)">"settlements"</span>: <span style="color:var(--signal)">2</span>}
+    {<span style="color:var(--blue)">"timestamp"</span>: <span style="color:var(--accent)">"2026-03-21T15:00:00Z"</span>, <span style="color:var(--blue)">"requests"</span>: <span style="color:var(--signal)">185</span>, <span style="color:var(--blue)">"accepted"</span>: <span style="color:var(--signal)">2</span>},
+    {<span style="color:var(--blue)">"timestamp"</span>: <span style="color:var(--accent)">"2026-03-21T16:00:00Z"</span>, <span style="color:var(--blue)">"requests"</span>: <span style="color:var(--signal)">203</span>, <span style="color:var(--blue)">"accepted"</span>: <span style="color:var(--signal)">3</span>},
+    {<span style="color:var(--blue)">"timestamp"</span>: <span style="color:var(--accent)">"2026-03-21T17:00:00Z"</span>, <span style="color:var(--blue)">"requests"</span>: <span style="color:var(--signal)">197</span>, <span style="color:var(--blue)">"accepted"</span>: <span style="color:var(--signal)">2</span>}
   ]
 }</pre>
     </div>
@@ -1532,7 +1465,7 @@ code{
         <span class="method-pill get">GET</span>
         <span class="endpoint-path">/avp/analytics/conversion</span>
       </div>
-      <p class="endpoint-desc">Returns conversion funnel analytics showing how many interactions progress through each stage of the AVP flow: handshake, RFP, negotiation, and settlement.</p>
+      <p class="endpoint-desc">Returns conversion funnel analytics showing how many interactions progress through each stage of the AVP flow: handshake, RFP, negotiation, and acceptance.</p>
 
       <table class="param-table">
         <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
@@ -1549,15 +1482,13 @@ code{
     <span style="color:var(--blue)">"rfps_submitted"</span>: <span style="color:var(--signal)">2156</span>,
     <span style="color:var(--blue)">"proposals_generated"</span>: <span style="color:var(--signal)">2098</span>,
     <span style="color:var(--blue)">"negotiations_started"</span>: <span style="color:var(--signal)">1654</span>,
-    <span style="color:var(--blue)">"negotiations_accepted"</span>: <span style="color:var(--signal)">1247</span>,
-    <span style="color:var(--blue)">"settlements_completed"</span>: <span style="color:var(--signal)">1198</span>
+    <span style="color:var(--blue)">"negotiations_accepted"</span>: <span style="color:var(--signal)">1247</span>
   },
   <span style="color:var(--blue)">"conversion_rates"</span>: {
     <span style="color:var(--blue)">"handshake_to_rfp"</span>: <span style="color:var(--signal)">0.63</span>,
     <span style="color:var(--blue)">"rfp_to_negotiation"</span>: <span style="color:var(--signal)">0.77</span>,
     <span style="color:var(--blue)">"negotiation_to_accept"</span>: <span style="color:var(--signal)">0.75</span>,
-    <span style="color:var(--blue)">"accept_to_settlement"</span>: <span style="color:var(--signal)">0.96</span>,
-    <span style="color:var(--blue)">"overall"</span>: <span style="color:var(--signal)">0.35</span>
+    <span style="color:var(--blue)">"overall"</span>: <span style="color:var(--signal)">0.36</span>
   },
   <span style="color:var(--blue)">"avg_negotiation_rounds"</span>: <span style="color:var(--signal)">3.2</span>,
   <span style="color:var(--blue)">"top_rejection_reasons"</span>: [
@@ -1604,12 +1535,6 @@ code{
       <span style="color:var(--blue)">"p90"</span>: <span style="color:var(--signal)">780</span>,
       <span style="color:var(--blue)">"p99"</span>: <span style="color:var(--signal)">1500</span>,
       <span style="color:var(--blue)">"count"</span>: <span style="color:var(--signal)">245</span>
-    },
-    <span style="color:var(--blue)">"/avp/settle"</span>: {
-      <span style="color:var(--blue)">"p50"</span>: <span style="color:var(--signal)">520</span>,
-      <span style="color:var(--blue)">"p90"</span>: <span style="color:var(--signal)">1100</span>,
-      <span style="color:var(--blue)">"p99"</span>: <span style="color:var(--signal)">2800</span>,
-      <span style="color:var(--blue)">"count"</span>: <span style="color:var(--signal)">52</span>
     }
   },
   <span style="color:var(--blue)">"unit"</span>: <span style="color:var(--accent)">"milliseconds"</span>
@@ -1621,31 +1546,31 @@ code{
   <div class="api-section" id="disputes-section">
     <span class="section-anchor" id="dispute-create"></span>
     <h2><span class="material-icons-outlined">gavel</span> Disputes</h2>
-    <p>Dispute endpoints handle disagreements between buyer and vendor agents after a settlement. Disputes can be raised for SLA violations, billing discrepancies, or service quality issues.</p>
+    <p>Dispute endpoints handle disagreements between buyer and vendor agents after an accepted negotiation. Disputes can be raised for SLA violations, billing discrepancies, or service quality issues.</p>
 
     <div class="endpoint-block">
       <div class="endpoint-header">
         <span class="method-pill post">POST</span>
         <span class="endpoint-path">/avp/dispute</span>
       </div>
-      <p class="endpoint-desc">Creates a new dispute against a settlement. The dispute includes evidence, requested resolution, and a severity classification. Both parties are notified immediately.</p>
+      <p class="endpoint-desc">Creates a new dispute against an accepted negotiation. The dispute includes evidence, requested resolution, and a severity classification. Both parties are notified immediately.</p>
 
       <table class="param-table">
         <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
         <tbody>
-          <tr><td>settlement_id</td><td><span class="type">string</span> <span class="required">required</span></td><td>The settlement being disputed</td></tr>
+          <tr><td>negotiation_id</td><td><span class="type">string</span> <span class="required">required</span></td><td>The accepted negotiation being disputed</td></tr>
           <tr><td>category</td><td><span class="type">string</span> <span class="required">required</span></td><td>Dispute category: sla_violation, billing, quality, terms_breach</td></tr>
           <tr><td>severity</td><td><span class="type">string</span> <span class="required">required</span></td><td>Severity level: low, medium, high, critical</td></tr>
           <tr><td>description</td><td><span class="type">string</span> <span class="required">required</span></td><td>Detailed description of the dispute</td></tr>
           <tr><td>evidence</td><td><span class="type">object[]</span> <span class="optional">optional</span></td><td>Array of evidence items (logs, metrics, screenshots)</td></tr>
-          <tr><td>requested_resolution</td><td><span class="type">string</span> <span class="required">required</span></td><td>Desired outcome: refund, credit, service_fix, contract_adjustment</td></tr>
+          <tr><td>requested_resolution</td><td><span class="type">string</span> <span class="required">required</span></td><td>Desired outcome: refund, credit, service_fix, terms_revision</td></tr>
         </tbody>
       </table>
 
       <div class="response-label"><span class="status status-201">201</span> Response</div>
       <pre style="font-family:var(--mono);font-size:0.78rem;line-height:1.7;color:var(--text-dim);background:var(--bg);padding:1rem;border-radius:6px;overflow-x:auto;border:1px solid var(--border)">{
   <span style="color:var(--blue)">"dispute_id"</span>: <span style="color:var(--accent)">"dsp_3e4f5a6b7c8d"</span>,
-  <span style="color:var(--blue)">"settlement_id"</span>: <span style="color:var(--accent)">"stl_1a2b3c4d5e6f"</span>,
+  <span style="color:var(--blue)">"negotiation_id"</span>: <span style="color:var(--accent)">"neg_4d5e6f7a8b9c"</span>,
   <span style="color:var(--blue)">"status"</span>: <span style="color:var(--accent)">"open"</span>,
   <span style="color:var(--blue)">"category"</span>: <span style="color:var(--accent)">"sla_violation"</span>,
   <span style="color:var(--blue)">"severity"</span>: <span style="color:var(--accent)">"high"</span>,
@@ -1677,7 +1602,7 @@ code{
       <div class="response-label"><span class="status status-200">200</span> Response</div>
       <pre style="font-family:var(--mono);font-size:0.78rem;line-height:1.7;color:var(--text-dim);background:var(--bg);padding:1rem;border-radius:6px;overflow-x:auto;border:1px solid var(--border)">{
   <span style="color:var(--blue)">"dispute_id"</span>: <span style="color:var(--accent)">"dsp_3e4f5a6b7c8d"</span>,
-  <span style="color:var(--blue)">"settlement_id"</span>: <span style="color:var(--accent)">"stl_1a2b3c4d5e6f"</span>,
+  <span style="color:var(--blue)">"negotiation_id"</span>: <span style="color:var(--accent)">"neg_4d5e6f7a8b9c"</span>,
   <span style="color:var(--blue)">"status"</span>: <span style="color:var(--accent)">"in_review"</span>,
   <span style="color:var(--blue)">"category"</span>: <span style="color:var(--accent)">"sla_violation"</span>,
   <span style="color:var(--blue)">"severity"</span>: <span style="color:var(--accent)">"high"</span>,
@@ -1692,7 +1617,7 @@ code{
   <span style="color:var(--blue)">"messages"</span>: [
     {
       <span style="color:var(--blue)">"from"</span>: <span style="color:var(--accent)">"buyer"</span>,
-      <span style="color:var(--blue)">"message"</span>: <span style="color:var(--accent)">"SLA breach detected, requesting service credit per contract terms"</span>,
+      <span style="color:var(--blue)">"message"</span>: <span style="color:var(--accent)">"SLA breach detected, requesting service credit per agreed terms"</span>,
       <span style="color:var(--blue)">"at"</span>: <span style="color:var(--accent)">"2026-03-22T14:30:00Z"</span>
     },
     {
@@ -1741,7 +1666,7 @@ code{
   <div class="api-section" id="audit-section">
     <span class="section-anchor" id="audit-list"></span>
     <h2><span class="material-icons-outlined">history</span> Audit Trail</h2>
-    <p>Audit trail endpoints provide immutable logs of all AVP interactions. Every handshake, negotiation round, settlement, and dispute action is recorded for compliance and debugging.</p>
+    <p>Audit trail endpoints provide immutable logs of all AVP interactions. Every handshake, negotiation round, acceptance, rejection, and dispute action is recorded for compliance and debugging.</p>
 
     <div class="endpoint-block">
       <div class="endpoint-header">
@@ -1754,7 +1679,7 @@ code{
         <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
         <tbody>
           <tr><td>session_id</td><td><span class="type">string</span> <span class="optional">optional</span></td><td>Filter by session ID</td></tr>
-          <tr><td>event_type</td><td><span class="type">string</span> <span class="optional">optional</span></td><td>Filter by event type (handshake, rfp, negotiate, settle, dispute)</td></tr>
+          <tr><td>event_type</td><td><span class="type">string</span> <span class="optional">optional</span></td><td>Filter by event type (handshake, rfp, negotiate, accept, reject, dispute)</td></tr>
           <tr><td>from</td><td><span class="type">string</span> <span class="optional">optional</span></td><td>Start of time range (ISO 8601)</td></tr>
           <tr><td>to</td><td><span class="type">string</span> <span class="optional">optional</span></td><td>End of time range (ISO 8601)</td></tr>
           <tr><td>limit</td><td><span class="type">integer</span> <span class="optional">optional</span></td><td>Max results (default: 50, max: 200)</td></tr>
@@ -1868,7 +1793,7 @@ code{
         <span class="method-pill get">GET</span>
         <span class="endpoint-path">/avp/data/export/<span class="param">{agent_id}</span></span>
       </div>
-      <p class="endpoint-desc">Exports all data stored about or by a specific agent. This supports GDPR Article 20 (data portability) requirements. The export includes all negotiations, settlements, reviews, and profile data.</p>
+      <p class="endpoint-desc">Exports all data stored about or by a specific agent. This supports GDPR Article 20 (data portability) requirements. The export includes all negotiations, reviews, and profile data.</p>
 
       <table class="param-table">
         <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
@@ -1886,7 +1811,6 @@ code{
   <span style="color:var(--blue)">"data_categories"</span>: [
     <span style="color:var(--accent)">"profile"</span>,
     <span style="color:var(--accent)">"negotiations"</span>,
-    <span style="color:var(--accent)">"settlements"</span>,
     <span style="color:var(--accent)">"reviews"</span>,
     <span style="color:var(--accent)">"audit_logs"</span>
   ],
@@ -1953,7 +1877,7 @@ code{
       <pre style="font-family:var(--mono);font-size:0.78rem;line-height:1.7;color:var(--text-dim);background:var(--bg);padding:1rem;border-radius:6px;overflow-x:auto;border:1px solid var(--border)">{
   <span style="color:var(--blue)">"sandbox_session_id"</span>: <span style="color:var(--accent)">"sbx_2a3b4c5d6e7f"</span>,
   <span style="color:var(--blue)">"status"</span>: <span style="color:var(--accent)">"active"</span>,
-  <span style="color:var(--blue)">"total_interactions"</span>: <span style="color:var(--signal)">6</span>,
+  <span style="color:var(--blue)">"total_interactions"</span>: <span style="color:var(--signal)">5</span>,
   <span style="color:var(--blue)">"interactions"</span>: [
     {
       <span style="color:var(--blue)">"sequence"</span>: <span style="color:var(--signal)">1</span>,
@@ -1994,17 +1918,9 @@ code{
       <span style="color:var(--blue)">"status_code"</span>: <span style="color:var(--signal)">200</span>,
       <span style="color:var(--blue)">"latency_ms"</span>: <span style="color:var(--signal)">95</span>,
       <span style="color:var(--blue)">"timestamp"</span>: <span style="color:var(--accent)">"2026-03-22T14:30:25Z"</span>
-    },
-    {
-      <span style="color:var(--blue)">"sequence"</span>: <span style="color:var(--signal)">6</span>,
-      <span style="color:var(--blue)">"method"</span>: <span style="color:var(--accent)">"POST"</span>,
-      <span style="color:var(--blue)">"endpoint"</span>: <span style="color:var(--accent)">"/avp/settle"</span>,
-      <span style="color:var(--blue)">"status_code"</span>: <span style="color:var(--signal)">200</span>,
-      <span style="color:var(--blue)">"latency_ms"</span>: <span style="color:var(--signal)">410</span>,
-      <span style="color:var(--blue)">"timestamp"</span>: <span style="color:var(--accent)">"2026-03-22T14:30:30Z"</span>
     }
   ],
-  <span style="color:var(--blue)">"total_latency_ms"</span>: <span style="color:var(--signal)">2062</span>
+  <span style="color:var(--blue)">"total_latency_ms"</span>: <span style="color:var(--signal)">1652</span>
 }</pre>
     </div>
   </div>
@@ -2013,7 +1929,7 @@ code{
   <div class="api-section" id="webhooks-section">
     <span class="section-anchor" id="webhooks-events"></span>
     <h2><span class="material-icons-outlined">webhook</span> Webhooks</h2>
-    <p>Webhooks provide real-time notifications for AVP events. Configure a webhook URL during agent registration or in the handshake to receive push notifications about session changes, negotiation updates, and settlement confirmations.</p>
+    <p>Webhooks provide real-time notifications for AVP events. Configure a webhook URL during agent registration or in the handshake to receive push notifications about session changes and negotiation updates.</p>
 
     <h3 style="font-size:1.1rem;font-weight:600;margin:1.5rem 0 1rem">Event Types</h3>
     <p style="color:var(--text-dim);font-size:0.875rem;margin-bottom:1rem">The following event types can be delivered to your webhook endpoint.</p>
@@ -2027,9 +1943,7 @@ code{
       <li><span class="event-type">negotiation.accepted</span><span class="event-desc">A proposal has been accepted by the buyer</span></li>
       <li><span class="event-type">negotiation.rejected</span><span class="event-desc">A proposal has been rejected by the buyer</span></li>
       <li><span class="event-type">negotiation.escalated</span><span class="event-desc">A negotiation has been escalated to human review</span></li>
-      <li><span class="event-type">settlement.completed</span><span class="event-desc">A settlement has been finalized successfully</span></li>
-      <li><span class="event-type">settlement.failed</span><span class="event-desc">A settlement attempt has failed (e.g., payment issue)</span></li>
-      <li><span class="event-type">dispute.opened</span><span class="event-desc">A new dispute has been filed against a settlement</span></li>
+      <li><span class="event-type">dispute.opened</span><span class="event-desc">A new dispute has been filed against an accepted negotiation</span></li>
       <li><span class="event-type">dispute.resolved</span><span class="event-desc">A dispute has been resolved</span></li>
       <li><span class="event-type">trust.review_received</span><span class="event-desc">A new trust review has been published for your agent</span></li>
     </ul>
@@ -2346,14 +2260,14 @@ result = neg_response.json()
   </div>
 
   <!-- Accept code -->
-  <div class="code-section-label">Accept &amp; Settle</div>
+  <div class="code-section-label">Accept Proposal</div>
   <div class="code-example">
     <div class="code-tabs">
-      <button class="code-tab active" onclick="switchTab(this,'settle')">cURL</button>
-      <button class="code-tab" onclick="switchTab(this,'settle')">Node.js</button>
-      <button class="code-tab" onclick="switchTab(this,'settle')">Python</button>
+      <button class="code-tab active" onclick="switchTab(this,'accept')">cURL</button>
+      <button class="code-tab" onclick="switchTab(this,'accept')">Node.js</button>
+      <button class="code-tab" onclick="switchTab(this,'accept')">Python</button>
     </div>
-    <div class="code-body" data-group="settle" data-lang="curl"><span class="cmt"># Accept the negotiation</span>
+    <div class="code-body" data-group="accept" data-lang="curl"><span class="cmt"># Accept the negotiation (final step in AVP)</span>
 <span class="flag">curl</span> <span class="flag">-X</span> POST https://vendor.example.com/avp/negotiate/accept \
   <span class="flag">-H</span> <span class="str">"Content-Type: application/json"</span> \
   <span class="flag">-d</span> <span class="str">'{
@@ -2363,20 +2277,9 @@ result = neg_response.json()
     "buyer_signature": "sig_buyer_a1b2c3d4..."
   }'</span>
 
-<span class="cmt"># Then settle the deal</span>
-<span class="flag">curl</span> <span class="flag">-X</span> POST https://vendor.example.com/avp/settle \
-  <span class="flag">-H</span> <span class="str">"Content-Type: application/json"</span> \
-  <span class="flag">-d</span> <span class="str">'{
-    "session_id": "ses_7f2a3b8c1d4e5f6a",
-    "negotiation_id": "neg_4d5e6f7a8b9c",
-    "payment_method": {
-      "type": "invoice",
-      "billing_email": "ap@buyer.example.com"
-    },
-    "auto_renew": false
-  }'</span></div>
-    <div class="code-body" data-group="settle" data-lang="node" style="display:none"><span class="cmt">// Accept the negotiation</span>
-<span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">'https://vendor.example.com/avp/negotiate/accept'</span>, {
+<span class="cmt"># Negotiation complete — proceed with your own business processes</span></div>
+    <div class="code-body" data-group="accept" data-lang="node" style="display:none"><span class="cmt">// Accept the negotiation (final step in AVP)</span>
+<span class="kw">const</span> <span class="var">acceptance</span> = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">'https://vendor.example.com/avp/negotiate/accept'</span>, {
   <span class="key">method</span>: <span class="str">'POST'</span>,
   <span class="key">headers</span>: avpHeaders,
   <span class="key">body</span>: JSON.<span class="fn">stringify</span>({
@@ -2387,25 +2290,11 @@ result = neg_response.json()
   }),
 });
 
-<span class="cmt">// Then settle the deal</span>
-<span class="kw">const</span> <span class="var">settlement</span> = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">'https://vendor.example.com/avp/settle'</span>, {
-  <span class="key">method</span>: <span class="str">'POST'</span>,
-  <span class="key">headers</span>: avpHeaders,
-  <span class="key">body</span>: JSON.<span class="fn">stringify</span>({
-    <span class="key">session_id</span>: sessionId,
-    <span class="key">negotiation_id</span>: negotiationId,
-    <span class="key">payment_method</span>: {
-      <span class="key">type</span>: <span class="str">'invoice'</span>,
-      <span class="key">billing_email</span>: <span class="str">'ap@buyer.example.com'</span>,
-    },
-    <span class="key">auto_renew</span>: <span class="num">false</span>,
-  }),
-});
-
-<span class="kw">const</span> <span class="var">contract</span> = <span class="kw">await</span> settlement.<span class="fn">json</span>();
-console.<span class="fn">log</span>(<span class="str">`Contract: ${contract.contract.contract_id}`</span>);</div>
-    <div class="code-body" data-group="settle" data-lang="python" style="display:none"><span class="cmt"># Accept the negotiation</span>
-requests.post(
+<span class="kw">const</span> <span class="var">result</span> = <span class="kw">await</span> acceptance.<span class="fn">json</span>();
+console.<span class="fn">log</span>(<span class="str">`Negotiation ${result.status}: ${result.message}`</span>);
+<span class="cmt">// Negotiation complete — proceed with your own business processes</span></div>
+    <div class="code-body" data-group="accept" data-lang="python" style="display:none"><span class="cmt"># Accept the negotiation (final step in AVP)</span>
+acceptance = requests.post(
     <span class="str">"https://vendor.example.com/avp/negotiate/accept"</span>,
     headers=headers,
     json={
@@ -2416,23 +2305,9 @@ requests.post(
     },
 )
 
-<span class="cmt"># Then settle the deal</span>
-settlement = requests.post(
-    <span class="str">"https://vendor.example.com/avp/settle"</span>,
-    headers=headers,
-    json={
-        <span class="str">"session_id"</span>: session_id,
-        <span class="str">"negotiation_id"</span>: negotiation_id,
-        <span class="str">"payment_method"</span>: {
-            <span class="str">"type"</span>: <span class="str">"invoice"</span>,
-            <span class="str">"billing_email"</span>: <span class="str">"ap@buyer.example.com"</span>,
-        },
-        <span class="str">"auto_renew"</span>: <span class="kw">False</span>,
-    },
-)
-
-contract = settlement.json()
-<span class="fn">print</span>(f<span class="str">"Contract: {contract['contract']['contract_id']}"</span>)</div>
+result = acceptance.json()
+<span class="fn">print</span>(f<span class="str">"Negotiation {result['status']}: {result['message']}"</span>)
+<span class="cmt"># Negotiation complete — proceed with your own business processes</span></div>
   </div>
 
   <!-- Registry code -->
@@ -2524,7 +2399,7 @@ registration = requests.post(
 <span class="flag">curl</span> <span class="flag">-X</span> POST https://vendor.example.com/avp/dispute \
   <span class="flag">-H</span> <span class="str">"Content-Type: application/json"</span> \
   <span class="flag">-d</span> <span class="str">'{
-    "settlement_id": "stl_1a2b3c4d5e6f",
+    "negotiation_id": "neg_4d5e6f7a8b9c",
     "category": "sla_violation",
     "severity": "high",
     "description": "Uptime below 99.95% SLA for 72 hours",
@@ -2543,7 +2418,7 @@ registration = requests.post(
   <span class="key">method</span>: <span class="str">'POST'</span>,
   <span class="key">headers</span>: avpHeaders,
   <span class="key">body</span>: JSON.<span class="fn">stringify</span>({
-    <span class="key">settlement_id</span>: <span class="str">'stl_1a2b3c4d5e6f'</span>,
+    <span class="key">negotiation_id</span>: <span class="str">'neg_4d5e6f7a8b9c'</span>,
     <span class="key">category</span>: <span class="str">'sla_violation'</span>,
     <span class="key">severity</span>: <span class="str">'high'</span>,
     <span class="key">description</span>: <span class="str">'Uptime below 99.95% SLA for 72 hours'</span>,
@@ -2568,7 +2443,7 @@ dispute = requests.post(
     <span class="str">"https://vendor.example.com/avp/dispute"</span>,
     headers=headers,
     json={
-        <span class="str">"settlement_id"</span>: <span class="str">"stl_1a2b3c4d5e6f"</span>,
+        <span class="str">"negotiation_id"</span>: <span class="str">"neg_4d5e6f7a8b9c"</span>,
         <span class="str">"category"</span>: <span class="str">"sla_violation"</span>,
         <span class="str">"severity"</span>: <span class="str">"high"</span>,
         <span class="str">"description"</span>: <span class="str">"Uptime below 99.95% SLA for 72 hours"</span>,
