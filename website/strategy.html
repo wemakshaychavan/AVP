@@ -1,0 +1,1349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AVP Strategy & Feasibility — AI Vendor Protocol</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Outfit:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+<style>
+.material-icons-outlined {
+  font-family: 'Material Icons Outlined';
+  font-size: inherit;
+  vertical-align: middle;
+  font-style: normal;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#07080a;
+  --bg-elevated:#0d0f13;
+  --bg-card:#111318;
+  --border:#1a1d25;
+  --border-bright:#2a2e3a;
+  --text:#e8eaed;
+  --text-dim:#7a7f8e;
+  --text-muted:#4a4f5e;
+  --accent:#00d4aa;
+  --accent-dim:#00d4aa33;
+  --accent-bright:#00ffcc;
+  --signal:#ff6b35;
+  --signal-dim:#ff6b3522;
+  --purple:#8b5cf6;
+  --purple-dim:#8b5cf622;
+  --blue:#3b82f6;
+  --blue-dim:#3b82f622;
+  --red:#ef4444;
+  --red-dim:#ef444422;
+  --yellow:#eab308;
+  --yellow-dim:#eab30822;
+  --green:#22c55e;
+  --green-dim:#22c55e22;
+  --gradient-accent:linear-gradient(135deg,#00d4aa,#3b82f6);
+  --gradient-warm:linear-gradient(135deg,#ff6b35,#ff3366);
+  --gradient-purple:linear-gradient(135deg,#8b5cf6,#3b82f6);
+  --mono:'DM Mono',monospace;
+  --sans:'Outfit',sans-serif;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--sans);
+  line-height:1.6;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--accent);color:var(--bg)}
+
+body::before{
+  content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
+  background:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  opacity:0.4;
+}
+
+.grid-bg{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size:80px 80px;
+  opacity:0.15;
+  mask-image:radial-gradient(ellipse 60% 50% at 50% 30%,black 20%,transparent 70%);
+}
+
+/* ---- STICKY NAV ---- */
+.top-nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  padding:0 2rem;height:56px;
+  background:rgba(7,8,10,0.85);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.nav-left{display:flex;align-items:center;gap:1.5rem}
+.nav-back{
+  display:inline-flex;align-items:center;gap:0.4rem;
+  font-family:var(--mono);font-size:0.8rem;color:var(--accent);
+  text-decoration:none;transition:color 0.3s;
+}
+.nav-back:hover{color:var(--accent-bright)}
+.nav-brand{
+  font-family:var(--mono);font-weight:500;font-size:0.95rem;color:var(--text);
+  display:flex;align-items:center;gap:0.5rem;
+  padding-left:1.5rem;border-left:1px solid var(--border);
+}
+.nav-brand .dot{
+  width:7px;height:7px;border-radius:50%;background:var(--accent);
+  box-shadow:0 0 10px var(--accent);
+  animation:pulse 2s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.8)}}
+.nav-sections{display:flex;gap:1.4rem;align-items:center}
+.nav-sections a{
+  color:var(--text-muted);text-decoration:none;font-size:0.75rem;font-weight:400;
+  letter-spacing:0.02em;transition:color 0.3s;
+}
+.nav-sections a:hover,.nav-sections a.active{color:var(--text)}
+
+/* ---- LAYOUT ---- */
+.page-wrap{position:relative;z-index:1;max-width:1000px;margin:0 auto;padding:0 2rem}
+section{padding:6rem 0}
+section+section{border-top:1px solid var(--border)}
+
+/* ---- HERO ---- */
+.hero{
+  min-height:70vh;display:flex;flex-direction:column;
+  justify-content:center;align-items:center;text-align:center;
+  padding-top:8rem;padding-bottom:4rem;position:relative;
+  border-bottom:none;
+}
+.hero-glow{
+  position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:700px;height:500px;
+  background:radial-gradient(ellipse,var(--accent-dim) 0%,transparent 60%);
+  filter:blur(80px);pointer-events:none;opacity:0.4;
+}
+.hero-glow-2{
+  position:absolute;top:20%;right:-10%;
+  width:350px;height:350px;
+  background:radial-gradient(ellipse,var(--purple-dim) 0%,transparent 60%);
+  filter:blur(80px);pointer-events:none;opacity:0.3;
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:0.5rem;
+  font-family:var(--mono);font-size:0.72rem;color:var(--accent);
+  background:var(--accent-dim);border:1px solid rgba(0,212,170,0.2);
+  padding:0.4rem 1rem;border-radius:100px;margin-bottom:2rem;
+  letter-spacing:0.04em;
+}
+.hero h1{
+  font-size:clamp(2.2rem,5vw,3.8rem);font-weight:800;
+  line-height:1.1;letter-spacing:-0.03em;
+  max-width:800px;margin-bottom:1.2rem;
+  background:linear-gradient(180deg,var(--text) 40%,var(--text-dim) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.hero h1 em{
+  font-style:normal;
+  background:var(--gradient-accent);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.hero-sub{
+  font-size:clamp(1rem,1.8vw,1.2rem);color:var(--text-dim);
+  max-width:620px;margin-bottom:0;font-weight:300;line-height:1.7;
+}
+
+/* ---- SECTION HEADERS ---- */
+.section-header{text-align:center;margin-bottom:3.5rem}
+.section-label{
+  font-family:var(--mono);font-size:0.68rem;color:var(--accent);
+  text-transform:uppercase;letter-spacing:0.15em;margin-bottom:0.8rem;
+  display:flex;align-items:center;justify-content:center;gap:0.6rem;
+}
+.section-label::before,.section-label::after{
+  content:'';width:30px;height:1px;background:var(--border-bright);
+}
+.section-title{
+  font-size:clamp(1.8rem,3.5vw,2.6rem);font-weight:700;
+  letter-spacing:-0.02em;line-height:1.15;margin-bottom:0.8rem;
+}
+.section-desc{color:var(--text-dim);max-width:600px;margin:0 auto;font-weight:300;font-size:1rem}
+
+/* ---- STAT CARDS ---- */
+.stats-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-bottom:3rem;
+}
+.stat-card{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:14px;padding:2rem 1.5rem;text-align:center;
+  position:relative;overflow:hidden;transition:all 0.4s;
+}
+.stat-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:var(--gradient-accent);opacity:0;transition:opacity 0.4s;
+}
+.stat-card:hover{border-color:var(--border-bright);transform:translateY(-3px)}
+.stat-card:hover::before{opacity:1}
+.stat-card.warm::before{background:var(--gradient-warm)}
+.stat-card.purple::before{background:var(--gradient-purple)}
+.stat-num{
+  font-size:2.2rem;font-weight:800;letter-spacing:-0.02em;
+  background:var(--gradient-accent);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;margin-bottom:0.3rem;
+}
+.stat-card.warm .stat-num{
+  background:var(--gradient-warm);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.stat-card.purple .stat-num{
+  background:var(--gradient-purple);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.stat-label{font-size:0.82rem;color:var(--text-dim);font-weight:300;line-height:1.4}
+.stat-sub{font-family:var(--mono);font-size:0.65rem;color:var(--text-muted);margin-top:0.4rem}
+
+/* ---- QUOTE CARDS ---- */
+.quotes-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}
+.quote-card{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:12px;padding:1.4rem 1.6rem;
+  border-left:3px solid var(--accent);
+  transition:all 0.4s;
+}
+.quote-card:hover{border-color:var(--border-bright);border-left-color:var(--accent-bright)}
+.quote-card:nth-child(2){border-left-color:var(--purple)}
+.quote-card:nth-child(3){border-left-color:var(--blue)}
+.quote-card:nth-child(4){border-left-color:var(--signal)}
+.quote-text{font-size:0.88rem;color:var(--text);font-weight:300;line-height:1.6;margin-bottom:0.6rem;font-style:italic}
+.quote-source{font-family:var(--mono);font-size:0.68rem;color:var(--text-muted);letter-spacing:0.03em}
+
+/* ---- CALLOUT ---- */
+.callout{
+  background:var(--bg-elevated);border:1px solid var(--border);
+  border-left:4px solid var(--accent);
+  border-radius:0 12px 12px 0;padding:1.5rem 2rem;
+  margin:2rem 0;
+}
+.callout.warm{border-left-color:var(--signal)}
+.callout.purple{border-left-color:var(--purple)}
+.callout.blue{border-left-color:var(--blue)}
+.callout p{font-size:0.95rem;color:var(--text);font-weight:400;line-height:1.7}
+.callout strong{color:var(--accent);font-weight:600}
+.callout.warm strong{color:var(--signal)}
+.callout.purple strong{color:var(--purple)}
+
+/* ---- PROBLEM SECTION ---- */
+.problem-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}
+.problem-item{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:12px;padding:1.4rem 1.6rem;
+  display:flex;gap:1rem;align-items:flex-start;
+  transition:all 0.4s;
+}
+.problem-item:hover{border-color:var(--border-bright);transform:translateY(-2px)}
+.problem-icon{
+  width:40px;height:40px;min-width:40px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--red-dim);color:var(--red);font-size:1.1rem;
+  border:1px solid rgba(239,68,68,0.2);
+}
+.problem-item h4{font-size:0.92rem;font-weight:600;margin-bottom:0.3rem;letter-spacing:-0.01em}
+.problem-item p{font-size:0.8rem;color:var(--text-dim);font-weight:300;line-height:1.5}
+
+/* ---- TABLES ---- */
+.table-wrap{margin-bottom:2.5rem}
+.table-wrap h3{font-size:1.15rem;font-weight:600;margin-bottom:1rem;display:flex;align-items:center;gap:0.5rem}
+.table-wrap h3 .material-icons-outlined{font-size:1.2rem;color:var(--accent)}
+table{
+  width:100%;border-collapse:collapse;font-size:0.85rem;
+  background:var(--bg-card);border:1px solid var(--border);border-radius:12px;
+  overflow:hidden;
+}
+thead{background:var(--bg-elevated)}
+th{
+  text-align:left;padding:0.9rem 1.2rem;font-weight:500;font-size:0.75rem;
+  color:var(--text-dim);text-transform:uppercase;letter-spacing:0.06em;
+  border-bottom:1px solid var(--border);
+}
+td{
+  padding:0.9rem 1.2rem;border-bottom:1px solid var(--border);
+  color:var(--text);font-weight:300;
+}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(0,212,170,0.03)}
+td:first-child{font-weight:500}
+.td-revenue{font-family:var(--mono);color:var(--accent);font-size:0.8rem}
+.td-disruption{color:var(--text-dim);font-size:0.82rem}
+
+/* ---- PROTOCOL STACK ---- */
+.stack-visual{max-width:700px;margin:0 auto}
+.stack-layer{
+  padding:1.4rem 2rem;text-align:center;position:relative;
+  border:1px solid var(--border);margin-bottom:-1px;
+  transition:all 0.3s;
+}
+.stack-layer:first-child{border-radius:14px 14px 0 0}
+.stack-layer:last-child{border-radius:0 0 14px 14px}
+.stack-layer:hover{z-index:2;border-color:var(--border-bright)}
+.stack-layer.avp{
+  background:linear-gradient(135deg,rgba(0,212,170,0.12),rgba(59,130,246,0.08));
+  border-color:rgba(0,212,170,0.3);
+}
+.stack-layer.a2a{background:var(--bg-card)}
+.stack-layer.mcp{background:var(--bg-card)}
+.stack-layer.http{background:var(--bg-elevated)}
+.stack-name{font-weight:700;font-size:1.05rem;margin-bottom:0.2rem}
+.stack-layer.avp .stack-name{color:var(--accent)}
+.stack-layer.a2a .stack-name{color:var(--purple)}
+.stack-layer.mcp .stack-name{color:var(--blue)}
+.stack-layer.http .stack-name{color:var(--text-muted)}
+.stack-desc{font-size:0.8rem;color:var(--text-dim);font-weight:300}
+.stack-tag{
+  position:absolute;right:1.5rem;top:50%;transform:translateY(-50%);
+  font-family:var(--mono);font-size:0.6rem;
+  padding:0.2rem 0.6rem;border-radius:4px;
+}
+.stack-layer.avp .stack-tag{background:var(--accent-dim);color:var(--accent)}
+.stack-layer.a2a .stack-tag{background:var(--purple-dim);color:var(--purple)}
+.stack-layer.mcp .stack-tag{background:var(--blue-dim);color:var(--blue)}
+
+/* ---- LESSON CARDS ---- */
+.lesson-section{margin-bottom:3rem}
+.lesson-section h3{font-size:1.15rem;font-weight:600;margin-bottom:1.2rem;display:flex;align-items:center;gap:0.5rem}
+.lesson-section h3 .material-icons-outlined{color:var(--accent);font-size:1.2rem}
+.lesson-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.lesson-card{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:12px;padding:1.3rem 1.5rem;
+  transition:all 0.4s;
+}
+.lesson-card:hover{border-color:var(--border-bright);transform:translateY(-2px)}
+.lesson-num{
+  font-family:var(--mono);font-size:0.65rem;color:var(--accent);
+  margin-bottom:0.4rem;letter-spacing:0.05em;
+}
+.lesson-card h4{font-size:0.92rem;font-weight:600;margin-bottom:0.3rem}
+.lesson-card p{font-size:0.8rem;color:var(--text-dim);font-weight:300;line-height:1.5}
+
+.learn-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.learn-item{
+  display:flex;gap:0.8rem;align-items:flex-start;
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:12px;padding:1.2rem 1.4rem;
+  transition:all 0.4s;
+}
+.learn-item:hover{border-color:var(--border-bright)}
+.learn-icon{
+  width:32px;height:32px;min-width:32px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--accent-dim);color:var(--accent);font-size:0.9rem;
+  border:1px solid rgba(0,212,170,0.2);
+}
+.learn-item p{font-size:0.82rem;color:var(--text-dim);font-weight:300;line-height:1.5}
+.learn-item strong{color:var(--text);font-weight:500}
+
+/* ---- DEPLOY CARDS ---- */
+.deploy-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-bottom:2.5rem}
+.deploy-card{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:14px;padding:1.6rem;
+  transition:all 0.4s;position:relative;overflow:hidden;
+}
+.deploy-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:var(--gradient-accent);opacity:0;transition:opacity 0.4s;
+}
+.deploy-card:hover{border-color:var(--border-bright);transform:translateY(-3px)}
+.deploy-card:hover::before{opacity:1}
+.deploy-card.featured{border-color:rgba(0,212,170,0.3);background:linear-gradient(180deg,rgba(0,212,170,0.05),var(--bg-card))}
+.deploy-card.featured::before{opacity:1}
+.deploy-header{display:flex;align-items:center;gap:0.8rem;margin-bottom:0.8rem}
+.deploy-icon{
+  width:40px;height:40px;min-width:40px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;font-size:1.1rem;
+}
+.deploy-card:nth-child(1) .deploy-icon{background:var(--accent-dim);color:var(--accent);border:1px solid rgba(0,212,170,0.3)}
+.deploy-card:nth-child(2) .deploy-icon{background:var(--blue-dim);color:var(--blue);border:1px solid rgba(59,130,246,0.3)}
+.deploy-card:nth-child(3) .deploy-icon{background:var(--signal-dim);color:var(--signal);border:1px solid rgba(255,107,53,0.3)}
+.deploy-card:nth-child(4) .deploy-icon{background:var(--purple-dim);color:var(--purple);border:1px solid rgba(139,92,246,0.3)}
+.deploy-card:nth-child(5) .deploy-icon{background:var(--yellow-dim);color:var(--yellow);border:1px solid rgba(234,179,8,0.3)}
+.deploy-card:nth-child(6) .deploy-icon{background:var(--green-dim);color:var(--green);border:1px solid rgba(34,197,94,0.3)}
+.deploy-card h4{font-size:0.95rem;font-weight:600}
+.deploy-meta{display:flex;gap:1rem;margin-bottom:0.6rem}
+.deploy-tag{
+  font-family:var(--mono);font-size:0.65rem;
+  padding:0.15rem 0.5rem;border-radius:4px;
+  background:var(--bg-elevated);color:var(--text-dim);
+  border:1px solid var(--border);
+}
+.deploy-tag.time{color:var(--accent)}
+.deploy-tag.cost{color:var(--signal)}
+.deploy-card p{font-size:0.8rem;color:var(--text-dim);font-weight:300;line-height:1.5}
+
+.gateway-highlight{
+  background:var(--bg-card);border:1px solid rgba(0,212,170,0.3);
+  border-radius:14px;padding:2rem;margin-bottom:2.5rem;
+  position:relative;overflow:hidden;
+}
+.gateway-highlight::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:var(--gradient-accent);
+}
+.gateway-highlight h3{font-size:1.2rem;font-weight:700;margin-bottom:0.8rem;display:flex;align-items:center;gap:0.5rem}
+.gateway-highlight h3 .material-icons-outlined{color:var(--accent);font-size:1.3rem}
+.gateway-highlight p{font-size:0.92rem;color:var(--text-dim);font-weight:300;line-height:1.7;margin-bottom:1rem}
+
+.code-block{
+  background:var(--bg-elevated);border:1px solid var(--border);
+  border-radius:10px;padding:1.2rem 1.5rem;
+  font-family:var(--mono);font-size:0.8rem;line-height:1.8;
+  overflow-x:auto;
+}
+.code-block .prompt{color:var(--accent)}
+.code-block .comment{color:var(--text-muted)}
+.code-block .cmd{color:var(--text)}
+
+/* ---- TIMELINE ---- */
+.timeline{position:relative;padding-left:3rem}
+.timeline::before{
+  content:'';position:absolute;left:14px;top:0;bottom:0;
+  width:2px;background:var(--border);
+}
+.timeline-item{position:relative;margin-bottom:2.5rem}
+.timeline-item:last-child{margin-bottom:0}
+.timeline-dot{
+  position:absolute;left:-3rem;top:0.3rem;
+  width:30px;height:30px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:0.6rem;font-weight:600;
+  z-index:2;
+}
+.timeline-item:nth-child(1) .timeline-dot{background:var(--accent-dim);color:var(--accent);border:2px solid var(--accent)}
+.timeline-item:nth-child(2) .timeline-dot{background:var(--purple-dim);color:var(--purple);border:2px solid var(--purple)}
+.timeline-item:nth-child(3) .timeline-dot{background:var(--blue-dim);color:var(--blue);border:2px solid var(--blue)}
+.timeline-item:nth-child(4) .timeline-dot{background:var(--signal-dim);color:var(--signal);border:2px solid var(--signal)}
+.timeline-phase{
+  font-family:var(--mono);font-size:0.7rem;color:var(--accent);
+  margin-bottom:0.3rem;letter-spacing:0.04em;
+}
+.timeline-item:nth-child(2) .timeline-phase{color:var(--purple)}
+.timeline-item:nth-child(3) .timeline-phase{color:var(--blue)}
+.timeline-item:nth-child(4) .timeline-phase{color:var(--signal)}
+.timeline-title{font-size:1.1rem;font-weight:600;margin-bottom:0.5rem}
+.timeline-details{
+  display:flex;flex-wrap:wrap;gap:0.5rem;
+}
+.timeline-tag{
+  font-size:0.75rem;padding:0.3rem 0.8rem;border-radius:6px;
+  background:var(--bg-card);border:1px solid var(--border);
+  color:var(--text-dim);font-weight:300;
+}
+
+/* ---- VERSION CARDS ---- */
+.version-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+.version-card{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:14px;padding:1.8rem;
+  position:relative;overflow:hidden;transition:all 0.4s;
+}
+.version-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  opacity:0;transition:opacity 0.4s;
+}
+.version-card:hover{border-color:var(--border-bright);transform:translateY(-3px)}
+.version-card:hover::before{opacity:1}
+.version-card:nth-child(1)::before{background:var(--gradient-accent)}
+.version-card:nth-child(2)::before{background:var(--gradient-purple)}
+.version-card:nth-child(3)::before{background:linear-gradient(135deg,var(--blue),var(--purple))}
+.version-card:nth-child(4)::before{background:var(--gradient-warm)}
+.version-tag{
+  font-family:var(--mono);font-size:0.7rem;font-weight:500;
+  margin-bottom:0.6rem;display:inline-flex;align-items:center;gap:0.4rem;
+}
+.version-card:nth-child(1) .version-tag{color:var(--accent)}
+.version-card:nth-child(2) .version-tag{color:var(--purple)}
+.version-card:nth-child(3) .version-tag{color:var(--blue)}
+.version-card:nth-child(4) .version-tag{color:var(--signal)}
+.version-card h4{font-size:1rem;font-weight:600;margin-bottom:0.8rem}
+.version-list{list-style:none}
+.version-list li{
+  font-size:0.82rem;color:var(--text-dim);font-weight:300;
+  padding:0.3rem 0;display:flex;align-items:center;gap:0.5rem;
+}
+.version-list li::before{
+  content:'';width:5px;height:5px;border-radius:50%;min-width:5px;
+}
+.version-card:nth-child(1) .version-list li::before{background:var(--accent)}
+.version-card:nth-child(2) .version-list li::before{background:var(--purple)}
+.version-card:nth-child(3) .version-list li::before{background:var(--blue)}
+.version-card:nth-child(4) .version-list li::before{background:var(--signal)}
+
+/* ---- RISK CARDS ---- */
+.risk-grid{display:grid;grid-template-columns:1fr;gap:1rem}
+.risk-card{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:12px;padding:1.4rem 1.6rem;
+  display:grid;grid-template-columns:auto 1fr auto;gap:1.2rem;align-items:center;
+  transition:all 0.4s;
+}
+.risk-card:hover{border-color:var(--border-bright)}
+.risk-indicator{
+  width:10px;height:10px;border-radius:50%;
+}
+.risk-indicator.high{background:var(--red);box-shadow:0 0 8px var(--red-dim)}
+.risk-indicator.med{background:var(--yellow);box-shadow:0 0 8px var(--yellow-dim)}
+.risk-indicator.low{background:var(--green);box-shadow:0 0 8px var(--green-dim)}
+.risk-content h4{font-size:0.92rem;font-weight:600;margin-bottom:0.2rem}
+.risk-content p{font-size:0.8rem;color:var(--text-dim);font-weight:300}
+.risk-mitigation{
+  font-size:0.75rem;color:var(--accent);font-family:var(--mono);
+  background:var(--accent-dim);padding:0.3rem 0.8rem;border-radius:6px;
+  white-space:nowrap;
+}
+
+/* ---- SUCCESS METRICS ---- */
+.metrics-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.2rem}
+.metric-card{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:14px;padding:1.6rem;text-align:center;
+  transition:all 0.4s;
+}
+.metric-card:hover{border-color:var(--border-bright);transform:translateY(-3px)}
+.metric-period{
+  font-family:var(--mono);font-size:0.68rem;color:var(--accent);
+  margin-bottom:0.8rem;letter-spacing:0.04em;
+}
+.metric-card:nth-child(2) .metric-period{color:var(--purple)}
+.metric-card:nth-child(3) .metric-period{color:var(--blue)}
+.metric-card:nth-child(4) .metric-period{color:var(--signal)}
+.metric-list{list-style:none;text-align:left}
+.metric-list li{
+  font-size:0.78rem;color:var(--text-dim);font-weight:300;
+  padding:0.35rem 0;display:flex;align-items:center;gap:0.5rem;
+  border-bottom:1px solid var(--border);
+}
+.metric-list li:last-child{border-bottom:none}
+.metric-list li .material-icons-outlined{font-size:0.85rem;color:var(--text-muted)}
+.metric-check{color:var(--accent) !important}
+
+/* ---- CTA ---- */
+.cta-section{
+  text-align:center;padding:6rem 0 8rem;position:relative;
+}
+.cta-glow{
+  position:absolute;bottom:0;left:50%;transform:translateX(-50%);
+  width:600px;height:400px;
+  background:radial-gradient(ellipse,var(--accent-dim) 0%,transparent 60%);
+  filter:blur(80px);pointer-events:none;opacity:0.3;
+}
+.cta-section h2{
+  font-size:clamp(1.6rem,3vw,2.4rem);font-weight:800;
+  letter-spacing:-0.02em;margin-bottom:1.5rem;line-height:1.3;
+  max-width:700px;margin-left:auto;margin-right:auto;
+}
+.cta-section h2 em{
+  font-style:normal;
+  background:var(--gradient-accent);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.cta-vision{
+  font-size:0.95rem;color:var(--text-dim);font-weight:300;line-height:1.8;
+  max-width:650px;margin:0 auto 2.5rem;
+}
+.cta-buttons{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+.btn-primary{
+  background:var(--accent);color:var(--bg);
+  padding:0.8rem 2rem;border-radius:8px;font-weight:600;font-size:0.9rem;
+  text-decoration:none;letter-spacing:0.02em;
+  transition:all 0.3s;display:inline-flex;align-items:center;gap:0.5rem;
+}
+.btn-primary:hover{background:var(--accent-bright);transform:translateY(-2px);box-shadow:0 8px 30px var(--accent-dim)}
+.btn-secondary{
+  background:transparent;color:var(--text);
+  padding:0.8rem 2rem;border-radius:8px;font-weight:500;font-size:0.9rem;
+  text-decoration:none;border:1px solid var(--border-bright);
+  transition:all 0.3s;display:inline-flex;align-items:center;gap:0.5rem;
+}
+.btn-secondary:hover{border-color:var(--text-dim);background:var(--bg-elevated)}
+
+/* ---- REVEAL ANIMATION ---- */
+.reveal{opacity:0;transform:translateY(30px);transition:all 0.8s cubic-bezier(0.16,1,0.3,1)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-delay-1{transition-delay:0.1s}
+.reveal-delay-2{transition-delay:0.2s}
+.reveal-delay-3{transition-delay:0.3s}
+.reveal-delay-4{transition-delay:0.4s}
+.reveal-delay-5{transition-delay:0.5s}
+
+/* ---- RESPONSIVE ---- */
+@media(max-width:900px){
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .quotes-grid{grid-template-columns:1fr}
+  .problem-grid{grid-template-columns:1fr}
+  .lesson-grid{grid-template-columns:1fr}
+  .learn-grid{grid-template-columns:1fr}
+  .deploy-grid{grid-template-columns:1fr}
+  .version-grid{grid-template-columns:1fr}
+  .metrics-grid{grid-template-columns:repeat(2,1fr)}
+  .risk-card{grid-template-columns:auto 1fr;gap:0.8rem}
+  .risk-mitigation{grid-column:1/-1;text-align:center}
+  .nav-sections{display:none}
+  .stack-tag{display:none}
+  table{font-size:0.78rem}
+  th,td{padding:0.7rem 0.8rem}
+}
+@media(max-width:600px){
+  .stats-grid{grid-template-columns:1fr}
+  .metrics-grid{grid-template-columns:1fr}
+  .top-nav{padding:0 1rem}
+  .page-wrap{padding:0 1rem}
+  section{padding:4rem 0}
+}
+</style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+
+<!-- ===== STICKY NAV ===== -->
+<nav class="top-nav">
+  <div class="nav-left">
+    <a href="index.html" class="nav-back">
+      <span class="material-icons-outlined" style="font-size:1rem">arrow_back</span> Home
+    </a>
+    <span class="nav-brand">
+      <span class="dot"></span> AVP Strategy
+    </span>
+  </div>
+  <div class="nav-sections">
+    <a href="#market">Market</a>
+    <a href="#problem">Problem</a>
+    <a href="#landscape">Landscape</a>
+    <a href="#stack">Protocol Stack</a>
+    <a href="#mcp">MCP Lessons</a>
+    <a href="#deploy">Deploy</a>
+    <a href="#gtm">GTM</a>
+    <a href="#roadmap">Roadmap</a>
+    <a href="#risks">Risks</a>
+    <a href="#metrics">Metrics</a>
+  </div>
+</nav>
+
+<div class="page-wrap">
+
+<!-- ===== HERO ===== -->
+<section class="hero" id="top">
+  <div class="hero-glow"></div>
+  <div class="hero-glow-2"></div>
+  <div class="hero-badge">
+    <span class="material-icons-outlined" style="font-size:0.85rem">insights</span>
+    Strategy & Feasibility
+  </div>
+  <h1>AVP Strategy &amp; <em>Feasibility</em></h1>
+  <p class="hero-sub">Why the AI-native economy needs an open commerce protocol — and why now.</p>
+</section>
+
+<!-- ===== MARKET OPPORTUNITY ===== -->
+<section id="market" class="reveal">
+  <div class="section-header">
+    <div class="section-label">Market Opportunity</div>
+    <h2 class="section-title">The Numbers Behind the Opportunity</h2>
+    <p class="section-desc">AI-driven procurement is not a future trend. The market is forming now, and the infrastructure layer is missing.</p>
+  </div>
+
+  <div class="stats-grid reveal reveal-delay-1">
+    <div class="stat-card">
+      <div class="stat-num">$15-18B</div>
+      <div class="stat-label">AI in Procurement by 2030</div>
+      <div class="stat-sub">22-25% CAGR</div>
+    </div>
+    <div class="stat-card purple">
+      <div class="stat-num">$50-65B</div>
+      <div class="stat-label">Agentic AI Market by 2030</div>
+      <div class="stat-sub">35-45% CAGR</div>
+    </div>
+    <div class="stat-card warm">
+      <div class="stat-num">$20.4T</div>
+      <div class="stat-label">Global B2B E-Commerce</div>
+      <div class="stat-sub">Total addressable universe</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">$3-8B</div>
+      <div class="stat-label">AVP Addressable Market by 2030</div>
+      <div class="stat-sub">Protocol + tooling layer</div>
+    </div>
+    <div class="stat-card warm">
+      <div class="stat-num">12-16 wks</div>
+      <div class="stat-label">Current RFP Cycle Time</div>
+      <div class="stat-sub">Manual, email-driven process</div>
+    </div>
+    <div class="stat-card purple">
+      <div class="stat-num">3 days</div>
+      <div class="stat-label">AVP-Enabled RFP Cycle</div>
+      <div class="stat-sub">95% reduction</div>
+    </div>
+  </div>
+
+  <div class="quotes-grid reveal reveal-delay-2">
+    <div class="quote-card">
+      <p class="quote-text">"By 2028, 33% of enterprise software will include agentic AI, up from less than 1% in 2024."</p>
+      <span class="quote-source">Gartner, 2024</span>
+    </div>
+    <div class="quote-card">
+      <p class="quote-text">"AI will manage 20% of procurement transactions by 2028."</p>
+      <span class="quote-source">Gartner Procurement Research</span>
+    </div>
+    <div class="quote-card">
+      <p class="quote-text">"Procurement is among the top 3 enterprise functions for generative AI value creation."</p>
+      <span class="quote-source">McKinsey Global Institute</span>
+    </div>
+    <div class="quote-card">
+      <p class="quote-text">"The agent economy will need new protocols, marketplaces, and trust layers to function."</p>
+      <span class="quote-source">a16z, AI Infrastructure Thesis</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== THE PROBLEM ===== -->
+<section id="problem" class="reveal">
+  <div class="section-header">
+    <div class="section-label">The Problem</div>
+    <h2 class="section-title">B2B Procurement is Fundamentally Broken</h2>
+    <p class="section-desc">The way businesses find, evaluate, and engage vendors has not changed in 20 years. AI agents cannot participate because there is no machine-readable layer.</p>
+  </div>
+
+  <div class="problem-grid">
+    <div class="problem-item reveal reveal-delay-1">
+      <div class="problem-icon"><span class="material-icons-outlined">search_off</span></div>
+      <div>
+        <h4>Weeks of Manual Vendor Research</h4>
+        <p>Teams spend 2-4 weeks scouring Clutch, LinkedIn, and referral networks to build a shortlist. No structured data, no API access, no automation possible.</p>
+      </div>
+    </div>
+    <div class="problem-item reveal reveal-delay-2">
+      <div class="problem-icon"><span class="material-icons-outlined">email</span></div>
+      <div>
+        <h4>Email-Based RFPs</h4>
+        <p>Requirements sent as Word docs via email. Responses arrive in inconsistent formats over weeks. Comparison requires manual spreadsheet work.</p>
+      </div>
+    </div>
+    <div class="problem-item reveal reveal-delay-3">
+      <div class="problem-icon"><span class="material-icons-outlined">visibility_off</span></div>
+      <div>
+        <h4>Hidden Pricing Everywhere</h4>
+        <p>Over 80% of B2B services hide pricing behind "contact us" walls. No way for AI agents to compare costs without human-mediated sales calls.</p>
+      </div>
+    </div>
+    <div class="problem-item reveal reveal-delay-4">
+      <div class="problem-icon"><span class="material-icons-outlined">code_off</span></div>
+      <div>
+        <h4>No Machine-Readable Capabilities</h4>
+        <p>Vendor skills, capacity, certifications, and availability exist only in marketing copy. Zero structured data for agent consumption.</p>
+      </div>
+    </div>
+    <div class="problem-item reveal reveal-delay-5">
+      <div class="problem-icon"><span class="material-icons-outlined">thumbs_up_down</span></div>
+      <div>
+        <h4>Review Manipulation</h4>
+        <p>Pay-for-placement and incentivized reviews undermine trust. Clutch, G2, and Capterra rankings are influenced by vendor spend, not quality.</p>
+      </div>
+    </div>
+    <div class="problem-item reveal reveal-delay-5">
+      <div class="problem-icon"><span class="material-icons-outlined">lock</span></div>
+      <div>
+        <h4>Walled Garden Procurement</h4>
+        <p>Enterprise procurement platforms like SAP Ariba and Coupa are closed ecosystems. Vendor data is trapped, interoperability is nonexistent.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout warm reveal" style="margin-top:2rem">
+    <p><strong>The result:</strong> A $20 trillion B2B economy running on email threads, PDF attachments, and phone calls. AI agents are locked out of the most important business decisions.</p>
+  </div>
+</section>
+
+<!-- ===== COMPETITIVE LANDSCAPE ===== -->
+<section id="landscape" class="reveal">
+  <div class="section-header">
+    <div class="section-label">Competitive Landscape</div>
+    <h2 class="section-title">Disruption Targets & Adjacent Players</h2>
+    <p class="section-desc">AVP does not compete head-to-head with these platforms. It makes them obsolete for AI-driven workflows.</p>
+  </div>
+
+  <div class="table-wrap reveal reveal-delay-1">
+    <h3><span class="material-icons-outlined">storefront</span> Vendor Discovery Platforms (Human-Centric)</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Platform</th>
+          <th>Est. Revenue</th>
+          <th>Why AVP Disrupts</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Clutch (Gartner)</td>
+          <td class="td-revenue">~$50-100M</td>
+          <td class="td-disruption">Pay-for-rank bias, no API, human-only interface</td>
+        </tr>
+        <tr>
+          <td>G2</td>
+          <td class="td-revenue">~$100M+ ARR</td>
+          <td class="td-disruption">Human-readable only, no structured vendor capabilities</td>
+        </tr>
+        <tr>
+          <td>Capterra (Gartner)</td>
+          <td class="td-revenue">~$500M segment</td>
+          <td class="td-disruption">Software-only focus, no services discovery</td>
+        </tr>
+        <tr>
+          <td>Upwork</td>
+          <td class="td-revenue">~$618M (2023)</td>
+          <td class="td-disruption">Individual freelancers, not B2B AI agent workflows</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="table-wrap reveal reveal-delay-2">
+    <h3><span class="material-icons-outlined">business</span> AI Procurement Platforms (Closed Ecosystems)</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Platform</th>
+          <th>Scale</th>
+          <th>Why AVP Disrupts</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>SAP Ariba</td>
+          <td class="td-revenue">$3.4B+ GMV</td>
+          <td class="td-disruption">Closed proprietary network, vendor lock-in</td>
+        </tr>
+        <tr>
+          <td>Coupa</td>
+          <td class="td-revenue">$1B+ revenue</td>
+          <td class="td-disruption">Walled garden, no interoperability</td>
+        </tr>
+        <tr>
+          <td>Globality</td>
+          <td class="td-revenue">$200M+ raised</td>
+          <td class="td-disruption">Closest concept but proprietary AI, not an open protocol</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout reveal reveal-delay-3">
+    <p><strong>No open standard exists for AI-to-AI business commerce.</strong> HTTP standardized information exchange. Stripe standardized payments. AVP standardizes how AI agents discover, evaluate, and transact with business vendors. This gap is the opportunity.</p>
+  </div>
+</section>
+
+<!-- ===== PROTOCOL STACK ===== -->
+<section id="stack" class="reveal">
+  <div class="section-header">
+    <div class="section-label">Protocol Architecture</div>
+    <h2 class="section-title">Where AVP Fits in the AI Stack</h2>
+    <p class="section-desc">AVP does not compete with MCP or A2A. It is the specialized business and commerce layer that sits above them.</p>
+  </div>
+
+  <div class="stack-visual reveal reveal-delay-1">
+    <div class="stack-layer avp">
+      <div class="stack-name">AVP — Business Commerce</div>
+      <div class="stack-desc">Discovery, RFP, Negotiation, Settlement</div>
+      <span class="stack-tag">AI Vendor Protocol</span>
+    </div>
+    <div class="stack-layer a2a">
+      <div class="stack-name">A2A — Agent Communication</div>
+      <div class="stack-desc">Google's Agent-to-Agent Protocol</div>
+      <span class="stack-tag">Google</span>
+    </div>
+    <div class="stack-layer mcp">
+      <div class="stack-name">MCP — Tool & Data Integration</div>
+      <div class="stack-desc">Anthropic's Model Context Protocol</div>
+      <span class="stack-tag">Anthropic</span>
+    </div>
+    <div class="stack-layer http">
+      <div class="stack-name">HTTP/HTTPS — Transport</div>
+      <div class="stack-desc">The foundation everything runs on</div>
+    </div>
+  </div>
+
+  <div class="callout purple reveal reveal-delay-2" style="margin-top:2rem">
+    <p><strong>Think of it this way:</strong> MCP lets an AI agent use tools and access data. A2A lets agents talk to each other. AVP gives them the vocabulary and workflow for doing business — finding vendors, requesting proposals, negotiating terms, and settling contracts. Each layer is essential. None replaces the other.</p>
+  </div>
+</section>
+
+<!-- ===== LESSONS FROM MCP ===== -->
+<section id="mcp" class="reveal">
+  <div class="section-header">
+    <div class="section-label">Learning from the Best</div>
+    <h2 class="section-title">What MCP Got Right — And What AVP Learns</h2>
+    <p class="section-desc">MCP's explosive adoption offers a blueprint for protocol design. Here is what worked and how AVP applies those lessons.</p>
+  </div>
+
+  <div class="lesson-section">
+    <h3><span class="material-icons-outlined">lightbulb</span> What MCP Did Right</h3>
+    <div class="lesson-grid">
+      <div class="lesson-card reveal reveal-delay-1">
+        <div class="lesson-num">01</div>
+        <h4>Extreme Simplicity</h4>
+        <p>JSON-RPC with just 3 primitives (Resources, Tools, Prompts). A working "Hello World" MCP server in 50 lines of code. Low barrier to entry drives adoption.</p>
+      </div>
+      <div class="lesson-card reveal reveal-delay-2">
+        <div class="lesson-num">02</div>
+        <h4>SDKs in 10 Languages</h4>
+        <p>TypeScript, Python, Java, C#, Go, Rust, Swift, Kotlin, Ruby, and Elixir SDKs were available before the community even asked. Meet developers where they are.</p>
+      </div>
+      <div class="lesson-card reveal reveal-delay-3">
+        <div class="lesson-num">03</div>
+        <h4>Co-Ownership with Giants</h4>
+        <p>Java SDK co-developed with Spring. C# SDK co-developed with Microsoft. This gave the protocol instant credibility and enterprise buy-in.</p>
+      </div>
+      <div class="lesson-card reveal reveal-delay-4">
+        <div class="lesson-num">04</div>
+        <h4>Implementation Before Spec</h4>
+        <p>Claude Desktop shipped with MCP support before the specification was finalized. Real usage shaped the protocol, not committee debates.</p>
+      </div>
+      <div class="lesson-card reveal reveal-delay-5">
+        <div class="lesson-num">05</div>
+        <h4>Open Source from Day One</h4>
+        <p>Apache 2.0 license, non-negotiable. The spec, SDKs, and reference implementations are all open. Trust is built through transparency.</p>
+      </div>
+      <div class="lesson-card reveal reveal-delay-5">
+        <div class="lesson-num">06</div>
+        <h4>Linux Foundation Governance</h4>
+        <p>MCP moved to independent governance under the Linux Foundation. No single company controls the protocol. This is essential for ecosystem trust.</p>
+      </div>
+      <div class="lesson-card reveal reveal-delay-5">
+        <div class="lesson-num">07</div>
+        <h4>Network Effects via Big Players</h4>
+        <p>Claude plus ChatGPT adopting MCP meant instant value for server developers. Two major clients guaranteed the market existed.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="lesson-section">
+    <h3><span class="material-icons-outlined">school</span> What AVP Learns and Applies</h3>
+    <div class="learn-grid">
+      <div class="learn-item reveal reveal-delay-1">
+        <div class="learn-icon"><span class="material-icons-outlined" style="font-size:0.9rem">code</span></div>
+        <p><strong>Ship SDKs early</strong> — TypeScript and Python SDKs available at launch, not after. Developers should be building on day one.</p>
+      </div>
+      <div class="learn-item reveal reveal-delay-2">
+        <div class="learn-icon"><span class="material-icons-outlined" style="font-size:0.9rem">build</span></div>
+        <p><strong>Working reference implementation</strong> — A complete, deployable AVP agent before the spec is finalized. Implementation validates design.</p>
+      </div>
+      <div class="learn-item reveal reveal-delay-3">
+        <div class="learn-icon"><span class="material-icons-outlined" style="font-size:0.9rem">account_balance</span></div>
+        <p><strong>Independent governance from day one</strong> — No single company can own AVP. Community-driven from the start, targeting Linux Foundation.</p>
+      </div>
+      <div class="learn-item reveal reveal-delay-4">
+        <div class="learn-icon"><span class="material-icons-outlined" style="font-size:0.9rem">lock</span></div>
+        <p><strong>Auth built in from the start</strong> — MCP added authentication late, causing pain. AVP includes API keys, OAuth, and HMAC signing in v1.0.</p>
+      </div>
+      <div class="learn-item reveal reveal-delay-5">
+        <div class="learn-icon"><span class="material-icons-outlined" style="font-size:0.9rem">verified</span></div>
+        <p><strong>Conformance testing at launch</strong> — A test suite that verifies AVP compliance ships with the protocol. No ambiguity about what "AVP-compatible" means.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== DEPLOYMENT OPTIONS ===== -->
+<section id="deploy" class="reveal">
+  <div class="section-header">
+    <div class="section-label">Deployment</div>
+    <h2 class="section-title">Go Live in Minutes, Not Months</h2>
+    <p class="section-desc">AVP is designed so that any business can become AI-discoverable, regardless of technical sophistication. Six deployment paths, from zero-code to full control.</p>
+  </div>
+
+  <div class="gateway-highlight reveal reveal-delay-1">
+    <h3><span class="material-icons-outlined">cloud_done</span> The AVP Gateway Concept</h3>
+    <p>Like Stripe made payments easy by hosting everything, AVP Gateway lets businesses configure their AI agent via a dashboard — no server required. Sign up, fill in your capabilities and pricing, go live. Your business is instantly discoverable by every AI agent on the planet.</p>
+    <div class="code-block">
+      <span class="comment"># One command to scaffold a local AVP agent</span><br>
+      <span class="prompt">$</span> <span class="cmd">npx create-avp-agent</span><br>
+      <br>
+      <span class="comment"># Or with Python</span><br>
+      <span class="prompt">$</span> <span class="cmd">pip install avp && avp init</span>
+    </div>
+  </div>
+
+  <div class="deploy-grid">
+    <div class="deploy-card featured reveal reveal-delay-1">
+      <div class="deploy-header">
+        <div class="deploy-icon"><span class="material-icons-outlined">cloud</span></div>
+        <h4>AVP Gateway (Hosted)</h4>
+      </div>
+      <div class="deploy-meta">
+        <span class="deploy-tag time">1 min setup</span>
+        <span class="deploy-tag cost">Freemium</span>
+      </div>
+      <p>Best for non-technical businesses. Dashboard-based configuration, no code, no server. Fill in a form and your AI agent is live.</p>
+    </div>
+    <div class="deploy-card reveal reveal-delay-2">
+      <div class="deploy-header">
+        <div class="deploy-icon"><span class="material-icons-outlined">web</span></div>
+        <h4>WordPress Plugin</h4>
+      </div>
+      <div class="deploy-meta">
+        <span class="deploy-tag time">2 min setup</span>
+        <span class="deploy-tag cost">Free</span>
+      </div>
+      <p>Best for the 40%+ of the web running WordPress. Install the plugin, configure in wp-admin, and your site serves AVP endpoints automatically.</p>
+    </div>
+    <div class="deploy-card reveal reveal-delay-3">
+      <div class="deploy-header">
+        <div class="deploy-icon"><span class="material-icons-outlined">bolt</span></div>
+        <h4>Cloudflare Workers</h4>
+      </div>
+      <div class="deploy-meta">
+        <span class="deploy-tag time">5 min setup</span>
+        <span class="deploy-tag cost">Free tier</span>
+      </div>
+      <p>Best for small-to-mid vendors. Edge-deployed, globally distributed, zero cold starts. Deploy with wrangler and configure via environment variables.</p>
+    </div>
+    <div class="deploy-card reveal reveal-delay-4">
+      <div class="deploy-header">
+        <div class="deploy-icon"><span class="material-icons-outlined">terminal</span></div>
+        <h4>Vercel / Netlify Functions</h4>
+      </div>
+      <div class="deploy-meta">
+        <span class="deploy-tag time">10 min setup</span>
+        <span class="deploy-tag cost">Free tier</span>
+      </div>
+      <p>Best for developers. Serverless functions with git-push deploys. Full control over logic with zero infrastructure management.</p>
+    </div>
+    <div class="deploy-card reveal reveal-delay-5">
+      <div class="deploy-header">
+        <div class="deploy-icon"><span class="material-icons-outlined">dns</span></div>
+        <h4>AWS Lambda + API Gateway</h4>
+      </div>
+      <div class="deploy-meta">
+        <span class="deploy-tag time">30 min setup</span>
+        <span class="deploy-tag cost">Pay-per-request</span>
+      </div>
+      <p>Best for enterprise. Full AWS integration with IAM, CloudWatch, VPC. Scales to millions of requests with fine-grained access control.</p>
+    </div>
+    <div class="deploy-card reveal reveal-delay-5">
+      <div class="deploy-header">
+        <div class="deploy-icon"><span class="material-icons-outlined">inventory_2</span></div>
+        <h4>Docker (Fly.io / Railway)</h4>
+      </div>
+      <div class="deploy-meta">
+        <span class="deploy-tag time">15 min setup</span>
+        <span class="deploy-tag cost">~$5/mo</span>
+      </div>
+      <p>Best for full control. Containerized deployment on any platform. Customize everything — middleware, caching, database, authentication.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== GO-TO-MARKET PHASES ===== -->
+<section id="gtm" class="reveal">
+  <div class="section-header">
+    <div class="section-label">Go-to-Market</div>
+    <h2 class="section-title">Four Phases to Critical Mass</h2>
+    <p class="section-desc">A deliberate rollout from foundation to standard, designed to build network effects at each stage.</p>
+  </div>
+
+  <div class="timeline">
+    <div class="timeline-item reveal reveal-delay-1">
+      <div class="timeline-dot">P1</div>
+      <div class="timeline-phase">Phase 1 — Months 0-3</div>
+      <div class="timeline-title">Foundation</div>
+      <div class="timeline-details">
+        <span class="timeline-tag">TypeScript SDK</span>
+        <span class="timeline-tag">Python SDK</span>
+        <span class="timeline-tag">AVP Gateway MVP</span>
+        <span class="timeline-tag">20 pilot vendors</span>
+        <span class="timeline-tag">WordPress plugin</span>
+        <span class="timeline-tag">Protocol spec v0.9</span>
+        <span class="timeline-tag">Reference implementation</span>
+        <span class="timeline-tag">Developer docs</span>
+      </div>
+    </div>
+    <div class="timeline-item reveal reveal-delay-2">
+      <div class="timeline-dot">P2</div>
+      <div class="timeline-phase">Phase 2 — Months 3-6</div>
+      <div class="timeline-title">Traction</div>
+      <div class="timeline-details">
+        <span class="timeline-tag">Agent framework partnerships</span>
+        <span class="timeline-tag">100 vendors onboarded</span>
+        <span class="timeline-tag">Chrome extension</span>
+        <span class="timeline-tag">First real transaction</span>
+        <span class="timeline-tag">Conformance test suite</span>
+        <span class="timeline-tag">LangChain integration</span>
+        <span class="timeline-tag">Community Discord</span>
+      </div>
+    </div>
+    <div class="timeline-item reveal reveal-delay-3">
+      <div class="timeline-dot">P3</div>
+      <div class="timeline-phase">Phase 3 — Months 6-12</div>
+      <div class="timeline-title">Ecosystem</div>
+      <div class="timeline-details">
+        <span class="timeline-tag">1,000 vendors</span>
+        <span class="timeline-tag">Enterprise integrations</span>
+        <span class="timeline-tag">Linux Foundation submission</span>
+        <span class="timeline-tag">MCP server for AVP</span>
+        <span class="timeline-tag">Industry vertical extensions</span>
+        <span class="timeline-tag">Multi-language SDKs</span>
+        <span class="timeline-tag">Audit trail system</span>
+      </div>
+    </div>
+    <div class="timeline-item reveal reveal-delay-4">
+      <div class="timeline-dot">P4</div>
+      <div class="timeline-phase">Phase 4 — Months 12-24</div>
+      <div class="timeline-title">Standard</div>
+      <div class="timeline-details">
+        <span class="timeline-tag">10,000 vendors</span>
+        <span class="timeline-tag">IETF submission</span>
+        <span class="timeline-tag">Federated registries</span>
+        <span class="timeline-tag">Payment rail integration</span>
+        <span class="timeline-tag">Enterprise procurement suites</span>
+        <span class="timeline-tag">Global adoption</span>
+        <span class="timeline-tag">AI trust scoring</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FEATURE ROADMAP ===== -->
+<section id="roadmap" class="reveal">
+  <div class="section-header">
+    <div class="section-label">Feature Roadmap</div>
+    <h2 class="section-title">Version-by-Version Delivery Plan</h2>
+    <p class="section-desc">Each release builds on the last, adding capabilities that unlock new use cases and integrations.</p>
+  </div>
+
+  <div class="version-grid">
+    <div class="version-card reveal reveal-delay-1">
+      <div class="version-tag"><span class="material-icons-outlined" style="font-size:0.85rem">rocket_launch</span> v1.0 Stable — Month 6</div>
+      <h4>Core Protocol</h4>
+      <ul class="version-list">
+        <li>Full protocol specification (JSON-RPC 2.0)</li>
+        <li>TypeScript and Python SDKs</li>
+        <li>AVP Gateway hosted service</li>
+        <li>Chrome extension for vendor detection</li>
+        <li>REST API with OpenAPI spec</li>
+        <li>Authentication (API key, OAuth 2.0, HMAC)</li>
+        <li>Conformance test suite</li>
+        <li>WordPress plugin v1.0</li>
+      </ul>
+    </div>
+    <div class="version-card reveal reveal-delay-2">
+      <div class="version-tag"><span class="material-icons-outlined" style="font-size:0.85rem">webhook</span> v1.1 — Month 9</div>
+      <h4>Enterprise Ready</h4>
+      <ul class="version-list">
+        <li>Webhook notifications for RFP events</li>
+        <li>Complete audit trail and logging</li>
+        <li>GDPR and data residency compliance</li>
+        <li>Salesforce integration</li>
+        <li>HubSpot integration</li>
+        <li>Rate limiting and quota management</li>
+        <li>Bulk vendor import/export</li>
+      </ul>
+    </div>
+    <div class="version-card reveal reveal-delay-3">
+      <div class="version-tag"><span class="material-icons-outlined" style="font-size:0.85rem">hub</span> v1.2 — Month 12</div>
+      <h4>Federated Network</h4>
+      <ul class="version-list">
+        <li>Federated registry protocol</li>
+        <li>Multi-currency pricing support</li>
+        <li>Payment rail integration (Stripe, ACH)</li>
+        <li>MCP server for AVP access</li>
+        <li>Java and Go SDKs</li>
+        <li>Industry-specific schema extensions</li>
+        <li>Advanced analytics dashboard</li>
+      </ul>
+    </div>
+    <div class="version-card reveal reveal-delay-4">
+      <div class="version-tag"><span class="material-icons-outlined" style="font-size:0.85rem">public</span> v2.0 — Month 18</div>
+      <h4>Global Standard</h4>
+      <ul class="version-list">
+        <li>AI-powered trust and reputation scoring</li>
+        <li>Industry vertical extensions (legal, healthcare, fintech)</li>
+        <li>IETF Internet-Draft submission</li>
+        <li>Multi-agent negotiation protocol</li>
+        <li>Smart contract settlement options</li>
+        <li>Real-time capability streaming</li>
+        <li>Enterprise SSO and RBAC</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ===== RISK ANALYSIS ===== -->
+<section id="risks" class="reveal">
+  <div class="section-header">
+    <div class="section-label">Risk Analysis</div>
+    <h2 class="section-title">Known Risks & Mitigations</h2>
+    <p class="section-desc">Every protocol faces adoption risk. Here is an honest assessment of what could go wrong and how AVP addresses each threat.</p>
+  </div>
+
+  <div class="risk-grid">
+    <div class="risk-card reveal reveal-delay-1">
+      <div class="risk-indicator high"></div>
+      <div class="risk-content">
+        <h4>Platform Capture by Big Tech</h4>
+        <p>Google, Microsoft, or Amazon could launch a proprietary alternative with distribution advantages and lock vendors into their ecosystem.</p>
+      </div>
+      <span class="risk-mitigation">Open governance + network effects</span>
+    </div>
+    <div class="risk-card reveal reveal-delay-2">
+      <div class="risk-indicator high"></div>
+      <div class="risk-content">
+        <h4>Chicken-and-Egg Cold Start</h4>
+        <p>Vendors will not adopt without buyer agents, and buyer agents will not integrate without vendors. Classic marketplace bootstrapping problem.</p>
+      </div>
+      <span class="risk-mitigation">Gateway + Chrome ext + niche focus</span>
+    </div>
+    <div class="risk-card reveal reveal-delay-3">
+      <div class="risk-indicator med"></div>
+      <div class="risk-content">
+        <h4>Enterprise Conservatism</h4>
+        <p>Large enterprises move slowly on protocol adoption. Procurement teams may resist AI-driven workflows due to compliance and change management concerns.</p>
+      </div>
+      <span class="risk-mitigation">Freemium + no-risk pilots + ROI calc</span>
+    </div>
+    <div class="risk-card reveal reveal-delay-4">
+      <div class="risk-indicator med"></div>
+      <div class="risk-content">
+        <h4>Protocol Fork Risk</h4>
+        <p>A well-funded competitor could fork AVP, add proprietary extensions, and fragment the ecosystem before critical mass is reached.</p>
+      </div>
+      <span class="risk-mitigation">Linux Foundation + community ownership</span>
+    </div>
+    <div class="risk-card reveal reveal-delay-5">
+      <div class="risk-indicator low"></div>
+      <div class="risk-content">
+        <h4>MCP Scope Creep into Commerce</h4>
+        <p>Anthropic could expand MCP's scope to cover business discovery and transactions, reducing the need for a separate commerce protocol.</p>
+      </div>
+      <span class="risk-mitigation">Complementary positioning + MCP integration</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SUCCESS METRICS ===== -->
+<section id="metrics" class="reveal">
+  <div class="section-header">
+    <div class="section-label">Success Metrics</div>
+    <h2 class="section-title">How We Measure Progress</h2>
+    <p class="section-desc">Concrete, measurable milestones at each stage. If we hit these numbers, the protocol is working.</p>
+  </div>
+
+  <div class="metrics-grid">
+    <div class="metric-card reveal reveal-delay-1">
+      <div class="metric-period">Month 3</div>
+      <ul class="metric-list">
+        <li><span class="material-icons-outlined metric-check">check_circle</span> 500 GitHub stars</li>
+        <li><span class="material-icons-outlined metric-check">check_circle</span> 20 live vendors</li>
+        <li><span class="material-icons-outlined metric-check">check_circle</span> 2 SDKs shipped</li>
+        <li><span class="material-icons-outlined metric-check">check_circle</span> First real transaction</li>
+      </ul>
+    </div>
+    <div class="metric-card reveal reveal-delay-2">
+      <div class="metric-period">Month 6</div>
+      <ul class="metric-list">
+        <li><span class="material-icons-outlined metric-check">check_circle</span> 2,000 GitHub stars</li>
+        <li><span class="material-icons-outlined metric-check">check_circle</span> 100 live vendors</li>
+        <li><span class="material-icons-outlined metric-check">check_circle</span> WordPress plugin live</li>
+        <li><span class="material-icons-outlined metric-check">check_circle</span> Enterprise pilot signed</li>
+      </ul>
+    </div>
+    <div class="metric-card reveal reveal-delay-3">
+      <div class="metric-period">Month 12</div>
+      <ul class="metric-list">
+        <li><span class="material-icons-outlined metric-check">check_circle</span> 10,000 GitHub stars</li>
+        <li><span class="material-icons-outlined metric-check">check_circle</span> 1,000 live vendors</li>
+        <li><span class="material-icons-outlined metric-check">check_circle</span> $1M deal value processed</li>
+        <li><span class="material-icons-outlined metric-check">check_circle</span> IETF Internet-Draft filed</li>
+      </ul>
+    </div>
+    <div class="metric-card reveal reveal-delay-4">
+      <div class="metric-period">Month 24</div>
+      <ul class="metric-list">
+        <li><span class="material-icons-outlined metric-check">check_circle</span> 50,000 GitHub stars</li>
+        <li><span class="material-icons-outlined metric-check">check_circle</span> 10,000 live vendors</li>
+        <li><span class="material-icons-outlined metric-check">check_circle</span> $100M deal value processed</li>
+        <li><span class="material-icons-outlined metric-check">check_circle</span> RFC number assigned</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ===== THE VISION / CTA ===== -->
+<section class="cta-section reveal" id="vision">
+  <div class="cta-glow"></div>
+  <div class="section-label" style="margin-bottom:2rem">The Vision</div>
+  <h2>In 3 years, when a business <em>needs a vendor</em></h2>
+  <p class="cta-vision">
+    Their AI agent queries AVP. Gets 50 qualified proposals in 30 seconds. AI negotiates the best 3 options based on budget, timeline, and capability fit. Human approves with one click. Contract signed, project started — all within a single afternoon.<br><br>
+    Not just a protocol. <strong style="color:var(--accent)">Infrastructure for the AI-native economy.</strong>
+  </p>
+  <div class="cta-buttons">
+    <a href="index.html" class="btn-primary">
+      <span class="material-icons-outlined" style="font-size:1.1rem">rocket_launch</span>
+      Get Started
+    </a>
+    <a href="https://github.com/AKSystems-mail/AVP" class="btn-secondary" target="_blank">
+      <span class="material-icons-outlined" style="font-size:1.1rem">code</span>
+      Read the Spec
+    </a>
+    <a href="api-docs.html" class="btn-secondary">
+      <span class="material-icons-outlined" style="font-size:1.1rem">description</span>
+      API Docs
+    </a>
+  </div>
+</section>
+
+</div><!-- /page-wrap -->
+
+<script>
+// Scroll reveal
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// Active nav section highlighting
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-sections a');
+
+function updateActiveNav() {
+  let current = '';
+  sections.forEach(section => {
+    const sectionTop = section.offsetTop - 100;
+    if (window.scrollY >= sectionTop) {
+      current = section.getAttribute('id');
+    }
+  });
+  navLinks.forEach(link => {
+    link.classList.remove('active');
+    if (link.getAttribute('href') === '#' + current) {
+      link.classList.add('active');
+    }
+  });
+}
+
+window.addEventListener('scroll', updateActiveNav, { passive: true });
+updateActiveNav();
+</script>
+
+</body>
+</html>
