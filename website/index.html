@@ -303,7 +303,6 @@ nav{
 .flow-step:nth-child(2) .flow-icon{border-color:rgba(59,130,246,0.3);box-shadow:0 0 20px rgba(59,130,246,0.1)}
 .flow-step:nth-child(3) .flow-icon{border-color:rgba(139,92,246,0.3);box-shadow:0 0 20px var(--purple-dim)}
 .flow-step:nth-child(4) .flow-icon{border-color:rgba(255,107,53,0.3);box-shadow:0 0 20px var(--signal-dim)}
-.flow-step:nth-child(5) .flow-icon{border-color:rgba(0,212,170,0.3);box-shadow:0 0 20px var(--accent-dim)}
 .flow-num{
   font-family:var(--mono);font-size:0.6rem;color:var(--text-muted);
   margin-bottom:0.5rem;letter-spacing:0.1em;
@@ -520,7 +519,7 @@ nav{
 .fd-arrow-lbl{font-family:var(--mono);font-size:0.55rem;color:var(--text-muted);white-space:nowrap}
 .fd-arrow-lbl.highlight{color:var(--accent)}
 .fd-steps-bar{
-  display:grid;grid-template-columns:repeat(6,1fr);gap:0;margin-top:2.5rem;
+  display:grid;grid-template-columns:repeat(5,1fr);gap:0;margin-top:2.5rem;
   border-top:1px solid var(--border);padding-top:1.5rem;
 }
 .fd-step-cell{text-align:center;padding:0.5rem;position:relative}
@@ -826,7 +825,7 @@ footer{
     <span class="v">v1.0-draft</span> Protocol Specification Published
   </div>
   <h1 class="reveal reveal-delay-1">The Open Standard for <em>AI-to-AI</em> Business Communication</h1>
-  <p class="hero-sub reveal reveal-delay-2">AVP enables AI agents on different websites to discover, communicate, negotiate, and transact&nbsp;&mdash; creating the protocol layer for the AI-native economy.</p>
+  <p class="hero-sub reveal reveal-delay-2">AVP enables AI agents on different websites to discover, communicate, negotiate, and accept proposals&nbsp;&mdash; creating the protocol layer for the AI-native economy.</p>
   <div class="hero-actions reveal reveal-delay-3">
     <a href="#code" class="btn-primary">Get Started &rarr;</a>
     <a href="#how-it-works" class="btn-secondary">Read the Spec</a>
@@ -863,14 +862,14 @@ footer{
     <div class="section-header">
       <div class="section-label reveal">Protocol</div>
       <h2 class="section-title reveal reveal-delay-1">What is AVP?</h2>
-      <p class="section-desc reveal reveal-delay-2">A standard way for any website to expose an AI agent that can be discovered, queried, and negotiated with by other AI agents.</p>
+      <p class="section-desc reveal reveal-delay-2">A standard way for any website to expose an AI agent that can be discovered, queried, and negotiated with by other AI agents. The protocol ends at proposal acceptance.</p>
     </div>
     <div class="what-grid">
       <div class="what-text reveal">
         <h3>The Problem</h3>
         <p>Finding and evaluating technology vendors is manual, slow, and opaque. Businesses spend weeks researching on Clutch and LinkedIn. RFPs go via email. Responses are inconsistent. Pricing is hidden behind "contact us" walls.</p>
         <h3>The Solution</h3>
-        <p>AVP defines a protocol so AI agents can handle the entire vendor discovery and negotiation cycle automatically &mdash; from finding matching vendors to comparing proposals to closing deals.</p>
+        <p>AVP defines a protocol so AI agents can handle the entire vendor discovery and negotiation cycle automatically &mdash; from finding matching vendors to comparing proposals to accepting the best one.</p>
         <div class="analogy">Think of it as DNS + HTTP + OAuth, but for AI business agents</div>
       </div>
       <div class="what-visual reveal reveal-delay-2">
@@ -899,10 +898,6 @@ footer{
               <span class="method" style="background:var(--signal-dim);color:var(--signal)">POST</span>
               <span class="path">/avp/negotiate</span>
             </div>
-            <div class="endpoint-display" style="margin-top:0.5rem">
-              <span class="method" style="background:var(--accent-dim);color:var(--accent)">POST</span>
-              <span class="path">/avp/settle</span>
-            </div>
           </div>
         </div>
       </div>
@@ -916,7 +911,7 @@ footer{
     <div class="section-header">
       <div class="section-label reveal">Why AVP</div>
       <h2 class="section-title reveal reveal-delay-1">Business Benefits</h2>
-      <p class="section-desc reveal reveal-delay-2">Why companies are adopting AVP to transform how they find partners, close deals, and scale operations.</p>
+      <p class="section-desc reveal reveal-delay-2">Why companies are adopting AVP to transform how they find partners, evaluate proposals, and make decisions.</p>
     </div>
     <div class="benefits-grid">
       <div class="benefit-card reveal">
@@ -947,7 +942,7 @@ footer{
         <div class="benefit-icon"><span class="material-icons-outlined">verified_user</span></div>
         <div class="benefit-content">
           <h4>Trust &amp; Transparency</h4>
-          <p>Four-tier business verification, reputation scores from real transactions, and cryptographic audit trails. Know exactly who you're dealing with before the first message.</p>
+          <p>Four-tier business verification, reputation scores from real interactions, and cryptographic audit trails. Know exactly who you're dealing with before the first message.</p>
           <span class="benefit-metric">Verified identity + trust score</span>
         </div>
       </div>
@@ -978,8 +973,8 @@ footer{
       <div class="benefit-card reveal reveal-delay-1">
         <div class="benefit-icon"><span class="material-icons-outlined">rocket_launch</span></div>
         <div class="benefit-content">
-          <h4>Faster Time-to-Deal</h4>
-          <p>From vendor search to signed agreement in minutes, not months. Structured proposals are machine-comparable, so your AI can rank and shortlist before you even look.</p>
+          <h4>Faster Time-to-Decision</h4>
+          <p>From vendor search to accepted proposal in minutes, not months. Structured proposals are machine-comparable, so your AI can rank, shortlist, and accept before you even look.</p>
           <span class="benefit-metric">Months &rarr; minutes</span>
         </div>
       </div>
@@ -993,7 +988,7 @@ footer{
     <div class="section-header">
       <div class="section-label reveal">Flow</div>
       <h2 class="section-title reveal reveal-delay-1">How It Works</h2>
-      <p class="section-desc reveal reveal-delay-2">Five phases from discovery to deal &mdash; fully automated, with human override at any stage.</p>
+      <p class="section-desc reveal reveal-delay-2">Four phases from discovery to decision &mdash; fully automated, with human override at any stage.</p>
     </div>
     <div class="flow-container">
       <div class="flow-step reveal">
@@ -1013,23 +1008,16 @@ footer{
       <div class="flow-step reveal reveal-delay-2">
         <div class="flow-icon"><span class="material-icons-outlined">description</span></div>
         <div class="flow-num">03</div>
-        <h4>Request</h4>
-        <p>Buyer sends structured RFP with requirements, budget, and timeline</p>
+        <h4>Request &amp; Propose</h4>
+        <p>Buyer sends structured RFP; vendor returns a structured proposal</p>
         <span class="flow-endpoint">/avp/rfp</span>
       </div>
       <div class="flow-step reveal reveal-delay-3">
         <div class="flow-icon"><span class="material-icons-outlined">forum</span></div>
         <div class="flow-num">04</div>
-        <h4>Negotiate</h4>
-        <p>Multi-round AI negotiation with counter-proposals and human escalation</p>
+        <h4>Negotiate &amp; Accept</h4>
+        <p>Multi-round negotiation ending in proposal acceptance or rejection</p>
         <span class="flow-endpoint">/avp/negotiate</span>
-      </div>
-      <div class="flow-step reveal reveal-delay-4">
-        <div class="flow-icon"><span class="material-icons-outlined">task_alt</span></div>
-        <div class="flow-num">05</div>
-        <h4>Settle</h4>
-        <p>Finalize agreement with signed settlement recorded on the registry</p>
-        <span class="flow-endpoint">/avp/settle</span>
       </div>
     </div>
   </div>
@@ -1067,12 +1055,12 @@ footer{
       <div class="feature-card reveal reveal-delay-2">
         <span class="feature-icon"><span class="material-icons-outlined">insights</span></span>
         <h4>Trust Scoring</h4>
-        <p>Reputation computed from transaction history, response quality, dispute rate, peer reviews, and protocol compliance. Transparent algorithm.</p>
+        <p>Reputation computed from interaction history, response quality, peer reviews, and protocol compliance. Transparent algorithm.</p>
       </div>
       <div class="feature-card reveal reveal-delay-3">
         <span class="feature-icon"><span class="material-icons-outlined">integration_instructions</span></span>
         <h4>SDK & Integrations</h4>
-        <p>Node.js, Python, and Go SDKs. Plug into Salesforce, HubSpot, Slack, Stripe. WordPress plugin. Chrome extension. Embeddable widget.</p>
+        <p>Node.js, Python, and Go SDKs. Plug into Salesforce, HubSpot, Slack. WordPress plugin. Chrome extension. Embeddable widget.</p>
       </div>
     </div>
   </div>
@@ -1104,7 +1092,7 @@ footer{
           <div class="int-card">
             <div class="int-card-icon"><span class="material-icons-outlined">hub</span></div>
             <h5>HubSpot</h5>
-            <p>Pipeline sync, contact creation, deal tracking from settlements</p>
+            <p>Pipeline sync, contact creation, deal tracking from accepted proposals</p>
             <span class="int-status planned">Planned</span>
           </div>
           <div class="int-card">
@@ -1138,53 +1126,19 @@ footer{
           <div class="int-card">
             <div class="int-card-icon"><span class="material-icons-outlined">groups</span></div>
             <h5>Microsoft Teams</h5>
-            <p>Channel notifications, approval workflows, deal alerts</p>
+            <p>Channel notifications, approval workflows, proposal alerts</p>
             <span class="int-status planned">Planned</span>
           </div>
           <div class="int-card">
             <div class="int-card-icon"><span class="material-icons-outlined">email</span></div>
             <h5>Email (SMTP)</h5>
-            <p>Proposal summaries, settlement confirmations, digest reports</p>
+            <p>Proposal summaries, acceptance confirmations, digest reports</p>
             <span class="int-status planned">Planned</span>
           </div>
           <div class="int-card">
             <div class="int-card-icon"><span class="material-icons-outlined">send</span></div>
             <h5>SendGrid</h5>
-            <p>Transactional emails for proposals and settlements</p>
-            <span class="int-status community">Community</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Payments & Legal -->
-      <div class="int-category reveal">
-        <div class="int-category-header">
-          <span class="material-icons-outlined">payments</span>
-          <h4>Payments &amp; Legal</h4>
-        </div>
-        <div class="int-grid">
-          <div class="int-card">
-            <div class="int-card-icon"><span class="material-icons-outlined">credit_card</span></div>
-            <h5>Stripe</h5>
-            <p>Milestone payments, invoicing from signed settlements</p>
-            <span class="int-status planned">Planned</span>
-          </div>
-          <div class="int-card">
-            <div class="int-card-icon"><span class="material-icons-outlined">currency_rupee</span></div>
-            <h5>Razorpay</h5>
-            <p>India-focused payment processing for settlements</p>
-            <span class="int-status community">Community</span>
-          </div>
-          <div class="int-card">
-            <div class="int-card-icon"><span class="material-icons-outlined">draw</span></div>
-            <h5>DocuSign</h5>
-            <p>Legal contract signing from AVP settlements</p>
-            <span class="int-status planned">Planned</span>
-          </div>
-          <div class="int-card">
-            <div class="int-card-icon"><span class="material-icons-outlined">description</span></div>
-            <h5>PandaDoc</h5>
-            <p>Document generation and e-signatures</p>
+            <p>Transactional emails for proposals and acceptances</p>
             <span class="int-status community">Community</span>
           </div>
         </div>
@@ -1200,7 +1154,7 @@ footer{
           <div class="int-card">
             <div class="int-card-icon"><span class="material-icons-outlined">view_kanban</span></div>
             <h5>Jira</h5>
-            <p>Auto-create projects and epics from signed settlements</p>
+            <p>Auto-create projects and epics from accepted proposals</p>
             <span class="int-status planned">Planned</span>
           </div>
           <div class="int-card">
@@ -1212,7 +1166,7 @@ footer{
           <div class="int-card">
             <div class="int-card-icon"><span class="material-icons-outlined">checklist</span></div>
             <h5>Asana</h5>
-            <p>Task creation from settlement deliverables</p>
+            <p>Task creation from accepted proposal deliverables</p>
             <span class="int-status community">Community</span>
           </div>
           <div class="int-card">
@@ -1573,17 +1527,13 @@ vendor.<span class="fn">run</span>(<span class="prop">port</span>=<span class="n
           <div class="fd-arrow-lbl highlight">5. Proposal</div>
           <div class="fd-arrow-h left"></div>
           <div class="fd-arrow-lbl">JSON Response</div>
-          <div style="height:12px"></div>
-          <div class="fd-arrow-lbl highlight">6. Settlement</div>
-          <div class="fd-arrow-h"></div>
-          <div class="fd-arrow-lbl">POST /avp/settle</div>
         </div>
 
         <!-- Vendor Node -->
         <div class="fd-node vendor">
           <div class="fd-node-icon"><span class="material-icons-outlined">apartment</span></div>
           <h5>Vendor Agent</h5>
-          <p>Exposes capabilities, generates proposals, negotiates, finalizes deals</p>
+          <p>Exposes capabilities, generates proposals, negotiates terms</p>
           <span class="fd-badge" style="background:var(--purple-dim);color:var(--purple)">vendor.com</span>
         </div>
 
@@ -1596,17 +1546,13 @@ vendor.<span class="fn">run</span>(<span class="prop">port</span>=<span class="n
           <div class="fd-arrow-lbl highlight">4. Auth</div>
           <div class="fd-arrow-h left"></div>
           <div class="fd-arrow-lbl">Ed25519 + JWT</div>
-          <div style="height:12px"></div>
-          <div class="fd-arrow-lbl highlight">7. Record</div>
-          <div class="fd-arrow-h"></div>
-          <div class="fd-arrow-lbl">Settlement Log</div>
         </div>
 
         <!-- Registry Node -->
         <div class="fd-node registry">
           <div class="fd-node-icon"><span class="material-icons-outlined">verified</span></div>
           <h5>AVP Registry</h5>
-          <p>Trust scores, identity verification, settlement records, agent index</p>
+          <p>Trust scores, identity verification, agent index</p>
           <span class="fd-badge" style="background:var(--signal-dim);color:var(--signal)">registry.avp.org</span>
         </div>
       </div>
@@ -1630,18 +1576,13 @@ vendor.<span class="fn">run</span>(<span class="prop">port</span>=<span class="n
         </div>
         <div class="fd-step-cell">
           <div class="num">04</div>
-          <h6>Request</h6>
-          <p>Send structured RFP with requirements</p>
+          <h6>Request &amp; Propose</h6>
+          <p>Send RFP, receive structured proposal</p>
         </div>
         <div class="fd-step-cell">
           <div class="num">05</div>
-          <h6>Negotiate</h6>
-          <p>Multi-round proposals and counters</p>
-        </div>
-        <div class="fd-step-cell">
-          <div class="num">06</div>
-          <h6>Settle</h6>
-          <p>Sign agreement and record on registry</p>
+          <h6>Accept / Reject</h6>
+          <p>Buyer accepts or rejects the proposal</p>
         </div>
       </div>
     </div>
@@ -1654,12 +1595,12 @@ vendor.<span class="fn">run</span>(<span class="prop">port</span>=<span class="n
     <div class="section-header">
       <div class="section-label reveal">Positioning</div>
       <h2 class="section-title reveal reveal-delay-1">Where AVP Fits</h2>
-      <p class="section-desc reveal reveal-delay-2">AVP is the commerce layer in the AI protocol stack — complementary to MCP and A2A.</p>
+      <p class="section-desc reveal reveal-delay-2">AVP is the business communication layer in the AI protocol stack — complementary to MCP and A2A.</p>
     </div>
     <div class="proto-stack-box reveal reveal-delay-3">
       <div class="proto-layer avp">
         <h5>AVP &mdash; Business Commerce</h5>
-        <p>Discovery, RFP, Negotiation, Settlement &bull; AI-to-AI business transactions</p>
+        <p>Discovery, RFP, Negotiation, Proposal Acceptance &bull; AI-to-AI business communication</p>
       </div>
       <div class="proto-layer a2a">
         <h5>A2A &mdash; Agent Communication</h5>
@@ -1691,7 +1632,7 @@ vendor.<span class="fn">run</span>(<span class="prop">port</span>=<span class="n
         <div class="stat-label">Message Types</div>
       </div>
       <div class="reveal reveal-delay-2">
-        <div class="stat-num">5</div>
+        <div class="stat-num">4</div>
         <div class="stat-label">API Endpoints</div>
       </div>
       <div class="reveal reveal-delay-3">
@@ -1716,7 +1657,7 @@ vendor.<span class="fn">run</span>(<span class="prop">port</span>=<span class="n
           <h4><span class="material-icons-outlined" style="font-size:1rem;vertical-align:middle;margin-right:0.3rem;color:var(--accent)">cloud</span> AVP Gateway</h4>
           <span class="deploy-time">~1 min</span>
         </div>
-        <p>Managed hosted service. Sign up, configure capabilities via dashboard, go live. No code required. Like Stripe for AI commerce.</p>
+        <p>Managed hosted service. Sign up, configure capabilities via dashboard, go live. No code required. Like Stripe for AI business communication.</p>
         <div class="deploy-meta"><span>Free tier available</span><span>Best for: Everyone</span></div>
       </div>
       <div class="deploy-card reveal reveal-delay-1">
@@ -1763,7 +1704,7 @@ vendor.<span class="fn">run</span>(<span class="prop">port</span>=<span class="n
     <div class="deploy-highlight reveal">
       <div class="deploy-highlight-text">
         <h4>One-Command Deployment</h4>
-        <p>Get a fully functional AVP agent running with a single command. SDKs handle discovery, auth, negotiation, and settlement out of the box.</p>
+        <p>Get a fully functional AVP agent running with a single command. SDKs handle discovery, auth, and negotiation out of the box.</p>
       </div>
       <div class="deploy-cmd">
 <span class="prompt">$</span> <span class="cmd">npx create-avp-agent</span>
@@ -1858,7 +1799,7 @@ vendor.<span class="fn">run</span>(<span class="prop">port</span>=<span class="n
         <div class="planned-icon"><span class="material-icons-outlined">webhook</span></div>
         <div>
           <h4>Webhooks &amp; Events</h4>
-          <p>Real-time event notifications for RFP receipt, proposal updates, negotiation changes, and settlement completion.</p>
+          <p>Real-time event notifications for RFP receipt, proposal updates, negotiation changes, and proposal acceptance.</p>
           <span class="planned-status planned">Planned</span>
         </div>
       </div>
@@ -1870,19 +1811,11 @@ vendor.<span class="fn">run</span>(<span class="prop">port</span>=<span class="n
           <span class="planned-status planned">Planned</span>
         </div>
       </div>
-      <div class="planned-card reveal">
-        <div class="planned-icon"><span class="material-icons-outlined">article</span></div>
-        <div>
-          <h4>Contract Templates</h4>
-          <p>Standard agreement JSON schemas, terms &amp; conditions framework, and digital signature integration for settlements.</p>
-          <span class="planned-status planned">Planned</span>
-        </div>
-      </div>
       <div class="planned-card reveal reveal-delay-1">
         <div class="planned-icon"><span class="material-icons-outlined">history</span></div>
         <div>
           <h4>Audit Trail</h4>
-          <p>Immutable transaction logging, configurable retention periods, and compliance-ready export in standard formats.</p>
+          <p>Immutable interaction logging, configurable retention periods, and compliance-ready export in standard formats.</p>
           <span class="planned-status planned">Planned</span>
         </div>
       </div>
