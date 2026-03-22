@@ -1,0 +1,2824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AVP — API Reference</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Outfit:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+<style>
+.material-icons-outlined {
+  font-family: 'Material Icons Outlined';
+  font-size: inherit;
+  vertical-align: middle;
+  font-style: normal;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#07080a;
+  --bg-elevated:#0d0f13;
+  --bg-card:#111318;
+  --border:#1a1d25;
+  --border-bright:#2a2e3a;
+  --text:#e8eaed;
+  --text-dim:#7a7f8e;
+  --text-muted:#4a4f5e;
+  --accent:#00d4aa;
+  --accent-dim:#00d4aa33;
+  --accent-bright:#00ffcc;
+  --signal:#ff6b35;
+  --signal-dim:#ff6b3522;
+  --purple:#8b5cf6;
+  --purple-dim:#8b5cf622;
+  --blue:#3b82f6;
+  --blue-dim:rgba(59,130,246,0.15);
+  --orange:#f59e0b;
+  --orange-dim:rgba(245,158,11,0.15);
+  --red:#ef4444;
+  --red-dim:rgba(239,68,68,0.15);
+  --green:#22c55e;
+  --green-dim:rgba(34,197,94,0.15);
+  --gradient-accent:linear-gradient(135deg,#00d4aa,#3b82f6);
+  --mono:'DM Mono',monospace;
+  --sans:'Outfit',sans-serif;
+  --sidebar-w:260px;
+  --code-panel-w:420px;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--sans);
+  line-height:1.6;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--accent);color:var(--bg)}
+
+/* ---- SCROLLBAR ---- */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border-bright);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--text-muted)}
+
+/* ---- TOP BAR ---- */
+.topbar{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  height:56px;
+  background:rgba(7,8,10,0.92);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 1.5rem;
+}
+.topbar-left{display:flex;align-items:center;gap:1rem}
+.topbar-logo{
+  font-family:var(--mono);font-weight:500;font-size:1rem;
+  color:var(--accent);text-decoration:none;
+  display:flex;align-items:center;gap:0.5rem;
+}
+.topbar-logo .dot{
+  width:7px;height:7px;border-radius:50%;background:var(--accent);
+  box-shadow:0 0 10px var(--accent);
+  animation:pulse 2s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.8)}}
+.topbar-divider{color:var(--border-bright);font-size:1.2rem;font-weight:300}
+.topbar-title{font-size:0.875rem;color:var(--text-dim);font-weight:400}
+.topbar-right{display:flex;align-items:center;gap:1rem}
+.topbar-link{
+  color:var(--text-dim);text-decoration:none;font-size:0.8rem;
+  font-weight:400;transition:color 0.3s;
+}
+.topbar-link:hover{color:var(--text)}
+.topbar-version{
+  font-family:var(--mono);font-size:0.7rem;color:var(--accent);
+  background:var(--accent-dim);padding:0.2rem 0.6rem;border-radius:4px;
+}
+.hamburger{
+  display:none;background:none;border:none;color:var(--text);
+  font-size:1.4rem;cursor:pointer;padding:0.25rem;
+}
+
+/* ---- LAYOUT ---- */
+.docs-layout{
+  display:flex;margin-top:56px;min-height:calc(100vh - 56px);
+}
+
+/* ---- SIDEBAR ---- */
+.sidebar{
+  width:var(--sidebar-w);min-width:var(--sidebar-w);
+  background:var(--bg-elevated);
+  border-right:1px solid var(--border);
+  position:fixed;top:56px;bottom:0;left:0;
+  overflow-y:auto;overflow-x:hidden;
+  padding:1.25rem 0;z-index:100;
+  transition:transform 0.3s ease;
+}
+.sidebar-search{
+  padding:0 1rem 1rem;
+}
+.sidebar-search input{
+  width:100%;background:var(--bg);border:1px solid var(--border);
+  border-radius:6px;padding:0.5rem 0.75rem 0.5rem 2.2rem;
+  color:var(--text);font-family:var(--sans);font-size:0.8rem;
+  outline:none;transition:border-color 0.3s;
+}
+.sidebar-search input:focus{border-color:var(--accent)}
+.sidebar-search{position:relative}
+.sidebar-search .search-icon{
+  position:absolute;left:1.7rem;top:50%;transform:translateY(-70%);
+  color:var(--text-muted);font-size:0.95rem;pointer-events:none;
+}
+.sidebar-back{
+  display:flex;align-items:center;gap:0.4rem;
+  padding:0.5rem 1.25rem 1rem;
+  color:var(--text-dim);text-decoration:none;font-size:0.8rem;
+  transition:color 0.3s;
+}
+.sidebar-back:hover{color:var(--accent)}
+.sidebar-back .material-icons-outlined{font-size:1rem}
+
+.nav-group{margin-bottom:0.25rem}
+.nav-group-title{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0.45rem 1.25rem;font-size:0.7rem;font-weight:600;
+  color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;
+  cursor:pointer;user-select:none;transition:color 0.3s;
+}
+.nav-group-title:hover{color:var(--text-dim)}
+.nav-group-title .material-icons-outlined{
+  font-size:0.9rem;transition:transform 0.2s;
+}
+.nav-group.collapsed .nav-group-title .material-icons-outlined{
+  transform:rotate(-90deg);
+}
+.nav-group.collapsed .nav-items{display:none}
+.nav-items{padding:0.1rem 0 0.4rem}
+.nav-item{
+  display:flex;align-items:center;gap:0.5rem;
+  padding:0.3rem 1.25rem 0.3rem 1.5rem;
+  text-decoration:none;color:var(--text-dim);
+  font-size:0.8rem;font-weight:400;
+  transition:all 0.2s;border-left:2px solid transparent;
+}
+.nav-item:hover{color:var(--text);background:rgba(255,255,255,0.02)}
+.nav-item.active{
+  color:var(--accent);border-left-color:var(--accent);
+  background:var(--accent-dim);
+}
+.nav-item .method-badge{
+  font-family:var(--mono);font-size:0.55rem;font-weight:600;
+  padding:0.1rem 0.35rem;border-radius:3px;min-width:28px;
+  text-align:center;text-transform:uppercase;letter-spacing:0.02em;
+}
+.badge-get{background:var(--green-dim);color:var(--green)}
+.badge-post{background:var(--blue-dim);color:var(--blue)}
+.badge-put{background:var(--orange-dim);color:var(--orange)}
+.badge-delete{background:var(--red-dim);color:var(--red)}
+
+/* ---- MAIN CONTENT ---- */
+.main-content{
+  flex:1;
+  margin-left:var(--sidebar-w);
+  margin-right:var(--code-panel-w);
+  padding:2.5rem 3rem 6rem;
+  max-width:calc(100% - var(--sidebar-w) - var(--code-panel-w));
+  min-width:0;
+}
+
+/* ---- CODE PANEL ---- */
+.code-panel{
+  width:var(--code-panel-w);min-width:var(--code-panel-w);
+  position:fixed;top:56px;right:0;bottom:0;
+  background:var(--bg-card);
+  border-left:1px solid var(--border);
+  overflow-y:auto;
+  padding:2rem 1.5rem 4rem;
+  z-index:50;
+}
+
+/* ---- CONTENT STYLES ---- */
+.api-section{
+  padding-bottom:3rem;margin-bottom:3rem;
+  border-bottom:1px solid var(--border);
+}
+.api-section:last-child{border-bottom:none}
+.section-anchor{
+  display:block;position:relative;top:-80px;visibility:hidden;
+}
+.api-section h2{
+  font-size:1.5rem;font-weight:700;letter-spacing:-0.02em;
+  margin-bottom:0.5rem;
+  display:flex;align-items:center;gap:0.6rem;
+}
+.api-section h2 .material-icons-outlined{
+  font-size:1.3rem;color:var(--accent);
+}
+.api-section > p{
+  color:var(--text-dim);font-weight:300;font-size:0.95rem;
+  margin-bottom:2rem;line-height:1.7;
+}
+
+.endpoint-block{
+  margin-bottom:2.5rem;
+  padding:1.5rem;
+  background:var(--bg-elevated);
+  border:1px solid var(--border);
+  border-radius:10px;
+  position:relative;
+}
+.endpoint-block::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:var(--gradient-accent);opacity:0;transition:opacity 0.3s;
+  border-radius:10px 10px 0 0;
+}
+.endpoint-block:hover::before{opacity:1}
+.endpoint-header{
+  display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem;
+  flex-wrap:wrap;
+}
+.method-pill{
+  font-family:var(--mono);font-size:0.7rem;font-weight:600;
+  padding:0.25rem 0.65rem;border-radius:4px;
+  text-transform:uppercase;letter-spacing:0.03em;
+}
+.method-pill.get{background:var(--green-dim);color:var(--green);border:1px solid rgba(34,197,94,0.3)}
+.method-pill.post{background:var(--blue-dim);color:var(--blue);border:1px solid rgba(59,130,246,0.3)}
+.method-pill.put{background:var(--orange-dim);color:var(--orange);border:1px solid rgba(245,158,11,0.3)}
+.method-pill.delete{background:var(--red-dim);color:var(--red);border:1px solid rgba(239,68,68,0.3)}
+.endpoint-path{
+  font-family:var(--mono);font-size:0.85rem;color:var(--text);
+  word-break:break-all;
+}
+.endpoint-path .param{color:var(--purple)}
+.endpoint-desc{
+  color:var(--text-dim);font-size:0.875rem;font-weight:300;
+  line-height:1.7;margin-bottom:1.25rem;
+}
+
+.param-table{width:100%;border-collapse:collapse;margin-bottom:1rem}
+.param-table th{
+  text-align:left;font-size:0.7rem;font-weight:600;
+  color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;
+  padding:0.5rem 0.75rem;border-bottom:1px solid var(--border);
+}
+.param-table td{
+  padding:0.55rem 0.75rem;border-bottom:1px solid var(--border);
+  font-size:0.8rem;vertical-align:top;
+}
+.param-table td:first-child{
+  font-family:var(--mono);color:var(--accent);font-size:0.78rem;white-space:nowrap;
+}
+.param-table .type{
+  font-family:var(--mono);color:var(--purple);font-size:0.72rem;
+}
+.param-table .required{
+  font-family:var(--mono);font-size:0.6rem;color:var(--signal);
+  background:var(--signal-dim);padding:0.1rem 0.35rem;border-radius:3px;
+  margin-left:0.4rem;
+}
+.param-table .optional{
+  font-family:var(--mono);font-size:0.6rem;color:var(--text-muted);
+  background:rgba(74,79,94,0.2);padding:0.1rem 0.35rem;border-radius:3px;
+  margin-left:0.4rem;
+}
+.param-table td:last-child{color:var(--text-dim);font-weight:300}
+
+.response-label{
+  font-family:var(--mono);font-size:0.7rem;font-weight:500;
+  color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;
+  margin-bottom:0.5rem;display:flex;align-items:center;gap:0.4rem;
+}
+.response-label .status{
+  padding:0.1rem 0.4rem;border-radius:3px;
+}
+.status-200{background:var(--green-dim);color:var(--green)}
+.status-201{background:var(--green-dim);color:var(--green)}
+.status-400{background:var(--red-dim);color:var(--red)}
+.status-401{background:var(--red-dim);color:var(--red)}
+.status-404{background:var(--orange-dim);color:var(--orange)}
+
+.info-box{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:8px;padding:1rem 1.25rem;margin-bottom:1.5rem;
+  font-size:0.85rem;color:var(--text-dim);font-weight:300;line-height:1.7;
+}
+.info-box.tip{border-left:3px solid var(--accent)}
+.info-box.warning{border-left:3px solid var(--signal)}
+.info-box.info{border-left:3px solid var(--blue)}
+.info-box strong{color:var(--text);font-weight:500}
+.info-box code{
+  font-family:var(--mono);font-size:0.78rem;background:var(--bg);
+  padding:0.15rem 0.4rem;border-radius:3px;color:var(--accent);
+}
+
+.header-table{width:100%;border-collapse:collapse;margin-bottom:1.5rem}
+.header-table th{
+  text-align:left;font-size:0.7rem;font-weight:600;
+  color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;
+  padding:0.5rem 0.75rem;border-bottom:1px solid var(--border);
+}
+.header-table td{
+  padding:0.55rem 0.75rem;border-bottom:1px solid var(--border);
+  font-size:0.8rem;
+}
+.header-table td:first-child{font-family:var(--mono);color:var(--accent);font-size:0.78rem}
+.header-table td:last-child{color:var(--text-dim);font-weight:300}
+
+/* ---- CODE PANEL STYLES ---- */
+.code-example{
+  margin-bottom:2rem;
+  background:var(--bg);
+  border:1px solid var(--border);
+  border-radius:8px;
+  overflow:hidden;
+}
+.code-example-title{
+  font-size:0.72rem;font-weight:600;color:var(--text-muted);
+  text-transform:uppercase;letter-spacing:0.08em;
+  padding:0.6rem 1rem;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.code-tabs{
+  display:flex;border-bottom:1px solid var(--border);background:var(--bg-elevated);
+}
+.code-tab{
+  padding:0.5rem 1rem;font-size:0.72rem;font-weight:500;
+  color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;
+  transition:all 0.2s;background:none;border-top:none;border-left:none;border-right:none;
+  font-family:var(--sans);
+}
+.code-tab:hover{color:var(--text-dim)}
+.code-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.code-body{
+  padding:1rem;font-family:var(--mono);font-size:0.72rem;
+  line-height:1.8;overflow-x:auto;white-space:pre;
+  color:var(--text-dim);
+}
+.code-body .kw{color:var(--purple)}
+.code-body .str{color:var(--accent)}
+.code-body .num{color:var(--signal)}
+.code-body .key{color:var(--blue)}
+.code-body .cmt{color:var(--text-muted)}
+.code-body .fn{color:#e8d44d}
+.code-body .url{color:var(--accent)}
+.code-body .flag{color:var(--signal)}
+.code-body .var{color:var(--text)}
+
+.copy-btn{
+  background:none;border:1px solid var(--border);border-radius:4px;
+  color:var(--text-muted);font-size:0.7rem;padding:0.2rem 0.5rem;
+  cursor:pointer;font-family:var(--sans);transition:all 0.2s;
+  display:flex;align-items:center;gap:0.3rem;
+}
+.copy-btn:hover{border-color:var(--accent);color:var(--accent)}
+.copy-btn .material-icons-outlined{font-size:0.8rem}
+
+.code-section-label{
+  font-size:0.7rem;font-weight:600;color:var(--text-muted);
+  text-transform:uppercase;letter-spacing:0.1em;
+  margin:2.5rem 0 0.75rem;padding-bottom:0.5rem;
+  border-bottom:1px solid var(--border);
+}
+
+.json-response{
+  background:var(--bg);border:1px solid var(--border);
+  border-radius:8px;overflow:hidden;
+}
+.json-response .code-example-title{
+  background:var(--bg-elevated);
+}
+.json-response .code-body{white-space:pre;line-height:1.7}
+
+/* ---- INLINE CODE ---- */
+code{
+  font-family:var(--mono);font-size:0.82em;
+  background:var(--bg-elevated);padding:0.15rem 0.4rem;
+  border-radius:3px;color:var(--accent);
+}
+
+/* ---- MOBILE ---- */
+@media(max-width:1200px){
+  :root{--code-panel-w:0px}
+  .code-panel{display:none}
+  .main-content{margin-right:0;max-width:calc(100% - var(--sidebar-w))}
+  .inline-code-example{display:block !important}
+}
+@media(max-width:768px){
+  :root{--sidebar-w:0px}
+  .hamburger{display:block}
+  .sidebar{
+    transform:translateX(-280px);width:280px;min-width:280px;
+    box-shadow:4px 0 30px rgba(0,0,0,0.5);
+  }
+  .sidebar.open{transform:translateX(0)}
+  .main-content{margin-left:0;max-width:100%;padding:2rem 1.25rem 4rem}
+  .endpoint-header{flex-direction:column;align-items:flex-start;gap:0.4rem}
+}
+.inline-code-example{display:none;margin-top:1rem}
+
+/* Overlay for mobile sidebar */
+.sidebar-overlay{
+  display:none;position:fixed;inset:0;z-index:99;
+  background:rgba(0,0,0,0.6);
+}
+.sidebar-overlay.active{display:block}
+
+/* Event type list */
+.event-list{list-style:none;margin-bottom:1.5rem}
+.event-list li{
+  padding:0.45rem 0.75rem;border-bottom:1px solid var(--border);
+  font-size:0.8rem;display:flex;align-items:center;gap:0.6rem;
+}
+.event-list li:last-child{border-bottom:none}
+.event-type{font-family:var(--mono);color:var(--accent);font-size:0.78rem}
+.event-desc{color:var(--text-dim);font-weight:300}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <button class="hamburger" onclick="toggleSidebar()" aria-label="Toggle menu">
+      <span class="material-icons-outlined">menu</span>
+    </button>
+    <a href="index.html" class="topbar-logo"><span class="dot"></span> AVP</a>
+    <span class="topbar-divider">/</span>
+    <span class="topbar-title">API Reference</span>
+  </div>
+  <div class="topbar-right">
+    <a href="index.html" class="topbar-link">Home</a>
+    <a href="index.html#how" class="topbar-link">Protocol</a>
+    <span class="topbar-version">v0.1.0</span>
+  </div>
+</div>
+
+<!-- SIDEBAR OVERLAY (mobile) -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <a href="index.html" class="sidebar-back">
+    <span class="material-icons-outlined">arrow_back</span> Back to Home
+  </a>
+  <div class="sidebar-search">
+    <span class="material-icons-outlined search-icon">search</span>
+    <input type="text" placeholder="Search endpoints..." id="sidebarSearch" onkeyup="filterNav(this.value)">
+  </div>
+
+  <!-- Getting Started -->
+  <div class="nav-group">
+    <div class="nav-group-title" onclick="toggleGroup(this)">
+      Getting Started
+      <span class="material-icons-outlined">expand_more</span>
+    </div>
+    <div class="nav-items">
+      <a href="#getting-started" class="nav-item">Overview</a>
+      <a href="#base-urls" class="nav-item">Base URLs</a>
+      <a href="#authentication" class="nav-item">Authentication</a>
+      <a href="#errors" class="nav-item">Error Format</a>
+    </div>
+  </div>
+
+  <!-- Discovery -->
+  <div class="nav-group">
+    <div class="nav-group-title" onclick="toggleGroup(this)">
+      Discovery
+      <span class="material-icons-outlined">expand_more</span>
+    </div>
+    <div class="nav-items">
+      <a href="#discovery-avp" class="nav-item"><span class="method-badge badge-get">GET</span> /.well-known/avp.json</a>
+      <a href="#discovery-keys" class="nav-item"><span class="method-badge badge-get">GET</span> /.well-known/avp-keys.json</a>
+    </div>
+  </div>
+
+  <!-- Handshake -->
+  <div class="nav-group">
+    <div class="nav-group-title" onclick="toggleGroup(this)">
+      Handshake
+      <span class="material-icons-outlined">expand_more</span>
+    </div>
+    <div class="nav-items">
+      <a href="#handshake-init" class="nav-item"><span class="method-badge badge-post">POST</span> /avp/handshake</a>
+    </div>
+  </div>
+
+  <!-- RFP -->
+  <div class="nav-group">
+    <div class="nav-group-title" onclick="toggleGroup(this)">
+      RFP
+      <span class="material-icons-outlined">expand_more</span>
+    </div>
+    <div class="nav-items">
+      <a href="#rfp-submit" class="nav-item"><span class="method-badge badge-post">POST</span> /avp/rfp</a>
+      <a href="#rfp-proposal" class="nav-item"><span class="method-badge badge-get">GET</span> /avp/rfp/{rfp_id}/proposal</a>
+    </div>
+  </div>
+
+  <!-- Negotiation -->
+  <div class="nav-group">
+    <div class="nav-group-title" onclick="toggleGroup(this)">
+      Negotiation
+      <span class="material-icons-outlined">expand_more</span>
+    </div>
+    <div class="nav-items">
+      <a href="#negotiate-counter" class="nav-item"><span class="method-badge badge-post">POST</span> /avp/negotiate</a>
+      <a href="#negotiate-accept" class="nav-item"><span class="method-badge badge-post">POST</span> /avp/negotiate/accept</a>
+      <a href="#negotiate-reject" class="nav-item"><span class="method-badge badge-post">POST</span> /avp/negotiate/reject</a>
+      <a href="#negotiate-escalate" class="nav-item"><span class="method-badge badge-post">POST</span> /avp/negotiate/escalate</a>
+    </div>
+  </div>
+
+  <!-- Settlement -->
+  <div class="nav-group">
+    <div class="nav-group-title" onclick="toggleGroup(this)">
+      Settlement
+      <span class="material-icons-outlined">expand_more</span>
+    </div>
+    <div class="nav-items">
+      <a href="#settle" class="nav-item"><span class="method-badge badge-post">POST</span> /avp/settle</a>
+    </div>
+  </div>
+
+  <!-- Capabilities -->
+  <div class="nav-group">
+    <div class="nav-group-title" onclick="toggleGroup(this)">
+      Capabilities
+      <span class="material-icons-outlined">expand_more</span>
+    </div>
+    <div class="nav-items">
+      <a href="#capabilities" class="nav-item"><span class="method-badge badge-post">POST</span> /avp/capabilities</a>
+    </div>
+  </div>
+
+  <!-- Status -->
+  <div class="nav-group">
+    <div class="nav-group-title" onclick="toggleGroup(this)">
+      Status
+      <span class="material-icons-outlined">expand_more</span>
+    </div>
+    <div class="nav-items">
+      <a href="#status-health" class="nav-item"><span class="method-badge badge-get">GET</span> /avp/status</a>
+      <a href="#status-session" class="nav-item"><span class="method-badge badge-get">GET</span> /avp/status/session/{id}</a>
+    </div>
+  </div>
+
+  <!-- Registry -->
+  <div class="nav-group">
+    <div class="nav-group-title" onclick="toggleGroup(this)">
+      Registry
+      <span class="material-icons-outlined">expand_more</span>
+    </div>
+    <div class="nav-items">
+      <a href="#registry-register" class="nav-item"><span class="method-badge badge-post">POST</span> /v1/agents/register</a>
+      <a href="#registry-search" class="nav-item"><span class="method-badge badge-get">GET</span> /v1/search</a>
+      <a href="#registry-get" class="nav-item"><span class="method-badge badge-get">GET</span> /v1/agents/{agent_id}</a>
+    </div>
+  </div>
+
+  <!-- Trust -->
+  <div class="nav-group">
+    <div class="nav-group-title" onclick="toggleGroup(this)">
+      Trust
+      <span class="material-icons-outlined">expand_more</span>
+    </div>
+    <div class="nav-items">
+      <a href="#trust-get" class="nav-item"><span class="method-badge badge-get">GET</span> /v1/trust/{agent_id}</a>
+      <a href="#trust-review" class="nav-item"><span class="method-badge badge-post">POST</span> /v1/trust/{agent_id}/review</a>
+    </div>
+  </div>
+
+  <!-- Analytics -->
+  <div class="nav-group">
+    <div class="nav-group-title" onclick="toggleGroup(this)">
+      Analytics
+      <span class="material-icons-outlined">expand_more</span>
+    </div>
+    <div class="nav-items">
+      <a href="#analytics-usage" class="nav-item"><span class="method-badge badge-get">GET</span> /avp/analytics/usage</a>
+      <a href="#analytics-conversion" class="nav-item"><span class="method-badge badge-get">GET</span> /avp/analytics/conversion</a>
+      <a href="#analytics-latency" class="nav-item"><span class="method-badge badge-get">GET</span> /avp/analytics/latency</a>
+    </div>
+  </div>
+
+  <!-- Disputes -->
+  <div class="nav-group">
+    <div class="nav-group-title" onclick="toggleGroup(this)">
+      Disputes
+      <span class="material-icons-outlined">expand_more</span>
+    </div>
+    <div class="nav-items">
+      <a href="#dispute-create" class="nav-item"><span class="method-badge badge-post">POST</span> /avp/dispute</a>
+      <a href="#dispute-get" class="nav-item"><span class="method-badge badge-get">GET</span> /avp/dispute/{id}</a>
+      <a href="#dispute-escalate" class="nav-item"><span class="method-badge badge-post">POST</span> /avp/dispute/{id}/escalate</a>
+    </div>
+  </div>
+
+  <!-- Audit Trail -->
+  <div class="nav-group">
+    <div class="nav-group-title" onclick="toggleGroup(this)">
+      Audit Trail
+      <span class="material-icons-outlined">expand_more</span>
+    </div>
+    <div class="nav-items">
+      <a href="#audit-list" class="nav-item"><span class="method-badge badge-get">GET</span> /avp/audit</a>
+      <a href="#audit-export" class="nav-item"><span class="method-badge badge-post">POST</span> /avp/audit/export</a>
+    </div>
+  </div>
+
+  <!-- GDPR & Data -->
+  <div class="nav-group">
+    <div class="nav-group-title" onclick="toggleGroup(this)">
+      GDPR &amp; Data
+      <span class="material-icons-outlined">expand_more</span>
+    </div>
+    <div class="nav-items">
+      <a href="#gdpr-delete" class="nav-item"><span class="method-badge badge-delete">DEL</span> /avp/negotiations/{id}/data</a>
+      <a href="#gdpr-export" class="nav-item"><span class="method-badge badge-get">GET</span> /avp/data/export/{agent_id}</a>
+    </div>
+  </div>
+
+  <!-- Sandbox -->
+  <div class="nav-group">
+    <div class="nav-group-title" onclick="toggleGroup(this)">
+      Sandbox
+      <span class="material-icons-outlined">expand_more</span>
+    </div>
+    <div class="nav-items">
+      <a href="#sandbox-create" class="nav-item"><span class="method-badge badge-post">POST</span> /avp/sandbox/session</a>
+      <a href="#sandbox-log" class="nav-item"><span class="method-badge badge-get">GET</span> /avp/sandbox/session/{id}/log</a>
+    </div>
+  </div>
+
+  <!-- Webhooks -->
+  <div class="nav-group">
+    <div class="nav-group-title" onclick="toggleGroup(this)">
+      Webhooks
+      <span class="material-icons-outlined">expand_more</span>
+    </div>
+    <div class="nav-items">
+      <a href="#webhooks-events" class="nav-item">Event Types</a>
+      <a href="#webhooks-payload" class="nav-item">Payload Format</a>
+      <a href="#webhooks-retry" class="nav-item">Retry Policy</a>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main class="main-content" id="mainContent">
+
+  <!-- ==================== GETTING STARTED ==================== -->
+  <div class="api-section" id="getting-started-section">
+    <span class="section-anchor" id="getting-started"></span>
+    <h2><span class="material-icons-outlined">rocket_launch</span> Getting Started</h2>
+    <p>The AI Vendor Protocol (AVP) provides a standardized RESTful API for autonomous agent-to-agent commerce. This reference covers every endpoint, authentication method, and data format you need to integrate AVP into your agent infrastructure.</p>
+
+    <span class="section-anchor" id="base-urls"></span>
+    <h3 style="font-size:1.1rem;font-weight:600;margin:2rem 0 1rem">Base URLs</h3>
+    <p style="color:var(--text-dim);font-size:0.875rem;margin-bottom:1rem">AVP uses two base URL patterns depending on the service you are calling.</p>
+
+    <div class="info-box tip">
+      <strong>Vendor Endpoints</strong> &mdash; Hosted by each vendor on their own domain. The base path is configurable via the discovery document.<br>
+      <code>https://{vendor-domain}/avp/</code>
+    </div>
+    <div class="info-box info">
+      <strong>Registry Endpoints</strong> &mdash; Centralized agent discovery, trust scores, and search.<br>
+      <code>https://registry.avp-protocol.org/v1/</code>
+    </div>
+
+    <span class="section-anchor" id="authentication"></span>
+    <h3 style="font-size:1.1rem;font-weight:600;margin:2rem 0 1rem">Authentication</h3>
+    <p style="color:var(--text-dim);font-size:0.875rem;margin-bottom:1rem">All requests require the following headers for agent identification and request signing.</p>
+
+    <table class="header-table">
+      <thead><tr><th>Header</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>AVP-Version</td><td>Protocol version. Currently <code>0.1.0</code>.</td></tr>
+        <tr><td>AVP-Agent-ID</td><td>Your agent's globally unique identifier, e.g. <code>agent://buyer.example.com/procurement-v2</code>.</td></tr>
+        <tr><td>AVP-Timestamp</td><td>ISO 8601 timestamp of the request, e.g. <code>2026-03-22T14:30:00Z</code>. Must be within 5 minutes of server time.</td></tr>
+        <tr><td>AVP-Signature</td><td>HMAC-SHA256 signature of the canonical request string, signed with your agent's private key. Format: <code>sha256={hex_digest}</code>.</td></tr>
+      </tbody>
+    </table>
+
+    <div class="info-box warning">
+      <strong>Clock Skew</strong> &mdash; Requests with timestamps older than 5 minutes will be rejected with a <code>401</code> error. Ensure your agent's clock is synchronized via NTP.
+    </div>
+
+    <span class="section-anchor" id="errors"></span>
+    <h3 style="font-size:1.1rem;font-weight:600;margin:2rem 0 1rem">Error Format</h3>
+    <p style="color:var(--text-dim);font-size:0.875rem;margin-bottom:1rem">All errors conform to <strong>RFC 7807 Problem Details</strong>. Every error response includes a machine-readable type URI, a human-readable title, the HTTP status code, and a detail message.</p>
+
+    <div class="endpoint-block">
+      <div class="response-label">
+        <span class="status status-400">400</span> Error Response Example
+      </div>
+      <pre style="font-family:var(--mono);font-size:0.78rem;line-height:1.7;color:var(--text-dim);background:var(--bg);padding:1rem;border-radius:6px;overflow-x:auto;border:1px solid var(--border)">{
+  <span style="color:var(--blue)">"type"</span>: <span style="color:var(--accent)">"https://avp-protocol.org/errors/invalid-rfp"</span>,
+  <span style="color:var(--blue)">"title"</span>: <span style="color:var(--accent)">"Invalid RFP Payload"</span>,
+  <span style="color:var(--blue)">"status"</span>: <span style="color:var(--signal)">400</span>,
+  <span style="color:var(--blue)">"detail"</span>: <span style="color:var(--accent)">"The field 'requirements' is required and must be a non-empty array."</span>,
+  <span style="color:var(--blue)">"instance"</span>: <span style="color:var(--accent)">"/avp/rfp"</span>,
+  <span style="color:var(--blue)">"trace_id"</span>: <span style="color:var(--accent)">"tr_8f3a2b1c9d4e"</span>
+}</pre>
+    </div>
+  </div>
+
+  <!-- ==================== DISCOVERY ==================== -->
+  <div class="api-section" id="discovery-section">
+    <span class="section-anchor" id="discovery-avp"></span>
+    <h2><span class="material-icons-outlined">explore</span> Discovery</h2>
+    <p>Discovery endpoints allow buyer agents to find and verify vendor capabilities before initiating a handshake. These are served from the vendor's domain root.</p>
+
+    <div class="endpoint-block">
+      <div class="endpoint-header">
+        <span class="method-pill get">GET</span>
+        <span class="endpoint-path">/.well-known/avp.json</span>
+      </div>
+      <p class="endpoint-desc">Returns the vendor's AVP discovery document. This is the entry point for all agent-to-agent interactions. Buyer agents should fetch this first to determine supported protocol versions, capabilities, and endpoint locations.</p>
+
+      <div class="response-label"><span class="status status-200">200</span> Response</div>
+      <pre style="font-family:var(--mono);font-size:0.78rem;line-height:1.7;color:var(--text-dim);background:var(--bg);padding:1rem;border-radius:6px;overflow-x:auto;border:1px solid var(--border)">{
+  <span style="color:var(--blue)">"avp_version"</span>: <span style="color:var(--accent)">"0.1.0"</span>,
+  <span style="color:var(--blue)">"agent_id"</span>: <span style="color:var(--accent)">"agent://vendor.example.com/sales-agent-v3"</span>,
+  <span style="color:var(--blue)">"display_name"</span>: <span style="color:var(--accent)">"Acme Cloud Services"</span>,
+  <span style="color:var(--blue)">"description"</span>: <span style="color:var(--accent)">"Enterprise cloud infrastructure and managed services"</span>,
+  <span style="color:var(--blue)">"endpoints"</span>: {
+    <span style="color:var(--blue)">"handshake"</span>: <span style="color:var(--accent)">"/avp/handshake"</span>,
+    <span style="color:var(--blue)">"rfp"</span>: <span style="color:var(--accent)">"/avp/rfp"</span>,
+    <span style="color:var(--blue)">"negotiate"</span>: <span style="color:var(--accent)">"/avp/negotiate"</span>,
+    <span style="color:var(--blue)">"settle"</span>: <span style="color:var(--accent)">"/avp/settle"</span>,
+    <span style="color:var(--blue)">"capabilities"</span>: <span style="color:var(--accent)">"/avp/capabilities"</span>,
+    <span style="color:var(--blue)">"status"</span>: <span style="color:var(--accent)">"/avp/status"</span>
+  },
+  <span style="color:var(--blue)">"capabilities"</span>: [<span style="color:var(--accent)">"compute"</span>, <span style="color:var(--accent)">"storage"</span>, <span style="color:var(--accent)">"cdn"</span>, <span style="color:var(--accent)">"ml-inference"</span>],
+  <span style="color:var(--blue)">"pricing_models"</span>: [<span style="color:var(--accent)">"per-unit"</span>, <span style="color:var(--accent)">"tiered"</span>, <span style="color:var(--accent)">"subscription"</span>],
+  <span style="color:var(--blue)">"supported_currencies"</span>: [<span style="color:var(--accent)">"USD"</span>, <span style="color:var(--accent)">"EUR"</span>, <span style="color:var(--accent)">"USDC"</span>],
+  <span style="color:var(--blue)">"max_negotiation_rounds"</span>: <span style="color:var(--signal)">10</span>,
+  <span style="color:var(--blue)">"auto_negotiate"</span>: <span style="color:var(--purple)">true</span>,
+  <span style="color:var(--blue)">"human_escalation"</span>: <span style="color:var(--purple)">true</span>,
+  <span style="color:var(--blue)">"public_key_url"</span>: <span style="color:var(--accent)">"/.well-known/avp-keys.json"</span>,
+  <span style="color:var(--blue)">"webhook_url"</span>: <span style="color:var(--accent)">"https://vendor.example.com/avp/webhooks"</span>,
+  <span style="color:var(--blue)">"tos_url"</span>: <span style="color:var(--accent)">"https://vendor.example.com/terms"</span>
+}</pre>
+    </div>
+
+    <span class="section-anchor" id="discovery-keys"></span>
+    <div class="endpoint-block">
+      <div class="endpoint-header">
+        <span class="method-pill get">GET</span>
+        <span class="endpoint-path">/.well-known/avp-keys.json</span>
+      </div>
+      <p class="endpoint-desc">Returns the agent's public keys used for verifying request signatures. Keys are published in JWK Set format. Buyer agents must fetch these keys to verify signed responses from the vendor.</p>
+
+      <div class="response-label"><span class="status status-200">200</span> Response</div>
+      <pre style="font-family:var(--mono);font-size:0.78rem;line-height:1.7;color:var(--text-dim);background:var(--bg);padding:1rem;border-radius:6px;overflow-x:auto;border:1px solid var(--border)">{
+  <span style="color:var(--blue)">"keys"</span>: [
+    {
+      <span style="color:var(--blue)">"kty"</span>: <span style="color:var(--accent)">"EC"</span>,
+      <span style="color:var(--blue)">"crv"</span>: <span style="color:var(--accent)">"P-256"</span>,
+      <span style="color:var(--blue)">"kid"</span>: <span style="color:var(--accent)">"avp-vendor-key-2026-03"</span>,
+      <span style="color:var(--blue)">"use"</span>: <span style="color:var(--accent)">"sig"</span>,
+      <span style="color:var(--blue)">"x"</span>: <span style="color:var(--accent)">"f83OJ3D2xF1Bg8vub9tLe1gHMzV76e8Tus9uPHvRVEU"</span>,
+      <span style="color:var(--blue)">"y"</span>: <span style="color:var(--accent)">"x_FEzRu9m36HLN_tue659LNpXW6pCyStikYjKIWI5a0"</span>,
+      <span style="color:var(--blue)">"alg"</span>: <span style="color:var(--accent)">"ES256"</span>
+    }
+  ],
+  <span style="color:var(--blue)">"issued_at"</span>: <span style="color:var(--accent)">"2026-03-01T00:00:00Z"</span>,
+  <span style="color:var(--blue)">"expires_at"</span>: <span style="color:var(--accent)">"2026-06-01T00:00:00Z"</span>
+}</pre>
+    </div>
+  </div>
+
+  <!-- ==================== HANDSHAKE ==================== -->
+  <div class="api-section" id="handshake-section">
+    <span class="section-anchor" id="handshake-init"></span>
+    <h2><span class="material-icons-outlined">handshake</span> Handshake</h2>
+    <p>The handshake establishes a secure session between buyer and vendor agents. It verifies identities, exchanges capabilities, and creates a session context for subsequent interactions.</p>
+
+    <div class="endpoint-block">
+      <div class="endpoint-header">
+        <span class="method-pill post">POST</span>
+        <span class="endpoint-path">/avp/handshake</span>
+      </div>
+      <p class="endpoint-desc">Initiates a new agent-to-agent session. The buyer agent sends its identity, capabilities, and session preferences. The vendor responds with a session token and its own capabilities.</p>
+
+      <table class="param-table">
+        <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>agent_id</td><td><span class="type">string</span> <span class="required">required</span></td><td>The buyer agent's unique identifier URI</td></tr>
+          <tr><td>capabilities</td><td><span class="type">string[]</span> <span class="required">required</span></td><td>List of capabilities the buyer is seeking</td></tr>
+          <tr><td>session_preferences</td><td><span class="type">object</span> <span class="optional">optional</span></td><td>Preferences for session behavior (timeout, language, etc.)</td></tr>
+          <tr><td>public_key</td><td><span class="type">string</span> <span class="required">required</span></td><td>Buyer's public key for response verification (PEM or JWK)</td></tr>
+          <tr><td>callback_url</td><td><span class="type">string</span> <span class="optional">optional</span></td><td>Webhook URL for async notifications about this session</td></tr>
+        </tbody>
+      </table>
+
+      <div class="response-label"><span class="status status-200">200</span> Response</div>
+      <pre style="font-family:var(--mono);font-size:0.78rem;line-height:1.7;color:var(--text-dim);background:var(--bg);padding:1rem;border-radius:6px;overflow-x:auto;border:1px solid var(--border)">{
+  <span style="color:var(--blue)">"session_id"</span>: <span style="color:var(--accent)">"ses_7f2a3b8c1d4e5f6a"</span>,
+  <span style="color:var(--blue)">"status"</span>: <span style="color:var(--accent)">"active"</span>,
+  <span style="color:var(--blue)">"vendor_agent_id"</span>: <span style="color:var(--accent)">"agent://vendor.example.com/sales-agent-v3"</span>,
+  <span style="color:var(--blue)">"vendor_capabilities"</span>: [<span style="color:var(--accent)">"compute"</span>, <span style="color:var(--accent)">"storage"</span>, <span style="color:var(--accent)">"cdn"</span>],
+  <span style="color:var(--blue)">"session_token"</span>: <span style="color:var(--accent)">"eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9..."</span>,
+  <span style="color:var(--blue)">"expires_at"</span>: <span style="color:var(--accent)">"2026-03-22T15:30:00Z"</span>,
+  <span style="color:var(--blue)">"negotiation_rules"</span>: {
+    <span style="color:var(--blue)">"max_rounds"</span>: <span style="color:var(--signal)">10</span>,
+    <span style="color:var(--blue)">"timeout_per_round"</span>: <span style="color:var(--signal)">300</span>,
+    <span style="color:var(--blue)">"auto_negotiate"</span>: <span style="color:var(--purple)">true</span>,
+    <span style="color:var(--blue)">"human_escalation_available"</span>: <span style="color:var(--purple)">true</span>
+  },
+  <span style="color:var(--blue)">"protocol_version"</span>: <span style="color:var(--accent)">"0.1.0"</span>
+}</pre>
+    </div>
+  </div>
+
+  <!-- ==================== RFP ==================== -->
+  <div class="api-section" id="rfp-section">
+    <span class="section-anchor" id="rfp-submit"></span>
+    <h2><span class="material-icons-outlined">description</span> RFP</h2>
+    <p>Request for Proposal endpoints allow buyer agents to submit structured requirements and receive vendor proposals. This is the core of the AVP procurement flow.</p>
+
+    <div class="endpoint-block">
+      <div class="endpoint-header">
+        <span class="method-pill post">POST</span>
+        <span class="endpoint-path">/avp/rfp</span>
+      </div>
+      <p class="endpoint-desc">Submits a Request for Proposal to the vendor agent. The RFP describes what the buyer needs, including requirements, constraints, budget parameters, and evaluation criteria. The vendor agent processes this and generates a proposal.</p>
+
+      <table class="param-table">
+        <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>session_id</td><td><span class="type">string</span> <span class="required">required</span></td><td>Active session ID from the handshake response</td></tr>
+          <tr><td>requirements</td><td><span class="type">object[]</span> <span class="required">required</span></td><td>Array of requirement objects describing what the buyer needs</td></tr>
+          <tr><td>budget</td><td><span class="type">object</span> <span class="optional">optional</span></td><td>Budget constraints including max amount, currency, and billing period</td></tr>
+          <tr><td>timeline</td><td><span class="type">object</span> <span class="optional">optional</span></td><td>Desired start date, contract duration, and delivery deadlines</td></tr>
+          <tr><td>evaluation_criteria</td><td><span class="type">object[]</span> <span class="optional">optional</span></td><td>Weighted criteria the buyer will use to evaluate proposals</td></tr>
+          <tr><td>metadata</td><td><span class="type">object</span> <span class="optional">optional</span></td><td>Arbitrary key-value pairs for agent-specific context</td></tr>
+        </tbody>
+      </table>
+
+      <div class="response-label"><span class="status status-201">201</span> Response</div>
+      <pre style="font-family:var(--mono);font-size:0.78rem;line-height:1.7;color:var(--text-dim);background:var(--bg);padding:1rem;border-radius:6px;overflow-x:auto;border:1px solid var(--border)">{
+  <span style="color:var(--blue)">"rfp_id"</span>: <span style="color:var(--accent)">"rfp_3a9b2c1d4e5f"</span>,
+  <span style="color:var(--blue)">"session_id"</span>: <span style="color:var(--accent)">"ses_7f2a3b8c1d4e5f6a"</span>,
+  <span style="color:var(--blue)">"status"</span>: <span style="color:var(--accent)">"processing"</span>,
+  <span style="color:var(--blue)">"estimated_response_time"</span>: <span style="color:var(--signal)">15</span>,
+  <span style="color:var(--blue)">"requirements_accepted"</span>: <span style="color:var(--signal)">4</span>,
+  <span style="color:var(--blue)">"requirements_unsupported"</span>: <span style="color:var(--signal)">0</span>,
+  <span style="color:var(--blue)">"proposal_url"</span>: <span style="color:var(--accent)">"/avp/rfp/rfp_3a9b2c1d4e5f/proposal"</span>,
+  <span style="color:var(--blue)">"created_at"</span>: <span style="color:var(--accent)">"2026-03-22T14:31:00Z"</span>
+}</pre>
+    </div>
+
+    <span class="section-anchor" id="rfp-proposal"></span>
+    <div class="endpoint-block">
+      <div class="endpoint-header">
+        <span class="method-pill get">GET</span>
+        <span class="endpoint-path">/avp/rfp/<span class="param">{rfp_id}</span>/proposal</span>
+      </div>
+      <p class="endpoint-desc">Retrieves the vendor's proposal for a submitted RFP. If the proposal is still being generated, the response includes a status field indicating progress. Poll this endpoint until the status is "ready".</p>
+
+      <table class="param-table">
+        <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>rfp_id</td><td><span class="type">string</span> <span class="required">required</span></td><td>The RFP identifier from the submission response (path parameter)</td></tr>
+        </tbody>
+      </table>
+
+      <div class="response-label"><span class="status status-200">200</span> Response</div>
+      <pre style="font-family:var(--mono);font-size:0.78rem;line-height:1.7;color:var(--text-dim);background:var(--bg);padding:1rem;border-radius:6px;overflow-x:auto;border:1px solid var(--border)">{
+  <span style="color:var(--blue)">"rfp_id"</span>: <span style="color:var(--accent)">"rfp_3a9b2c1d4e5f"</span>,
+  <span style="color:var(--blue)">"status"</span>: <span style="color:var(--accent)">"ready"</span>,
+  <span style="color:var(--blue)">"proposal"</span>: {
+    <span style="color:var(--blue)">"proposal_id"</span>: <span style="color:var(--accent)">"prop_8c1d2e3f4a5b"</span>,
+    <span style="color:var(--blue)">"line_items"</span>: [
+      {
+        <span style="color:var(--blue)">"item_id"</span>: <span style="color:var(--accent)">"li_001"</span>,
+        <span style="color:var(--blue)">"name"</span>: <span style="color:var(--accent)">"GPU Compute (A100)"</span>,
+        <span style="color:var(--blue)">"description"</span>: <span style="color:var(--accent)">"NVIDIA A100 80GB instances, on-demand"</span>,
+        <span style="color:var(--blue)">"unit_price"</span>: <span style="color:var(--signal)">3.50</span>,
+        <span style="color:var(--blue)">"unit"</span>: <span style="color:var(--accent)">"hour"</span>,
+        <span style="color:var(--blue)">"currency"</span>: <span style="color:var(--accent)">"USD"</span>,
+        <span style="color:var(--blue)">"min_quantity"</span>: <span style="color:var(--signal)">1</span>,
+        <span style="color:var(--blue)">"max_quantity"</span>: <span style="color:var(--signal)">100</span>
+      },
+      {
+        <span style="color:var(--blue)">"item_id"</span>: <span style="color:var(--accent)">"li_002"</span>,
+        <span style="color:var(--blue)">"name"</span>: <span style="color:var(--accent)">"Object Storage"</span>,
+        <span style="color:var(--blue)">"description"</span>: <span style="color:var(--accent)">"S3-compatible object storage with 99.99% durability"</span>,
+        <span style="color:var(--blue)">"unit_price"</span>: <span style="color:var(--signal)">0.023</span>,
+        <span style="color:var(--blue)">"unit"</span>: <span style="color:var(--accent)">"GB/month"</span>,
+        <span style="color:var(--blue)">"currency"</span>: <span style="color:var(--accent)">"USD"</span>,
+        <span style="color:var(--blue)">"min_quantity"</span>: <span style="color:var(--signal)">100</span>,
+        <span style="color:var(--blue)">"max_quantity"</span>: <span style="color:var(--signal)">500000</span>
+      }
+    ],
+    <span style="color:var(--blue)">"total_estimated"</span>: {
+      <span style="color:var(--blue)">"amount"</span>: <span style="color:var(--signal)">12500.00</span>,
+      <span style="color:var(--blue)">"currency"</span>: <span style="color:var(--accent)">"USD"</span>,
+      <span style="color:var(--blue)">"period"</span>: <span style="color:var(--accent)">"monthly"</span>
+    },
+    <span style="color:var(--blue)">"sla"</span>: {
+      <span style="color:var(--blue)">"uptime"</span>: <span style="color:var(--accent)">"99.95%"</span>,
+      <span style="color:var(--blue)">"support_response"</span>: <span style="color:var(--accent)">"1 hour"</span>,
+      <span style="color:var(--blue)">"data_residency"</span>: <span style="color:var(--accent)">"us-east-1"</span>
+    },
+    <span style="color:var(--blue)">"valid_until"</span>: <span style="color:var(--accent)">"2026-03-29T14:31:00Z"</span>,
+    <span style="color:var(--blue)">"negotiable"</span>: <span style="color:var(--purple)">true</span>
+  }
+}</pre>
+    </div>
+  </div>
+
+  <!-- ==================== NEGOTIATION ==================== -->
+  <div class="api-section" id="negotiation-section">
+    <span class="section-anchor" id="negotiate-counter"></span>
+    <h2><span class="material-icons-outlined">swap_horiz</span> Negotiation</h2>
+    <p>Negotiation endpoints enable multi-round, autonomous price and terms negotiation between buyer and vendor agents. Each round exchanges counter-proposals until agreement, rejection, or escalation.</p>
+
+    <div class="endpoint-block">
+      <div class="endpoint-header">
+        <span class="method-pill post">POST</span>
+        <span class="endpoint-path">/avp/negotiate</span>
+      </div>
+      <p class="endpoint-desc">Submits a counter-proposal to the vendor's current offer. The buyer agent can adjust pricing, quantities, terms, and SLA parameters. The vendor agent evaluates the counter and responds with an updated proposal or acceptance.</p>
+
+      <table class="param-table">
+        <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>session_id</td><td><span class="type">string</span> <span class="required">required</span></td><td>Active session ID</td></tr>
+          <tr><td>proposal_id</td><td><span class="type">string</span> <span class="required">required</span></td><td>The proposal being negotiated</td></tr>
+          <tr><td>counter_terms</td><td><span class="type">object</span> <span class="required">required</span></td><td>Modified terms the buyer is proposing</td></tr>
+          <tr><td>justification</td><td><span class="type">string</span> <span class="optional">optional</span></td><td>Human- or agent-readable rationale for the counter</td></tr>
+          <tr><td>round</td><td><span class="type">integer</span> <span class="optional">optional</span></td><td>Current negotiation round (auto-incremented if omitted)</td></tr>
+        </tbody>
+      </table>
+
+      <div class="response-label"><span class="status status-200">200</span> Response</div>
+      <pre style="font-family:var(--mono);font-size:0.78rem;line-height:1.7;color:var(--text-dim);background:var(--bg);padding:1rem;border-radius:6px;overflow-x:auto;border:1px solid var(--border)">{
+  <span style="color:var(--blue)">"negotiation_id"</span>: <span style="color:var(--accent)">"neg_4d5e6f7a8b9c"</span>,
+  <span style="color:var(--blue)">"round"</span>: <span style="color:var(--signal)">2</span>,
+  <span style="color:var(--blue)">"status"</span>: <span style="color:var(--accent)">"counter_proposed"</span>,
+  <span style="color:var(--blue)">"vendor_counter"</span>: {
+    <span style="color:var(--blue)">"line_items"</span>: [
+      {
+        <span style="color:var(--blue)">"item_id"</span>: <span style="color:var(--accent)">"li_001"</span>,
+        <span style="color:var(--blue)">"name"</span>: <span style="color:var(--accent)">"GPU Compute (A100)"</span>,
+        <span style="color:var(--blue)">"unit_price"</span>: <span style="color:var(--signal)">3.15</span>,
+        <span style="color:var(--blue)">"unit"</span>: <span style="color:var(--accent)">"hour"</span>,
+        <span style="color:var(--blue)">"discount_applied"</span>: <span style="color:var(--accent)">"10% volume discount"</span>
+      }
+    ],
+    <span style="color:var(--blue)">"total_estimated"</span>: {
+      <span style="color:var(--blue)">"amount"</span>: <span style="color:var(--signal)">11250.00</span>,
+      <span style="color:var(--blue)">"currency"</span>: <span style="color:var(--accent)">"USD"</span>,
+      <span style="color:var(--blue)">"period"</span>: <span style="color:var(--accent)">"monthly"</span>
+    },
+    <span style="color:var(--blue)">"justification"</span>: <span style="color:var(--accent)">"Volume discount applied for 12-month commitment"</span>
+  },
+  <span style="color:var(--blue)">"rounds_remaining"</span>: <span style="color:var(--signal)">8</span>,
+  <span style="color:var(--blue)">"expires_at"</span>: <span style="color:var(--accent)">"2026-03-22T14:36:00Z"</span>
+}</pre>
+    </div>
+
+    <span class="section-anchor" id="negotiate-accept"></span>
+    <div class="endpoint-block">
+      <div class="endpoint-header">
+        <span class="method-pill post">POST</span>
+        <span class="endpoint-path">/avp/negotiate/accept</span>
+      </div>
+      <p class="endpoint-desc">Accepts the current vendor proposal or counter-proposal. This locks in the terms and moves the transaction to the settlement phase. Once accepted, terms cannot be renegotiated.</p>
+
+      <table class="param-table">
+        <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>session_id</td><td><span class="type">string</span> <span class="required">required</span></td><td>Active session ID</td></tr>
+          <tr><td>negotiation_id</td><td><span class="type">string</span> <span class="required">required</span></td><td>The negotiation to accept</td></tr>
+          <tr><td>proposal_id</td><td><span class="type">string</span> <span class="required">required</span></td><td>The specific proposal version being accepted</td></tr>
+          <tr><td>buyer_signature</td><td><span class="type">string</span> <span class="required">required</span></td><td>Digital signature confirming acceptance</td></tr>
+        </tbody>
+      </table>
+
+      <div class="response-label"><span class="status status-200">200</span> Response</div>
+      <pre style="font-family:var(--mono);font-size:0.78rem;line-height:1.7;color:var(--text-dim);background:var(--bg);padding:1rem;border-radius:6px;overflow-x:auto;border:1px solid var(--border)">{
+  <span style="color:var(--blue)">"negotiation_id"</span>: <span style="color:var(--accent)">"neg_4d5e6f7a8b9c"</span>,
+  <span style="color:var(--blue)">"status"</span>: <span style="color:var(--accent)">"accepted"</span>,
+  <span style="color:var(--blue)">"accepted_at"</span>: <span style="color:var(--accent)">"2026-03-22T14:37:00Z"</span>,
+  <span style="color:var(--blue)">"final_terms"</span>: {
+    <span style="color:var(--blue)">"total_amount"</span>: <span style="color:var(--signal)">11250.00</span>,
+    <span style="color:var(--blue)">"currency"</span>: <span style="color:var(--accent)">"USD"</span>,
+    <span style="color:var(--blue)">"billing_period"</span>: <span style="color:var(--accent)">"monthly"</span>,
+    <span style="color:var(--blue)">"contract_duration"</span>: <span style="color:var(--accent)">"12 months"</span>
+  },
+  <span style="color:var(--blue)">"settlement_url"</span>: <span style="color:var(--accent)">"/avp/settle"</span>,
+  <span style="color:var(--blue)">"vendor_signature"</span>: <span style="color:var(--accent)">"sig_vendor_8a9b0c1d2e3f..."</span>
+}</pre>
+    </div>
+
+    <span class="section-anchor" id="negotiate-reject"></span>
+    <div class="endpoint-block">
+      <div class="endpoint-header">
+        <span class="method-pill post">POST</span>
+        <span class="endpoint-path">/avp/negotiate/reject</span>
+      </div>
+      <p class="endpoint-desc">Rejects the current proposal and terminates the negotiation. A rejection reason should be provided to help the vendor improve future proposals. The session remains active for new RFPs.</p>
+
+      <table class="param-table">
+        <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>session_id</td><td><span class="type">string</span> <span class="required">required</span></td><td>Active session ID</td></tr>
+          <tr><td>negotiation_id</td><td><span class="type">string</span> <span class="required">required</span></td><td>The negotiation to reject</td></tr>
+          <tr><td>reason</td><td><span class="type">string</span> <span class="required">required</span></td><td>Machine-readable rejection reason code</td></tr>
+          <tr><td>detail</td><td><span class="type">string</span> <span class="optional">optional</span></td><td>Human-readable explanation of the rejection</td></tr>
+        </tbody>
+      </table>
+
+      <div class="response-label"><span class="status status-200">200</span> Response</div>
+      <pre style="font-family:var(--mono);font-size:0.78rem;line-height:1.7;color:var(--text-dim);background:var(--bg);padding:1rem;border-radius:6px;overflow-x:auto;border:1px solid var(--border)">{
+  <span style="color:var(--blue)">"negotiation_id"</span>: <span style="color:var(--accent)">"neg_4d5e6f7a8b9c"</span>,
+  <span style="color:var(--blue)">"status"</span>: <span style="color:var(--accent)">"rejected"</span>,
+  <span style="color:var(--blue)">"rejected_at"</span>: <span style="color:var(--accent)">"2026-03-22T14:38:00Z"</span>,
+  <span style="color:var(--blue)">"reason"</span>: <span style="color:var(--accent)">"price_too_high"</span>,
+  <span style="color:var(--blue)">"detail"</span>: <span style="color:var(--accent)">"Offer exceeds buyer budget ceiling by 25%"</span>,
+  <span style="color:var(--blue)">"session_status"</span>: <span style="color:var(--accent)">"active"</span>,
+  <span style="color:var(--blue)">"can_submit_new_rfp"</span>: <span style="color:var(--purple)">true</span>
+}</pre>
+    </div>
+
+    <span class="section-anchor" id="negotiate-escalate"></span>
+    <div class="endpoint-block">
+      <div class="endpoint-header">
+        <span class="method-pill post">POST</span>
+        <span class="endpoint-path">/avp/negotiate/escalate</span>
+      </div>
+      <p class="endpoint-desc">Escalates the negotiation to a human decision-maker on one or both sides. This is used when agents reach their authority limits or when the buyer requests human review of complex terms.</p>
+
+      <table class="param-table">
+        <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>session_id</td><td><span class="type">string</span> <span class="required">required</span></td><td>Active session ID</td></tr>
+          <tr><td>negotiation_id</td><td><span class="type">string</span> <span class="required">required</span></td><td>The negotiation to escalate</td></tr>
+          <tr><td>escalation_reason</td><td><span class="type">string</span> <span class="required">required</span></td><td>Reason code for escalation</td></tr>
+          <tr><td>escalation_context</td><td><span class="type">object</span> <span class="optional">optional</span></td><td>Additional context for the human reviewer</td></tr>
+          <tr><td>preferred_channel</td><td><span class="type">string</span> <span class="optional">optional</span></td><td>Preferred communication channel: email, slack, or dashboard</td></tr>
+        </tbody>
+      </table>
+
+      <div class="response-label"><span class="status status-200">200</span> Response</div>
+      <pre style="font-family:var(--mono);font-size:0.78rem;line-height:1.7;color:var(--text-dim);background:var(--bg);padding:1rem;border-radius:6px;overflow-x:auto;border:1px solid var(--border)">{
+  <span style="color:var(--blue)">"negotiation_id"</span>: <span style="color:var(--accent)">"neg_4d5e6f7a8b9c"</span>,
+  <span style="color:var(--blue)">"status"</span>: <span style="color:var(--accent)">"escalated"</span>,
+  <span style="color:var(--blue)">"escalated_at"</span>: <span style="color:var(--accent)">"2026-03-22T14:40:00Z"</span>,
+  <span style="color:var(--blue)">"escalation_id"</span>: <span style="color:var(--accent)">"esc_9a0b1c2d3e4f"</span>,
+  <span style="color:var(--blue)">"assigned_to"</span>: <span style="color:var(--accent)">"vendor-sales-team@vendor.example.com"</span>,
+  <span style="color:var(--blue)">"expected_response"</span>: <span style="color:var(--accent)">"2026-03-23T14:40:00Z"</span>,
+  <span style="color:var(--blue)">"notification_sent"</span>: <span style="color:var(--purple)">true</span>,
+  <span style="color:var(--blue)">"channel"</span>: <span style="color:var(--accent)">"email"</span>
+}</pre>
+    </div>
+  </div>
+
+  <!-- ==================== SETTLEMENT ==================== -->
+  <div class="api-section" id="settlement-section">
+    <span class="section-anchor" id="settle"></span>
+    <h2><span class="material-icons-outlined">verified</span> Settlement</h2>
+    <p>Settlement finalizes a negotiated deal, creating a binding agreement between buyer and vendor agents. This step handles payment authorization, contract generation, and service activation.</p>
+
+    <div class="endpoint-block">
+      <div class="endpoint-header">
+        <span class="method-pill post">POST</span>
+        <span class="endpoint-path">/avp/settle</span>
+      </div>
+      <p class="endpoint-desc">Finalizes the accepted proposal into a binding agreement. The buyer provides payment details and the vendor confirms the agreement with a signed contract hash. Services begin provisioning upon successful settlement.</p>
+
+      <table class="param-table">
+        <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>session_id</td><td><span class="type">string</span> <span class="required">required</span></td><td>Active session ID</td></tr>
+          <tr><td>negotiation_id</td><td><span class="type">string</span> <span class="required">required</span></td><td>The accepted negotiation</td></tr>
+          <tr><td>payment_method</td><td><span class="type">object</span> <span class="required">required</span></td><td>Payment details (type, token, billing address)</td></tr>
+          <tr><td>billing_contact</td><td><span class="type">object</span> <span class="optional">optional</span></td><td>Billing contact information</td></tr>
+          <tr><td>auto_renew</td><td><span class="type">boolean</span> <span class="optional">optional</span></td><td>Whether to auto-renew at contract end (default: false)</td></tr>
+        </tbody>
+      </table>
+
+      <div class="response-label"><span class="status status-200">200</span> Response</div>
+      <pre style="font-family:var(--mono);font-size:0.78rem;line-height:1.7;color:var(--text-dim);background:var(--bg);padding:1rem;border-radius:6px;overflow-x:auto;border:1px solid var(--border)">{
+  <span style="color:var(--blue)">"settlement_id"</span>: <span style="color:var(--accent)">"stl_1a2b3c4d5e6f"</span>,
+  <span style="color:var(--blue)">"status"</span>: <span style="color:var(--accent)">"confirmed"</span>,
+  <span style="color:var(--blue)">"contract"</span>: {
+    <span style="color:var(--blue)">"contract_id"</span>: <span style="color:var(--accent)">"ctr_7g8h9i0j1k2l"</span>,
+    <span style="color:var(--blue)">"hash"</span>: <span style="color:var(--accent)">"sha256:a1b2c3d4e5f6g7h8i9j0..."</span>,
+    <span style="color:var(--blue)">"start_date"</span>: <span style="color:var(--accent)">"2026-04-01T00:00:00Z"</span>,
+    <span style="color:var(--blue)">"end_date"</span>: <span style="color:var(--accent)">"2027-03-31T23:59:59Z"</span>,
+    <span style="color:var(--blue)">"total_value"</span>: <span style="color:var(--signal)">135000.00</span>,
+    <span style="color:var(--blue)">"currency"</span>: <span style="color:var(--accent)">"USD"</span>,
+    <span style="color:var(--blue)">"auto_renew"</span>: <span style="color:var(--purple)">false</span>
+  },
+  <span style="color:var(--blue)">"payment"</span>: {
+    <span style="color:var(--blue)">"status"</span>: <span style="color:var(--accent)">"authorized"</span>,
+    <span style="color:var(--blue)">"first_charge_date"</span>: <span style="color:var(--accent)">"2026-04-01T00:00:00Z"</span>
+  },
+  <span style="color:var(--blue)">"provisioning"</span>: {
+    <span style="color:var(--blue)">"status"</span>: <span style="color:var(--accent)">"in_progress"</span>,
+    <span style="color:var(--blue)">"estimated_ready"</span>: <span style="color:var(--accent)">"2026-03-22T15:00:00Z"</span>
+  },
+  <span style="color:var(--blue)">"vendor_signature"</span>: <span style="color:var(--accent)">"sig_stl_vendor_x8y9z0..."</span>,
+  <span style="color:var(--blue)">"buyer_signature"</span>: <span style="color:var(--accent)">"sig_stl_buyer_a1b2c3..."</span>
+}</pre>
+    </div>
+  </div>
+
+  <!-- ==================== CAPABILITIES ==================== -->
+  <div class="api-section" id="capabilities-section">
+    <span class="section-anchor" id="capabilities"></span>
+    <h2><span class="material-icons-outlined">psychology</span> Capabilities</h2>
+    <p>Query a vendor agent's capabilities in detail. This is useful for programmatic filtering before submitting an RFP, or for building capability-aware routing logic.</p>
+
+    <div class="endpoint-block">
+      <div class="endpoint-header">
+        <span class="method-pill post">POST</span>
+        <span class="endpoint-path">/avp/capabilities</span>
+      </div>
+      <p class="endpoint-desc">Queries the vendor agent for detailed capability information. You can filter by category, request pricing ranges, and check availability. Useful for multi-vendor comparison before committing to a negotiation.</p>
+
+      <table class="param-table">
+        <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>session_id</td><td><span class="type">string</span> <span class="required">required</span></td><td>Active session ID</td></tr>
+          <tr><td>categories</td><td><span class="type">string[]</span> <span class="optional">optional</span></td><td>Filter by capability categories (e.g., ["compute", "storage"])</td></tr>
+          <tr><td>include_pricing</td><td><span class="type">boolean</span> <span class="optional">optional</span></td><td>Whether to include indicative pricing (default: false)</td></tr>
+          <tr><td>region</td><td><span class="type">string</span> <span class="optional">optional</span></td><td>Filter capabilities by deployment region</td></tr>
+        </tbody>
+      </table>
+
+      <div class="response-label"><span class="status status-200">200</span> Response</div>
+      <pre style="font-family:var(--mono);font-size:0.78rem;line-height:1.7;color:var(--text-dim);background:var(--bg);padding:1rem;border-radius:6px;overflow-x:auto;border:1px solid var(--border)">{
+  <span style="color:var(--blue)">"agent_id"</span>: <span style="color:var(--accent)">"agent://vendor.example.com/sales-agent-v3"</span>,
+  <span style="color:var(--blue)">"capabilities"</span>: [
+    {
+      <span style="color:var(--blue)">"id"</span>: <span style="color:var(--accent)">"cap_compute_gpu"</span>,
+      <span style="color:var(--blue)">"category"</span>: <span style="color:var(--accent)">"compute"</span>,
+      <span style="color:var(--blue)">"name"</span>: <span style="color:var(--accent)">"GPU Compute"</span>,
+      <span style="color:var(--blue)">"description"</span>: <span style="color:var(--accent)">"NVIDIA GPU instances for ML training and inference"</span>,
+      <span style="color:var(--blue)">"variants"</span>: [<span style="color:var(--accent)">"A100-40GB"</span>, <span style="color:var(--accent)">"A100-80GB"</span>, <span style="color:var(--accent)">"H100"</span>],
+      <span style="color:var(--blue)">"regions"</span>: [<span style="color:var(--accent)">"us-east-1"</span>, <span style="color:var(--accent)">"eu-west-1"</span>, <span style="color:var(--accent)">"ap-southeast-1"</span>],
+      <span style="color:var(--blue)">"availability"</span>: <span style="color:var(--accent)">"high"</span>,
+      <span style="color:var(--blue)">"pricing_range"</span>: {
+        <span style="color:var(--blue)">"min"</span>: <span style="color:var(--signal)">2.50</span>,
+        <span style="color:var(--blue)">"max"</span>: <span style="color:var(--signal)">8.00</span>,
+        <span style="color:var(--blue)">"unit"</span>: <span style="color:var(--accent)">"hour"</span>,
+        <span style="color:var(--blue)">"currency"</span>: <span style="color:var(--accent)">"USD"</span>
+      }
+    },
+    {
+      <span style="color:var(--blue)">"id"</span>: <span style="color:var(--accent)">"cap_storage_obj"</span>,
+      <span style="color:var(--blue)">"category"</span>: <span style="color:var(--accent)">"storage"</span>,
+      <span style="color:var(--blue)">"name"</span>: <span style="color:var(--accent)">"Object Storage"</span>,
+      <span style="color:var(--blue)">"description"</span>: <span style="color:var(--accent)">"S3-compatible distributed object storage"</span>,
+      <span style="color:var(--blue)">"variants"</span>: [<span style="color:var(--accent)">"standard"</span>, <span style="color:var(--accent)">"infrequent-access"</span>, <span style="color:var(--accent)">"archive"</span>],
+      <span style="color:var(--blue)">"regions"</span>: [<span style="color:var(--accent)">"us-east-1"</span>, <span style="color:var(--accent)">"eu-west-1"</span>],
+      <span style="color:var(--blue)">"availability"</span>: <span style="color:var(--accent)">"high"</span>,
+      <span style="color:var(--blue)">"pricing_range"</span>: {
+        <span style="color:var(--blue)">"min"</span>: <span style="color:var(--signal)">0.01</span>,
+        <span style="color:var(--blue)">"max"</span>: <span style="color:var(--signal)">0.03</span>,
+        <span style="color:var(--blue)">"unit"</span>: <span style="color:var(--accent)">"GB/month"</span>,
+        <span style="color:var(--blue)">"currency"</span>: <span style="color:var(--accent)">"USD"</span>
+      }
+    }
+  ],
+  <span style="color:var(--blue)">"last_updated"</span>: <span style="color:var(--accent)">"2026-03-22T12:00:00Z"</span>
+}</pre>
+    </div>
+  </div>
+
+  <!-- ==================== STATUS ==================== -->
+  <div class="api-section" id="status-section">
+    <span class="section-anchor" id="status-health"></span>
+    <h2><span class="material-icons-outlined">monitor_heart</span> Status</h2>
+    <p>Status endpoints provide health checks and session monitoring. Use these to verify that a vendor agent is online and responsive, or to check the state of an active session.</p>
+
+    <div class="endpoint-block">
+      <div class="endpoint-header">
+        <span class="method-pill get">GET</span>
+        <span class="endpoint-path">/avp/status</span>
+      </div>
+      <p class="endpoint-desc">Returns the vendor agent's health status, including uptime, current load, active sessions count, and supported protocol version. This endpoint does not require authentication.</p>
+
+      <div class="response-label"><span class="status status-200">200</span> Response</div>
+      <pre style="font-family:var(--mono);font-size:0.78rem;line-height:1.7;color:var(--text-dim);background:var(--bg);padding:1rem;border-radius:6px;overflow-x:auto;border:1px solid var(--border)">{
+  <span style="color:var(--blue)">"status"</span>: <span style="color:var(--accent)">"healthy"</span>,
+  <span style="color:var(--blue)">"agent_id"</span>: <span style="color:var(--accent)">"agent://vendor.example.com/sales-agent-v3"</span>,
+  <span style="color:var(--blue)">"uptime_seconds"</span>: <span style="color:var(--signal)">2592000</span>,
+  <span style="color:var(--blue)">"active_sessions"</span>: <span style="color:var(--signal)">42</span>,
+  <span style="color:var(--blue)">"avg_response_time_ms"</span>: <span style="color:var(--signal)">145</span>,
+  <span style="color:var(--blue)">"protocol_version"</span>: <span style="color:var(--accent)">"0.1.0"</span>,
+  <span style="color:var(--blue)">"load"</span>: <span style="color:var(--accent)">"normal"</span>,
+  <span style="color:var(--blue)">"last_negotiation"</span>: <span style="color:var(--accent)">"2026-03-22T14:25:00Z"</span>,
+  <span style="color:var(--blue)">"features"</span>: {
+    <span style="color:var(--blue)">"auto_negotiate"</span>: <span style="color:var(--purple)">true</span>,
+    <span style="color:var(--blue)">"human_escalation"</span>: <span style="color:var(--purple)">true</span>,
+    <span style="color:var(--blue)">"sandbox_mode"</span>: <span style="color:var(--purple)">true</span>
+  }
+}</pre>
+    </div>
+
+    <span class="section-anchor" id="status-session"></span>
+    <div class="endpoint-block">
+      <div class="endpoint-header">
+        <span class="method-pill get">GET</span>
+        <span class="endpoint-path">/avp/status/session/<span class="param">{id}</span></span>
+      </div>
+      <p class="endpoint-desc">Returns detailed status for a specific session, including current phase, active negotiations, and timeline of events. Requires the session token from the handshake.</p>
+
+      <table class="param-table">
+        <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>id</td><td><span class="type">string</span> <span class="required">required</span></td><td>The session ID (path parameter)</td></tr>
+        </tbody>
+      </table>
+
+      <div class="response-label"><span class="status status-200">200</span> Response</div>
+      <pre style="font-family:var(--mono);font-size:0.78rem;line-height:1.7;color:var(--text-dim);background:var(--bg);padding:1rem;border-radius:6px;overflow-x:auto;border:1px solid var(--border)">{
+  <span style="color:var(--blue)">"session_id"</span>: <span style="color:var(--accent)">"ses_7f2a3b8c1d4e5f6a"</span>,
+  <span style="color:var(--blue)">"status"</span>: <span style="color:var(--accent)">"active"</span>,
+  <span style="color:var(--blue)">"phase"</span>: <span style="color:var(--accent)">"negotiation"</span>,
+  <span style="color:var(--blue)">"buyer_agent"</span>: <span style="color:var(--accent)">"agent://buyer.example.com/procurement-v2"</span>,
+  <span style="color:var(--blue)">"vendor_agent"</span>: <span style="color:var(--accent)">"agent://vendor.example.com/sales-agent-v3"</span>,
+  <span style="color:var(--blue)">"created_at"</span>: <span style="color:var(--accent)">"2026-03-22T14:30:00Z"</span>,
+  <span style="color:var(--blue)">"expires_at"</span>: <span style="color:var(--accent)">"2026-03-22T15:30:00Z"</span>,
+  <span style="color:var(--blue)">"rfps_submitted"</span>: <span style="color:var(--signal)">1</span>,
+  <span style="color:var(--blue)">"active_negotiations"</span>: <span style="color:var(--signal)">1</span>,
+  <span style="color:var(--blue)">"current_round"</span>: <span style="color:var(--signal)">3</span>,
+  <span style="color:var(--blue)">"events"</span>: [
+    {<span style="color:var(--blue)">"type"</span>: <span style="color:var(--accent)">"handshake"</span>, <span style="color:var(--blue)">"at"</span>: <span style="color:var(--accent)">"2026-03-22T14:30:00Z"</span>},
+    {<span style="color:var(--blue)">"type"</span>: <span style="color:var(--accent)">"rfp_submitted"</span>, <span style="color:var(--blue)">"at"</span>: <span style="color:var(--accent)">"2026-03-22T14:31:00Z"</span>},
+    {<span style="color:var(--blue)">"type"</span>: <span style="color:var(--accent)">"proposal_ready"</span>, <span style="color:var(--blue)">"at"</span>: <span style="color:var(--accent)">"2026-03-22T14:31:15Z"</span>},
+    {<span style="color:var(--blue)">"type"</span>: <span style="color:var(--accent)">"counter_proposed"</span>, <span style="color:var(--blue)">"at"</span>: <span style="color:var(--accent)">"2026-03-22T14:33:00Z"</span>}
+  ]
+}</pre>
+    </div>
+  </div>
+
+  <!-- ==================== REGISTRY ==================== -->
+  <div class="api-section" id="registry-section">
+    <span class="section-anchor" id="registry-register"></span>
+    <h2><span class="material-icons-outlined">app_registration</span> Registry</h2>
+    <p>The AVP Registry is a centralized directory for discovering and verifying agent identities. All endpoints use the base URL <code>https://registry.avp-protocol.org/v1/</code>.</p>
+
+    <div class="endpoint-block">
+      <div class="endpoint-header">
+        <span class="method-pill post">POST</span>
+        <span class="endpoint-path">/v1/agents/register</span>
+      </div>
+      <p class="endpoint-desc">Registers a new agent with the AVP registry. This creates a verifiable identity that other agents can look up. Registration requires domain verification and a valid public key.</p>
+
+      <table class="param-table">
+        <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>agent_id</td><td><span class="type">string</span> <span class="required">required</span></td><td>Globally unique agent URI (e.g., agent://domain/name)</td></tr>
+          <tr><td>display_name</td><td><span class="type">string</span> <span class="required">required</span></td><td>Human-readable agent display name</td></tr>
+          <tr><td>description</td><td><span class="type">string</span> <span class="required">required</span></td><td>Description of agent's services or capabilities</td></tr>
+          <tr><td>domain</td><td><span class="type">string</span> <span class="required">required</span></td><td>Domain that hosts the agent's AVP endpoints</td></tr>
+          <tr><td>public_key</td><td><span class="type">object</span> <span class="required">required</span></td><td>Agent's public key in JWK format</td></tr>
+          <tr><td>capabilities</td><td><span class="type">string[]</span> <span class="required">required</span></td><td>List of capability tags</td></tr>
+          <tr><td>contact_email</td><td><span class="type">string</span> <span class="optional">optional</span></td><td>Contact email for the agent operator</td></tr>
+          <tr><td>webhook_url</td><td><span class="type">string</span> <span class="optional">optional</span></td><td>Webhook URL for registry notifications</td></tr>
+        </tbody>
+      </table>
+
+      <div class="response-label"><span class="status status-201">201</span> Response</div>
+      <pre style="font-family:var(--mono);font-size:0.78rem;line-height:1.7;color:var(--text-dim);background:var(--bg);padding:1rem;border-radius:6px;overflow-x:auto;border:1px solid var(--border)">{
+  <span style="color:var(--blue)">"agent_id"</span>: <span style="color:var(--accent)">"agent://vendor.example.com/sales-agent-v3"</span>,
+  <span style="color:var(--blue)">"registration_id"</span>: <span style="color:var(--accent)">"reg_5f6a7b8c9d0e"</span>,
+  <span style="color:var(--blue)">"status"</span>: <span style="color:var(--accent)">"pending_verification"</span>,
+  <span style="color:var(--blue)">"verification"</span>: {
+    <span style="color:var(--blue)">"method"</span>: <span style="color:var(--accent)">"dns_txt"</span>,
+    <span style="color:var(--blue)">"record_name"</span>: <span style="color:var(--accent)">"_avp-verify.vendor.example.com"</span>,
+    <span style="color:var(--blue)">"record_value"</span>: <span style="color:var(--accent)">"avp-verify=reg_5f6a7b8c9d0e"</span>,
+    <span style="color:var(--blue)">"expires_at"</span>: <span style="color:var(--accent)">"2026-03-25T14:30:00Z"</span>
+  },
+  <span style="color:var(--blue)">"created_at"</span>: <span style="color:var(--accent)">"2026-03-22T14:30:00Z"</span>
+}</pre>
+    </div>
+
+    <span class="section-anchor" id="registry-search"></span>
+    <div class="endpoint-block">
+      <div class="endpoint-header">
+        <span class="method-pill get">GET</span>
+        <span class="endpoint-path">/v1/search</span>
+      </div>
+      <p class="endpoint-desc">Searches the registry for agents matching given criteria. Supports filtering by capabilities, trust score, availability, and region. Results are ranked by relevance and trust score.</p>
+
+      <table class="param-table">
+        <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>q</td><td><span class="type">string</span> <span class="optional">optional</span></td><td>Free-text search query</td></tr>
+          <tr><td>capabilities</td><td><span class="type">string</span> <span class="optional">optional</span></td><td>Comma-separated capability tags to filter by</td></tr>
+          <tr><td>min_trust_score</td><td><span class="type">number</span> <span class="optional">optional</span></td><td>Minimum trust score (0.0 to 1.0)</td></tr>
+          <tr><td>region</td><td><span class="type">string</span> <span class="optional">optional</span></td><td>Filter by deployment region</td></tr>
+          <tr><td>status</td><td><span class="type">string</span> <span class="optional">optional</span></td><td>Agent status: active, inactive, or all (default: active)</td></tr>
+          <tr><td>limit</td><td><span class="type">integer</span> <span class="optional">optional</span></td><td>Max results to return (default: 20, max: 100)</td></tr>
+          <tr><td>offset</td><td><span class="type">integer</span> <span class="optional">optional</span></td><td>Pagination offset (default: 0)</td></tr>
+        </tbody>
+      </table>
+
+      <div class="response-label"><span class="status status-200">200</span> Response</div>
+      <pre style="font-family:var(--mono);font-size:0.78rem;line-height:1.7;color:var(--text-dim);background:var(--bg);padding:1rem;border-radius:6px;overflow-x:auto;border:1px solid var(--border)">{
+  <span style="color:var(--blue)">"results"</span>: [
+    {
+      <span style="color:var(--blue)">"agent_id"</span>: <span style="color:var(--accent)">"agent://vendor.example.com/sales-agent-v3"</span>,
+      <span style="color:var(--blue)">"display_name"</span>: <span style="color:var(--accent)">"Acme Cloud Services"</span>,
+      <span style="color:var(--blue)">"description"</span>: <span style="color:var(--accent)">"Enterprise cloud infrastructure and managed services"</span>,
+      <span style="color:var(--blue)">"capabilities"</span>: [<span style="color:var(--accent)">"compute"</span>, <span style="color:var(--accent)">"storage"</span>, <span style="color:var(--accent)">"cdn"</span>],
+      <span style="color:var(--blue)">"trust_score"</span>: <span style="color:var(--signal)">0.94</span>,
+      <span style="color:var(--blue)">"total_transactions"</span>: <span style="color:var(--signal)">1247</span>,
+      <span style="color:var(--blue)">"avg_response_time_ms"</span>: <span style="color:var(--signal)">145</span>,
+      <span style="color:var(--blue)">"status"</span>: <span style="color:var(--accent)">"active"</span>,
+      <span style="color:var(--blue)">"verified"</span>: <span style="color:var(--purple)">true</span>
+    },
+    {
+      <span style="color:var(--blue)">"agent_id"</span>: <span style="color:var(--accent)">"agent://cloudprovider.io/infra-sales"</span>,
+      <span style="color:var(--blue)">"display_name"</span>: <span style="color:var(--accent)">"CloudProvider Infrastructure"</span>,
+      <span style="color:var(--blue)">"description"</span>: <span style="color:var(--accent)">"Bare-metal and virtual infrastructure at scale"</span>,
+      <span style="color:var(--blue)">"capabilities"</span>: [<span style="color:var(--accent)">"compute"</span>, <span style="color:var(--accent)">"bare-metal"</span>, <span style="color:var(--accent)">"networking"</span>],
+      <span style="color:var(--blue)">"trust_score"</span>: <span style="color:var(--signal)">0.89</span>,
+      <span style="color:var(--blue)">"total_transactions"</span>: <span style="color:var(--signal)">834</span>,
+      <span style="color:var(--blue)">"avg_response_time_ms"</span>: <span style="color:var(--signal)">210</span>,
+      <span style="color:var(--blue)">"status"</span>: <span style="color:var(--accent)">"active"</span>,
+      <span style="color:var(--blue)">"verified"</span>: <span style="color:var(--purple)">true</span>
+    }
+  ],
+  <span style="color:var(--blue)">"total"</span>: <span style="color:var(--signal)">23</span>,
+  <span style="color:var(--blue)">"limit"</span>: <span style="color:var(--signal)">20</span>,
+  <span style="color:var(--blue)">"offset"</span>: <span style="color:var(--signal)">0</span>
+}</pre>
+    </div>
+
+    <span class="section-anchor" id="registry-get"></span>
+    <div class="endpoint-block">
+      <div class="endpoint-header">
+        <span class="method-pill get">GET</span>
+        <span class="endpoint-path">/v1/agents/<span class="param">{agent_id}</span></span>
+      </div>
+      <p class="endpoint-desc">Retrieves the full registration profile for a specific agent. Includes verified identity, capabilities, trust metrics, and contact information. The agent_id must be URL-encoded.</p>
+
+      <table class="param-table">
+        <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>agent_id</td><td><span class="type">string</span> <span class="required">required</span></td><td>URL-encoded agent ID (path parameter)</td></tr>
+        </tbody>
+      </table>
+
+      <div class="response-label"><span class="status status-200">200</span> Response</div>
+      <pre style="font-family:var(--mono);font-size:0.78rem;line-height:1.7;color:var(--text-dim);background:var(--bg);padding:1rem;border-radius:6px;overflow-x:auto;border:1px solid var(--border)">{
+  <span style="color:var(--blue)">"agent_id"</span>: <span style="color:var(--accent)">"agent://vendor.example.com/sales-agent-v3"</span>,
+  <span style="color:var(--blue)">"display_name"</span>: <span style="color:var(--accent)">"Acme Cloud Services"</span>,
+  <span style="color:var(--blue)">"description"</span>: <span style="color:var(--accent)">"Enterprise cloud infrastructure and managed services"</span>,
+  <span style="color:var(--blue)">"domain"</span>: <span style="color:var(--accent)">"vendor.example.com"</span>,
+  <span style="color:var(--blue)">"capabilities"</span>: [<span style="color:var(--accent)">"compute"</span>, <span style="color:var(--accent)">"storage"</span>, <span style="color:var(--accent)">"cdn"</span>, <span style="color:var(--accent)">"ml-inference"</span>],
+  <span style="color:var(--blue)">"verified"</span>: <span style="color:var(--purple)">true</span>,
+  <span style="color:var(--blue)">"verified_at"</span>: <span style="color:var(--accent)">"2026-01-15T10:00:00Z"</span>,
+  <span style="color:var(--blue)">"trust_score"</span>: <span style="color:var(--signal)">0.94</span>,
+  <span style="color:var(--blue)">"metrics"</span>: {
+    <span style="color:var(--blue)">"total_transactions"</span>: <span style="color:var(--signal)">1247</span>,
+    <span style="color:var(--blue)">"successful_settlements"</span>: <span style="color:var(--signal)">1198</span>,
+    <span style="color:var(--blue)">"avg_negotiation_rounds"</span>: <span style="color:var(--signal)">3.2</span>,
+    <span style="color:var(--blue)">"avg_response_time_ms"</span>: <span style="color:var(--signal)">145</span>,
+    <span style="color:var(--blue)">"dispute_rate"</span>: <span style="color:var(--signal)">0.012</span>
+  },
+  <span style="color:var(--blue)">"public_key_url"</span>: <span style="color:var(--accent)">"https://vendor.example.com/.well-known/avp-keys.json"</span>,
+  <span style="color:var(--blue)">"discovery_url"</span>: <span style="color:var(--accent)">"https://vendor.example.com/.well-known/avp.json"</span>,
+  <span style="color:var(--blue)">"registered_at"</span>: <span style="color:var(--accent)">"2025-06-01T00:00:00Z"</span>,
+  <span style="color:var(--blue)">"status"</span>: <span style="color:var(--accent)">"active"</span>
+}</pre>
+    </div>
+  </div>
+
+  <!-- ==================== TRUST ==================== -->
+  <div class="api-section" id="trust-section">
+    <span class="section-anchor" id="trust-get"></span>
+    <h2><span class="material-icons-outlined">shield</span> Trust</h2>
+    <p>Trust endpoints provide reputation data and peer reviews for agents. Trust scores are computed from transaction history, dispute rates, and peer reviews.</p>
+
+    <div class="endpoint-block">
+      <div class="endpoint-header">
+        <span class="method-pill get">GET</span>
+        <span class="endpoint-path">/v1/trust/<span class="param">{agent_id}</span></span>
+      </div>
+      <p class="endpoint-desc">Retrieves the detailed trust profile for an agent, including composite trust score, score breakdown, recent reviews, and historical trend data.</p>
+
+      <table class="param-table">
+        <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>agent_id</td><td><span class="type">string</span> <span class="required">required</span></td><td>URL-encoded agent ID (path parameter)</td></tr>
+        </tbody>
+      </table>
+
+      <div class="response-label"><span class="status status-200">200</span> Response</div>
+      <pre style="font-family:var(--mono);font-size:0.78rem;line-height:1.7;color:var(--text-dim);background:var(--bg);padding:1rem;border-radius:6px;overflow-x:auto;border:1px solid var(--border)">{
+  <span style="color:var(--blue)">"agent_id"</span>: <span style="color:var(--accent)">"agent://vendor.example.com/sales-agent-v3"</span>,
+  <span style="color:var(--blue)">"trust_score"</span>: <span style="color:var(--signal)">0.94</span>,
+  <span style="color:var(--blue)">"score_breakdown"</span>: {
+    <span style="color:var(--blue)">"transaction_success_rate"</span>: <span style="color:var(--signal)">0.96</span>,
+    <span style="color:var(--blue)">"dispute_resolution_rate"</span>: <span style="color:var(--signal)">0.92</span>,
+    <span style="color:var(--blue)">"response_reliability"</span>: <span style="color:var(--signal)">0.98</span>,
+    <span style="color:var(--blue)">"peer_review_avg"</span>: <span style="color:var(--signal)">0.91</span>,
+    <span style="color:var(--blue)">"age_factor"</span>: <span style="color:var(--signal)">0.85</span>
+  },
+  <span style="color:var(--blue)">"total_reviews"</span>: <span style="color:var(--signal)">342</span>,
+  <span style="color:var(--blue)">"recent_reviews"</span>: [
+    {
+      <span style="color:var(--blue)">"reviewer"</span>: <span style="color:var(--accent)">"agent://buyer.corp.io/procurement"</span>,
+      <span style="color:var(--blue)">"rating"</span>: <span style="color:var(--signal)">5</span>,
+      <span style="color:var(--blue)">"comment"</span>: <span style="color:var(--accent)">"Fast negotiations, fair pricing, excellent SLA adherence"</span>,
+      <span style="color:var(--blue)">"transaction_id"</span>: <span style="color:var(--accent)">"stl_abc123"</span>,
+      <span style="color:var(--blue)">"created_at"</span>: <span style="color:var(--accent)">"2026-03-20T09:15:00Z"</span>
+    },
+    {
+      <span style="color:var(--blue)">"reviewer"</span>: <span style="color:var(--accent)">"agent://startup.dev/infra-bot"</span>,
+      <span style="color:var(--blue)">"rating"</span>: <span style="color:var(--signal)">4</span>,
+      <span style="color:var(--blue)">"comment"</span>: <span style="color:var(--accent)">"Good service, pricing slightly above market average"</span>,
+      <span style="color:var(--blue)">"transaction_id"</span>: <span style="color:var(--accent)">"stl_def456"</span>,
+      <span style="color:var(--blue)">"created_at"</span>: <span style="color:var(--accent)">"2026-03-18T16:42:00Z"</span>
+    }
+  ],
+  <span style="color:var(--blue)">"trend"</span>: <span style="color:var(--accent)">"stable"</span>,
+  <span style="color:var(--blue)">"computed_at"</span>: <span style="color:var(--accent)">"2026-03-22T14:00:00Z"</span>
+}</pre>
+    </div>
+
+    <span class="section-anchor" id="trust-review"></span>
+    <div class="endpoint-block">
+      <div class="endpoint-header">
+        <span class="method-pill post">POST</span>
+        <span class="endpoint-path">/v1/trust/<span class="param">{agent_id}</span>/review</span>
+      </div>
+      <p class="endpoint-desc">Submits a peer review for an agent after a completed transaction. Reviews must reference a valid settlement ID. Only one review is allowed per settlement.</p>
+
+      <table class="param-table">
+        <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>agent_id</td><td><span class="type">string</span> <span class="required">required</span></td><td>Agent being reviewed (path parameter)</td></tr>
+          <tr><td>settlement_id</td><td><span class="type">string</span> <span class="required">required</span></td><td>The settlement this review is for</td></tr>
+          <tr><td>rating</td><td><span class="type">integer</span> <span class="required">required</span></td><td>Rating from 1 to 5</td></tr>
+          <tr><td>comment</td><td><span class="type">string</span> <span class="optional">optional</span></td><td>Free-text review comment (max 500 chars)</td></tr>
+          <tr><td>dimensions</td><td><span class="type">object</span> <span class="optional">optional</span></td><td>Granular ratings: pricing_fairness, response_speed, sla_adherence (each 1-5)</td></tr>
+        </tbody>
+      </table>
+
+      <div class="response-label"><span class="status status-201">201</span> Response</div>
+      <pre style="font-family:var(--mono);font-size:0.78rem;line-height:1.7;color:var(--text-dim);background:var(--bg);padding:1rem;border-radius:6px;overflow-x:auto;border:1px solid var(--border)">{
+  <span style="color:var(--blue)">"review_id"</span>: <span style="color:var(--accent)">"rev_2c3d4e5f6g7h"</span>,
+  <span style="color:var(--blue)">"agent_id"</span>: <span style="color:var(--accent)">"agent://vendor.example.com/sales-agent-v3"</span>,
+  <span style="color:var(--blue)">"rating"</span>: <span style="color:var(--signal)">5</span>,
+  <span style="color:var(--blue)">"status"</span>: <span style="color:var(--accent)">"published"</span>,
+  <span style="color:var(--blue)">"updated_trust_score"</span>: <span style="color:var(--signal)">0.94</span>,
+  <span style="color:var(--blue)">"created_at"</span>: <span style="color:var(--accent)">"2026-03-22T15:00:00Z"</span>
+}</pre>
+    </div>
+  </div>
+
+  <!-- ==================== ANALYTICS ==================== -->
+  <div class="api-section" id="analytics-section">
+    <span class="section-anchor" id="analytics-usage"></span>
+    <h2><span class="material-icons-outlined">analytics</span> Analytics</h2>
+    <p>Analytics endpoints provide insights into agent performance, transaction metrics, and operational health. These help vendors optimize their pricing and buyers track their procurement efficiency.</p>
+
+    <div class="endpoint-block">
+      <div class="endpoint-header">
+        <span class="method-pill get">GET</span>
+        <span class="endpoint-path">/avp/analytics/usage</span>
+      </div>
+      <p class="endpoint-desc">Returns usage analytics for the agent, including transaction volumes, active sessions, and resource consumption over a specified time period.</p>
+
+      <table class="param-table">
+        <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>period</td><td><span class="type">string</span> <span class="optional">optional</span></td><td>Time period: 1h, 24h, 7d, 30d, 90d (default: 24h)</td></tr>
+          <tr><td>granularity</td><td><span class="type">string</span> <span class="optional">optional</span></td><td>Data point granularity: minute, hour, day (default: hour)</td></tr>
+        </tbody>
+      </table>
+
+      <div class="response-label"><span class="status status-200">200</span> Response</div>
+      <pre style="font-family:var(--mono);font-size:0.78rem;line-height:1.7;color:var(--text-dim);background:var(--bg);padding:1rem;border-radius:6px;overflow-x:auto;border:1px solid var(--border)">{
+  <span style="color:var(--blue)">"period"</span>: <span style="color:var(--accent)">"24h"</span>,
+  <span style="color:var(--blue)">"summary"</span>: {
+    <span style="color:var(--blue)">"total_requests"</span>: <span style="color:var(--signal)">4521</span>,
+    <span style="color:var(--blue)">"unique_agents"</span>: <span style="color:var(--signal)">87</span>,
+    <span style="color:var(--blue)">"handshakes"</span>: <span style="color:var(--signal)">134</span>,
+    <span style="color:var(--blue)">"rfps_received"</span>: <span style="color:var(--signal)">98</span>,
+    <span style="color:var(--blue)">"negotiations_started"</span>: <span style="color:var(--signal)">76</span>,
+    <span style="color:var(--blue)">"settlements_completed"</span>: <span style="color:var(--signal)">52</span>,
+    <span style="color:var(--blue)">"total_revenue"</span>: {
+      <span style="color:var(--blue)">"amount"</span>: <span style="color:var(--signal)">284750.00</span>,
+      <span style="color:var(--blue)">"currency"</span>: <span style="color:var(--accent)">"USD"</span>
+    }
+  },
+  <span style="color:var(--blue)">"timeseries"</span>: [
+    {<span style="color:var(--blue)">"timestamp"</span>: <span style="color:var(--accent)">"2026-03-21T15:00:00Z"</span>, <span style="color:var(--blue)">"requests"</span>: <span style="color:var(--signal)">185</span>, <span style="color:var(--blue)">"settlements"</span>: <span style="color:var(--signal)">2</span>},
+    {<span style="color:var(--blue)">"timestamp"</span>: <span style="color:var(--accent)">"2026-03-21T16:00:00Z"</span>, <span style="color:var(--blue)">"requests"</span>: <span style="color:var(--signal)">203</span>, <span style="color:var(--blue)">"settlements"</span>: <span style="color:var(--signal)">3</span>},
+    {<span style="color:var(--blue)">"timestamp"</span>: <span style="color:var(--accent)">"2026-03-21T17:00:00Z"</span>, <span style="color:var(--blue)">"requests"</span>: <span style="color:var(--signal)">197</span>, <span style="color:var(--blue)">"settlements"</span>: <span style="color:var(--signal)">2</span>}
+  ]
+}</pre>
+    </div>
+
+    <span class="section-anchor" id="analytics-conversion"></span>
+    <div class="endpoint-block">
+      <div class="endpoint-header">
+        <span class="method-pill get">GET</span>
+        <span class="endpoint-path">/avp/analytics/conversion</span>
+      </div>
+      <p class="endpoint-desc">Returns conversion funnel analytics showing how many interactions progress through each stage of the AVP flow: handshake, RFP, negotiation, and settlement.</p>
+
+      <table class="param-table">
+        <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>period</td><td><span class="type">string</span> <span class="optional">optional</span></td><td>Time period: 24h, 7d, 30d, 90d (default: 30d)</td></tr>
+        </tbody>
+      </table>
+
+      <div class="response-label"><span class="status status-200">200</span> Response</div>
+      <pre style="font-family:var(--mono);font-size:0.78rem;line-height:1.7;color:var(--text-dim);background:var(--bg);padding:1rem;border-radius:6px;overflow-x:auto;border:1px solid var(--border)">{
+  <span style="color:var(--blue)">"period"</span>: <span style="color:var(--accent)">"30d"</span>,
+  <span style="color:var(--blue)">"funnel"</span>: {
+    <span style="color:var(--blue)">"handshakes"</span>: <span style="color:var(--signal)">3420</span>,
+    <span style="color:var(--blue)">"rfps_submitted"</span>: <span style="color:var(--signal)">2156</span>,
+    <span style="color:var(--blue)">"proposals_generated"</span>: <span style="color:var(--signal)">2098</span>,
+    <span style="color:var(--blue)">"negotiations_started"</span>: <span style="color:var(--signal)">1654</span>,
+    <span style="color:var(--blue)">"negotiations_accepted"</span>: <span style="color:var(--signal)">1247</span>,
+    <span style="color:var(--blue)">"settlements_completed"</span>: <span style="color:var(--signal)">1198</span>
+  },
+  <span style="color:var(--blue)">"conversion_rates"</span>: {
+    <span style="color:var(--blue)">"handshake_to_rfp"</span>: <span style="color:var(--signal)">0.63</span>,
+    <span style="color:var(--blue)">"rfp_to_negotiation"</span>: <span style="color:var(--signal)">0.77</span>,
+    <span style="color:var(--blue)">"negotiation_to_accept"</span>: <span style="color:var(--signal)">0.75</span>,
+    <span style="color:var(--blue)">"accept_to_settlement"</span>: <span style="color:var(--signal)">0.96</span>,
+    <span style="color:var(--blue)">"overall"</span>: <span style="color:var(--signal)">0.35</span>
+  },
+  <span style="color:var(--blue)">"avg_negotiation_rounds"</span>: <span style="color:var(--signal)">3.2</span>,
+  <span style="color:var(--blue)">"top_rejection_reasons"</span>: [
+    {<span style="color:var(--blue)">"reason"</span>: <span style="color:var(--accent)">"price_too_high"</span>, <span style="color:var(--blue)">"count"</span>: <span style="color:var(--signal)">203</span>},
+    {<span style="color:var(--blue)">"reason"</span>: <span style="color:var(--accent)">"capability_mismatch"</span>, <span style="color:var(--blue)">"count"</span>: <span style="color:var(--signal)">89</span>},
+    {<span style="color:var(--blue)">"reason"</span>: <span style="color:var(--accent)">"sla_insufficient"</span>, <span style="color:var(--blue)">"count"</span>: <span style="color:var(--signal)">67</span>}
+  ]
+}</pre>
+    </div>
+
+    <span class="section-anchor" id="analytics-latency"></span>
+    <div class="endpoint-block">
+      <div class="endpoint-header">
+        <span class="method-pill get">GET</span>
+        <span class="endpoint-path">/avp/analytics/latency</span>
+      </div>
+      <p class="endpoint-desc">Returns latency metrics broken down by endpoint and percentile. Useful for monitoring agent responsiveness and identifying performance bottlenecks.</p>
+
+      <table class="param-table">
+        <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>period</td><td><span class="type">string</span> <span class="optional">optional</span></td><td>Time period: 1h, 24h, 7d (default: 24h)</td></tr>
+        </tbody>
+      </table>
+
+      <div class="response-label"><span class="status status-200">200</span> Response</div>
+      <pre style="font-family:var(--mono);font-size:0.78rem;line-height:1.7;color:var(--text-dim);background:var(--bg);padding:1rem;border-radius:6px;overflow-x:auto;border:1px solid var(--border)">{
+  <span style="color:var(--blue)">"period"</span>: <span style="color:var(--accent)">"24h"</span>,
+  <span style="color:var(--blue)">"endpoints"</span>: {
+    <span style="color:var(--blue)">"/avp/handshake"</span>: {
+      <span style="color:var(--blue)">"p50"</span>: <span style="color:var(--signal)">82</span>,
+      <span style="color:var(--blue)">"p90"</span>: <span style="color:var(--signal)">145</span>,
+      <span style="color:var(--blue)">"p99"</span>: <span style="color:var(--signal)">320</span>,
+      <span style="color:var(--blue)">"count"</span>: <span style="color:var(--signal)">134</span>
+    },
+    <span style="color:var(--blue)">"/avp/rfp"</span>: {
+      <span style="color:var(--blue)">"p50"</span>: <span style="color:var(--signal)">1250</span>,
+      <span style="color:var(--blue)">"p90"</span>: <span style="color:var(--signal)">3400</span>,
+      <span style="color:var(--blue)">"p99"</span>: <span style="color:var(--signal)">8900</span>,
+      <span style="color:var(--blue)">"count"</span>: <span style="color:var(--signal)">98</span>
+    },
+    <span style="color:var(--blue)">"/avp/negotiate"</span>: {
+      <span style="color:var(--blue)">"p50"</span>: <span style="color:var(--signal)">340</span>,
+      <span style="color:var(--blue)">"p90"</span>: <span style="color:var(--signal)">780</span>,
+      <span style="color:var(--blue)">"p99"</span>: <span style="color:var(--signal)">1500</span>,
+      <span style="color:var(--blue)">"count"</span>: <span style="color:var(--signal)">245</span>
+    },
+    <span style="color:var(--blue)">"/avp/settle"</span>: {
+      <span style="color:var(--blue)">"p50"</span>: <span style="color:var(--signal)">520</span>,
+      <span style="color:var(--blue)">"p90"</span>: <span style="color:var(--signal)">1100</span>,
+      <span style="color:var(--blue)">"p99"</span>: <span style="color:var(--signal)">2800</span>,
+      <span style="color:var(--blue)">"count"</span>: <span style="color:var(--signal)">52</span>
+    }
+  },
+  <span style="color:var(--blue)">"unit"</span>: <span style="color:var(--accent)">"milliseconds"</span>
+}</pre>
+    </div>
+  </div>
+
+  <!-- ==================== DISPUTES ==================== -->
+  <div class="api-section" id="disputes-section">
+    <span class="section-anchor" id="dispute-create"></span>
+    <h2><span class="material-icons-outlined">gavel</span> Disputes</h2>
+    <p>Dispute endpoints handle disagreements between buyer and vendor agents after a settlement. Disputes can be raised for SLA violations, billing discrepancies, or service quality issues.</p>
+
+    <div class="endpoint-block">
+      <div class="endpoint-header">
+        <span class="method-pill post">POST</span>
+        <span class="endpoint-path">/avp/dispute</span>
+      </div>
+      <p class="endpoint-desc">Creates a new dispute against a settlement. The dispute includes evidence, requested resolution, and a severity classification. Both parties are notified immediately.</p>
+
+      <table class="param-table">
+        <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>settlement_id</td><td><span class="type">string</span> <span class="required">required</span></td><td>The settlement being disputed</td></tr>
+          <tr><td>category</td><td><span class="type">string</span> <span class="required">required</span></td><td>Dispute category: sla_violation, billing, quality, terms_breach</td></tr>
+          <tr><td>severity</td><td><span class="type">string</span> <span class="required">required</span></td><td>Severity level: low, medium, high, critical</td></tr>
+          <tr><td>description</td><td><span class="type">string</span> <span class="required">required</span></td><td>Detailed description of the dispute</td></tr>
+          <tr><td>evidence</td><td><span class="type">object[]</span> <span class="optional">optional</span></td><td>Array of evidence items (logs, metrics, screenshots)</td></tr>
+          <tr><td>requested_resolution</td><td><span class="type">string</span> <span class="required">required</span></td><td>Desired outcome: refund, credit, service_fix, contract_adjustment</td></tr>
+        </tbody>
+      </table>
+
+      <div class="response-label"><span class="status status-201">201</span> Response</div>
+      <pre style="font-family:var(--mono);font-size:0.78rem;line-height:1.7;color:var(--text-dim);background:var(--bg);padding:1rem;border-radius:6px;overflow-x:auto;border:1px solid var(--border)">{
+  <span style="color:var(--blue)">"dispute_id"</span>: <span style="color:var(--accent)">"dsp_3e4f5a6b7c8d"</span>,
+  <span style="color:var(--blue)">"settlement_id"</span>: <span style="color:var(--accent)">"stl_1a2b3c4d5e6f"</span>,
+  <span style="color:var(--blue)">"status"</span>: <span style="color:var(--accent)">"open"</span>,
+  <span style="color:var(--blue)">"category"</span>: <span style="color:var(--accent)">"sla_violation"</span>,
+  <span style="color:var(--blue)">"severity"</span>: <span style="color:var(--accent)">"high"</span>,
+  <span style="color:var(--blue)">"assigned_to"</span>: <span style="color:var(--accent)">"vendor_dispute_handler"</span>,
+  <span style="color:var(--blue)">"response_deadline"</span>: <span style="color:var(--accent)">"2026-03-23T14:30:00Z"</span>,
+  <span style="color:var(--blue)">"created_at"</span>: <span style="color:var(--accent)">"2026-03-22T14:30:00Z"</span>,
+  <span style="color:var(--blue)">"notifications_sent"</span>: {
+    <span style="color:var(--blue)">"buyer"</span>: <span style="color:var(--purple)">true</span>,
+    <span style="color:var(--blue)">"vendor"</span>: <span style="color:var(--purple)">true</span>
+  }
+}</pre>
+    </div>
+
+    <span class="section-anchor" id="dispute-get"></span>
+    <div class="endpoint-block">
+      <div class="endpoint-header">
+        <span class="method-pill get">GET</span>
+        <span class="endpoint-path">/avp/dispute/<span class="param">{id}</span></span>
+      </div>
+      <p class="endpoint-desc">Retrieves the current state of a dispute, including all messages, evidence, and resolution proposals exchanged between the parties.</p>
+
+      <table class="param-table">
+        <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>id</td><td><span class="type">string</span> <span class="required">required</span></td><td>The dispute ID (path parameter)</td></tr>
+        </tbody>
+      </table>
+
+      <div class="response-label"><span class="status status-200">200</span> Response</div>
+      <pre style="font-family:var(--mono);font-size:0.78rem;line-height:1.7;color:var(--text-dim);background:var(--bg);padding:1rem;border-radius:6px;overflow-x:auto;border:1px solid var(--border)">{
+  <span style="color:var(--blue)">"dispute_id"</span>: <span style="color:var(--accent)">"dsp_3e4f5a6b7c8d"</span>,
+  <span style="color:var(--blue)">"settlement_id"</span>: <span style="color:var(--accent)">"stl_1a2b3c4d5e6f"</span>,
+  <span style="color:var(--blue)">"status"</span>: <span style="color:var(--accent)">"in_review"</span>,
+  <span style="color:var(--blue)">"category"</span>: <span style="color:var(--accent)">"sla_violation"</span>,
+  <span style="color:var(--blue)">"severity"</span>: <span style="color:var(--accent)">"high"</span>,
+  <span style="color:var(--blue)">"description"</span>: <span style="color:var(--accent)">"Uptime dropped below 99.95% SLA for 3 consecutive days"</span>,
+  <span style="color:var(--blue)">"evidence"</span>: [
+    {
+      <span style="color:var(--blue)">"type"</span>: <span style="color:var(--accent)">"metrics"</span>,
+      <span style="color:var(--blue)">"description"</span>: <span style="color:var(--accent)">"Uptime monitoring data showing 99.2% over 72h period"</span>,
+      <span style="color:var(--blue)">"url"</span>: <span style="color:var(--accent)">"https://monitoring.buyer.com/report/abc123"</span>
+    }
+  ],
+  <span style="color:var(--blue)">"messages"</span>: [
+    {
+      <span style="color:var(--blue)">"from"</span>: <span style="color:var(--accent)">"buyer"</span>,
+      <span style="color:var(--blue)">"message"</span>: <span style="color:var(--accent)">"SLA breach detected, requesting service credit per contract terms"</span>,
+      <span style="color:var(--blue)">"at"</span>: <span style="color:var(--accent)">"2026-03-22T14:30:00Z"</span>
+    },
+    {
+      <span style="color:var(--blue)">"from"</span>: <span style="color:var(--accent)">"vendor"</span>,
+      <span style="color:var(--blue)">"message"</span>: <span style="color:var(--accent)">"Acknowledged. Investigating root cause. Preliminary credit calculation in progress."</span>,
+      <span style="color:var(--blue)">"at"</span>: <span style="color:var(--accent)">"2026-03-22T15:10:00Z"</span>
+    }
+  ],
+  <span style="color:var(--blue)">"requested_resolution"</span>: <span style="color:var(--accent)">"credit"</span>,
+  <span style="color:var(--blue)">"created_at"</span>: <span style="color:var(--accent)">"2026-03-22T14:30:00Z"</span>,
+  <span style="color:var(--blue)">"updated_at"</span>: <span style="color:var(--accent)">"2026-03-22T15:10:00Z"</span>
+}</pre>
+    </div>
+
+    <span class="section-anchor" id="dispute-escalate"></span>
+    <div class="endpoint-block">
+      <div class="endpoint-header">
+        <span class="method-pill post">POST</span>
+        <span class="endpoint-path">/avp/dispute/<span class="param">{id}</span>/escalate</span>
+      </div>
+      <p class="endpoint-desc">Escalates a dispute to a higher authority, such as the AVP arbitration panel or designated human mediators. Escalation is typically used when agents cannot resolve the dispute autonomously.</p>
+
+      <table class="param-table">
+        <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>id</td><td><span class="type">string</span> <span class="required">required</span></td><td>The dispute ID (path parameter)</td></tr>
+          <tr><td>reason</td><td><span class="type">string</span> <span class="required">required</span></td><td>Reason for escalation</td></tr>
+          <tr><td>escalation_level</td><td><span class="type">string</span> <span class="optional">optional</span></td><td>Level: human_mediator, arbitration_panel (default: human_mediator)</td></tr>
+        </tbody>
+      </table>
+
+      <div class="response-label"><span class="status status-200">200</span> Response</div>
+      <pre style="font-family:var(--mono);font-size:0.78rem;line-height:1.7;color:var(--text-dim);background:var(--bg);padding:1rem;border-radius:6px;overflow-x:auto;border:1px solid var(--border)">{
+  <span style="color:var(--blue)">"dispute_id"</span>: <span style="color:var(--accent)">"dsp_3e4f5a6b7c8d"</span>,
+  <span style="color:var(--blue)">"status"</span>: <span style="color:var(--accent)">"escalated"</span>,
+  <span style="color:var(--blue)">"escalation_level"</span>: <span style="color:var(--accent)">"arbitration_panel"</span>,
+  <span style="color:var(--blue)">"escalated_at"</span>: <span style="color:var(--accent)">"2026-03-23T10:00:00Z"</span>,
+  <span style="color:var(--blue)">"arbitration_case_id"</span>: <span style="color:var(--accent)">"arb_9h0i1j2k3l4m"</span>,
+  <span style="color:var(--blue)">"expected_resolution"</span>: <span style="color:var(--accent)">"2026-03-30T00:00:00Z"</span>,
+  <span style="color:var(--blue)">"panel_assigned"</span>: <span style="color:var(--purple)">true</span>
+}</pre>
+    </div>
+  </div>
+
+  <!-- ==================== AUDIT TRAIL ==================== -->
+  <div class="api-section" id="audit-section">
+    <span class="section-anchor" id="audit-list"></span>
+    <h2><span class="material-icons-outlined">history</span> Audit Trail</h2>
+    <p>Audit trail endpoints provide immutable logs of all AVP interactions. Every handshake, negotiation round, settlement, and dispute action is recorded for compliance and debugging.</p>
+
+    <div class="endpoint-block">
+      <div class="endpoint-header">
+        <span class="method-pill get">GET</span>
+        <span class="endpoint-path">/avp/audit</span>
+      </div>
+      <p class="endpoint-desc">Returns a paginated list of audit log entries for the authenticated agent. Entries can be filtered by event type, session, time range, and counterparty.</p>
+
+      <table class="param-table">
+        <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>session_id</td><td><span class="type">string</span> <span class="optional">optional</span></td><td>Filter by session ID</td></tr>
+          <tr><td>event_type</td><td><span class="type">string</span> <span class="optional">optional</span></td><td>Filter by event type (handshake, rfp, negotiate, settle, dispute)</td></tr>
+          <tr><td>from</td><td><span class="type">string</span> <span class="optional">optional</span></td><td>Start of time range (ISO 8601)</td></tr>
+          <tr><td>to</td><td><span class="type">string</span> <span class="optional">optional</span></td><td>End of time range (ISO 8601)</td></tr>
+          <tr><td>limit</td><td><span class="type">integer</span> <span class="optional">optional</span></td><td>Max results (default: 50, max: 200)</td></tr>
+          <tr><td>cursor</td><td><span class="type">string</span> <span class="optional">optional</span></td><td>Pagination cursor from previous response</td></tr>
+        </tbody>
+      </table>
+
+      <div class="response-label"><span class="status status-200">200</span> Response</div>
+      <pre style="font-family:var(--mono);font-size:0.78rem;line-height:1.7;color:var(--text-dim);background:var(--bg);padding:1rem;border-radius:6px;overflow-x:auto;border:1px solid var(--border)">{
+  <span style="color:var(--blue)">"entries"</span>: [
+    {
+      <span style="color:var(--blue)">"id"</span>: <span style="color:var(--accent)">"aud_001a2b3c4d5e"</span>,
+      <span style="color:var(--blue)">"event_type"</span>: <span style="color:var(--accent)">"negotiation.counter_proposed"</span>,
+      <span style="color:var(--blue)">"session_id"</span>: <span style="color:var(--accent)">"ses_7f2a3b8c1d4e5f6a"</span>,
+      <span style="color:var(--blue)">"agent_id"</span>: <span style="color:var(--accent)">"agent://buyer.example.com/procurement-v2"</span>,
+      <span style="color:var(--blue)">"counterparty"</span>: <span style="color:var(--accent)">"agent://vendor.example.com/sales-agent-v3"</span>,
+      <span style="color:var(--blue)">"action"</span>: <span style="color:var(--accent)">"Buyer submitted counter-proposal in round 2"</span>,
+      <span style="color:var(--blue)">"payload_hash"</span>: <span style="color:var(--accent)">"sha256:e3b0c44298fc1c14..."</span>,
+      <span style="color:var(--blue)">"ip_address"</span>: <span style="color:var(--accent)">"198.51.100.42"</span>,
+      <span style="color:var(--blue)">"timestamp"</span>: <span style="color:var(--accent)">"2026-03-22T14:33:00Z"</span>
+    },
+    {
+      <span style="color:var(--blue)">"id"</span>: <span style="color:var(--accent)">"aud_002f3g4h5i6j"</span>,
+      <span style="color:var(--blue)">"event_type"</span>: <span style="color:var(--accent)">"rfp.submitted"</span>,
+      <span style="color:var(--blue)">"session_id"</span>: <span style="color:var(--accent)">"ses_7f2a3b8c1d4e5f6a"</span>,
+      <span style="color:var(--blue)">"agent_id"</span>: <span style="color:var(--accent)">"agent://buyer.example.com/procurement-v2"</span>,
+      <span style="color:var(--blue)">"counterparty"</span>: <span style="color:var(--accent)">"agent://vendor.example.com/sales-agent-v3"</span>,
+      <span style="color:var(--blue)">"action"</span>: <span style="color:var(--accent)">"RFP submitted with 4 requirements"</span>,
+      <span style="color:var(--blue)">"payload_hash"</span>: <span style="color:var(--accent)">"sha256:d7a8fbb307d7809..."</span>,
+      <span style="color:var(--blue)">"ip_address"</span>: <span style="color:var(--accent)">"198.51.100.42"</span>,
+      <span style="color:var(--blue)">"timestamp"</span>: <span style="color:var(--accent)">"2026-03-22T14:31:00Z"</span>
+    }
+  ],
+  <span style="color:var(--blue)">"cursor"</span>: <span style="color:var(--accent)">"eyJsYXN0X2lkIjoiYXVkXzAwMmYzZzRoNWk2aiJ9"</span>,
+  <span style="color:var(--blue)">"has_more"</span>: <span style="color:var(--purple)">true</span>
+}</pre>
+    </div>
+
+    <span class="section-anchor" id="audit-export"></span>
+    <div class="endpoint-block">
+      <div class="endpoint-header">
+        <span class="method-pill post">POST</span>
+        <span class="endpoint-path">/avp/audit/export</span>
+      </div>
+      <p class="endpoint-desc">Initiates an export of audit log data for a specified time range. The export is generated asynchronously and a download URL is provided once ready. Useful for compliance reporting.</p>
+
+      <table class="param-table">
+        <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>from</td><td><span class="type">string</span> <span class="required">required</span></td><td>Start of time range (ISO 8601)</td></tr>
+          <tr><td>to</td><td><span class="type">string</span> <span class="required">required</span></td><td>End of time range (ISO 8601)</td></tr>
+          <tr><td>format</td><td><span class="type">string</span> <span class="optional">optional</span></td><td>Export format: json, csv, parquet (default: json)</td></tr>
+          <tr><td>include_payloads</td><td><span class="type">boolean</span> <span class="optional">optional</span></td><td>Include full request/response payloads (default: false)</td></tr>
+        </tbody>
+      </table>
+
+      <div class="response-label"><span class="status status-200">200</span> Response</div>
+      <pre style="font-family:var(--mono);font-size:0.78rem;line-height:1.7;color:var(--text-dim);background:var(--bg);padding:1rem;border-radius:6px;overflow-x:auto;border:1px solid var(--border)">{
+  <span style="color:var(--blue)">"export_id"</span>: <span style="color:var(--accent)">"exp_6k7l8m9n0o1p"</span>,
+  <span style="color:var(--blue)">"status"</span>: <span style="color:var(--accent)">"processing"</span>,
+  <span style="color:var(--blue)">"format"</span>: <span style="color:var(--accent)">"json"</span>,
+  <span style="color:var(--blue)">"from"</span>: <span style="color:var(--accent)">"2026-03-01T00:00:00Z"</span>,
+  <span style="color:var(--blue)">"to"</span>: <span style="color:var(--accent)">"2026-03-22T23:59:59Z"</span>,
+  <span style="color:var(--blue)">"estimated_records"</span>: <span style="color:var(--signal)">12450</span>,
+  <span style="color:var(--blue)">"estimated_ready_at"</span>: <span style="color:var(--accent)">"2026-03-22T14:35:00Z"</span>,
+  <span style="color:var(--blue)">"download_url"</span>: <span style="color:var(--purple)">null</span>
+}</pre>
+    </div>
+  </div>
+
+  <!-- ==================== GDPR & DATA ==================== -->
+  <div class="api-section" id="gdpr-section">
+    <span class="section-anchor" id="gdpr-delete"></span>
+    <h2><span class="material-icons-outlined">privacy_tip</span> GDPR &amp; Data</h2>
+    <p>Data management endpoints support GDPR compliance and data sovereignty requirements. Agents can request deletion of negotiation data or export all stored data for a given agent identity.</p>
+
+    <div class="endpoint-block">
+      <div class="endpoint-header">
+        <span class="method-pill delete">DELETE</span>
+        <span class="endpoint-path">/avp/negotiations/<span class="param">{id}</span>/data</span>
+      </div>
+      <p class="endpoint-desc">Requests deletion of all data associated with a specific negotiation. This includes RFP content, proposals, counter-proposals, and messages. Audit log entries are retained for compliance but have their payloads redacted.</p>
+
+      <table class="param-table">
+        <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>id</td><td><span class="type">string</span> <span class="required">required</span></td><td>The negotiation ID (path parameter)</td></tr>
+          <tr><td>reason</td><td><span class="type">string</span> <span class="optional">optional</span></td><td>Reason for deletion request (for audit purposes)</td></tr>
+        </tbody>
+      </table>
+
+      <div class="response-label"><span class="status status-200">200</span> Response</div>
+      <pre style="font-family:var(--mono);font-size:0.78rem;line-height:1.7;color:var(--text-dim);background:var(--bg);padding:1rem;border-radius:6px;overflow-x:auto;border:1px solid var(--border)">{
+  <span style="color:var(--blue)">"negotiation_id"</span>: <span style="color:var(--accent)">"neg_4d5e6f7a8b9c"</span>,
+  <span style="color:var(--blue)">"status"</span>: <span style="color:var(--accent)">"deletion_scheduled"</span>,
+  <span style="color:var(--blue)">"data_types_affected"</span>: [
+    <span style="color:var(--accent)">"rfp_content"</span>,
+    <span style="color:var(--accent)">"proposals"</span>,
+    <span style="color:var(--accent)">"counter_proposals"</span>,
+    <span style="color:var(--accent)">"negotiation_messages"</span>
+  ],
+  <span style="color:var(--blue)">"audit_entries_redacted"</span>: <span style="color:var(--signal)">8</span>,
+  <span style="color:var(--blue)">"estimated_completion"</span>: <span style="color:var(--accent)">"2026-03-22T15:00:00Z"</span>,
+  <span style="color:var(--blue)">"confirmation_token"</span>: <span style="color:var(--accent)">"del_confirm_x1y2z3a4b5"</span>
+}</pre>
+    </div>
+
+    <span class="section-anchor" id="gdpr-export"></span>
+    <div class="endpoint-block">
+      <div class="endpoint-header">
+        <span class="method-pill get">GET</span>
+        <span class="endpoint-path">/avp/data/export/<span class="param">{agent_id}</span></span>
+      </div>
+      <p class="endpoint-desc">Exports all data stored about or by a specific agent. This supports GDPR Article 20 (data portability) requirements. The export includes all negotiations, settlements, reviews, and profile data.</p>
+
+      <table class="param-table">
+        <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>agent_id</td><td><span class="type">string</span> <span class="required">required</span></td><td>URL-encoded agent ID (path parameter)</td></tr>
+          <tr><td>format</td><td><span class="type">string</span> <span class="optional">optional</span></td><td>Export format: json or csv (default: json)</td></tr>
+        </tbody>
+      </table>
+
+      <div class="response-label"><span class="status status-200">200</span> Response</div>
+      <pre style="font-family:var(--mono);font-size:0.78rem;line-height:1.7;color:var(--text-dim);background:var(--bg);padding:1rem;border-radius:6px;overflow-x:auto;border:1px solid var(--border)">{
+  <span style="color:var(--blue)">"export_id"</span>: <span style="color:var(--accent)">"gdpr_exp_7a8b9c0d1e2f"</span>,
+  <span style="color:var(--blue)">"agent_id"</span>: <span style="color:var(--accent)">"agent://buyer.example.com/procurement-v2"</span>,
+  <span style="color:var(--blue)">"status"</span>: <span style="color:var(--accent)">"processing"</span>,
+  <span style="color:var(--blue)">"data_categories"</span>: [
+    <span style="color:var(--accent)">"profile"</span>,
+    <span style="color:var(--accent)">"negotiations"</span>,
+    <span style="color:var(--accent)">"settlements"</span>,
+    <span style="color:var(--accent)">"reviews"</span>,
+    <span style="color:var(--accent)">"audit_logs"</span>
+  ],
+  <span style="color:var(--blue)">"estimated_size_mb"</span>: <span style="color:var(--signal)">24.5</span>,
+  <span style="color:var(--blue)">"estimated_ready_at"</span>: <span style="color:var(--accent)">"2026-03-22T15:15:00Z"</span>,
+  <span style="color:var(--blue)">"download_url"</span>: <span style="color:var(--purple)">null</span>,
+  <span style="color:var(--blue)">"expires_at"</span>: <span style="color:var(--accent)">"2026-03-29T15:15:00Z"</span>
+}</pre>
+    </div>
+  </div>
+
+  <!-- ==================== SANDBOX ==================== -->
+  <div class="api-section" id="sandbox-section">
+    <span class="section-anchor" id="sandbox-create"></span>
+    <h2><span class="material-icons-outlined">science</span> Sandbox</h2>
+    <p>Sandbox endpoints provide a safe testing environment where agents can practice the full AVP flow without creating real commitments. All sandbox sessions use simulated data and are isolated from production.</p>
+
+    <div class="endpoint-block">
+      <div class="endpoint-header">
+        <span class="method-pill post">POST</span>
+        <span class="endpoint-path">/avp/sandbox/session</span>
+      </div>
+      <p class="endpoint-desc">Creates a new sandbox session with configurable vendor behavior. You can specify how the simulated vendor agent should respond to RFPs, negotiate, and handle edge cases. Ideal for integration testing.</p>
+
+      <table class="param-table">
+        <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>scenario</td><td><span class="type">string</span> <span class="optional">optional</span></td><td>Preset scenario: happy_path, hard_negotiator, slow_responder, error_prone (default: happy_path)</td></tr>
+          <tr><td>vendor_persona</td><td><span class="type">object</span> <span class="optional">optional</span></td><td>Custom vendor behavior configuration</td></tr>
+          <tr><td>max_duration_minutes</td><td><span class="type">integer</span> <span class="optional">optional</span></td><td>Max session duration (default: 60, max: 480)</td></tr>
+          <tr><td>record_interactions</td><td><span class="type">boolean</span> <span class="optional">optional</span></td><td>Whether to record all interactions for replay (default: true)</td></tr>
+        </tbody>
+      </table>
+
+      <div class="response-label"><span class="status status-201">201</span> Response</div>
+      <pre style="font-family:var(--mono);font-size:0.78rem;line-height:1.7;color:var(--text-dim);background:var(--bg);padding:1rem;border-radius:6px;overflow-x:auto;border:1px solid var(--border)">{
+  <span style="color:var(--blue)">"sandbox_session_id"</span>: <span style="color:var(--accent)">"sbx_2a3b4c5d6e7f"</span>,
+  <span style="color:var(--blue)">"status"</span>: <span style="color:var(--accent)">"active"</span>,
+  <span style="color:var(--blue)">"scenario"</span>: <span style="color:var(--accent)">"happy_path"</span>,
+  <span style="color:var(--blue)">"vendor_agent_id"</span>: <span style="color:var(--accent)">"agent://sandbox.avp-protocol.org/sim-vendor-001"</span>,
+  <span style="color:var(--blue)">"base_url"</span>: <span style="color:var(--accent)">"https://sandbox.avp-protocol.org/sbx_2a3b4c5d6e7f"</span>,
+  <span style="color:var(--blue)">"expires_at"</span>: <span style="color:var(--accent)">"2026-03-22T15:30:00Z"</span>,
+  <span style="color:var(--blue)">"recording"</span>: <span style="color:var(--purple)">true</span>,
+  <span style="color:var(--blue)">"log_url"</span>: <span style="color:var(--accent)">"/avp/sandbox/session/sbx_2a3b4c5d6e7f/log"</span>
+}</pre>
+    </div>
+
+    <span class="section-anchor" id="sandbox-log"></span>
+    <div class="endpoint-block">
+      <div class="endpoint-header">
+        <span class="method-pill get">GET</span>
+        <span class="endpoint-path">/avp/sandbox/session/<span class="param">{id}</span>/log</span>
+      </div>
+      <p class="endpoint-desc">Retrieves the interaction log for a sandbox session. Shows every request and response with timing data, making it easy to debug agent integration issues.</p>
+
+      <table class="param-table">
+        <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>id</td><td><span class="type">string</span> <span class="required">required</span></td><td>The sandbox session ID (path parameter)</td></tr>
+        </tbody>
+      </table>
+
+      <div class="response-label"><span class="status status-200">200</span> Response</div>
+      <pre style="font-family:var(--mono);font-size:0.78rem;line-height:1.7;color:var(--text-dim);background:var(--bg);padding:1rem;border-radius:6px;overflow-x:auto;border:1px solid var(--border)">{
+  <span style="color:var(--blue)">"sandbox_session_id"</span>: <span style="color:var(--accent)">"sbx_2a3b4c5d6e7f"</span>,
+  <span style="color:var(--blue)">"status"</span>: <span style="color:var(--accent)">"active"</span>,
+  <span style="color:var(--blue)">"total_interactions"</span>: <span style="color:var(--signal)">6</span>,
+  <span style="color:var(--blue)">"interactions"</span>: [
+    {
+      <span style="color:var(--blue)">"sequence"</span>: <span style="color:var(--signal)">1</span>,
+      <span style="color:var(--blue)">"method"</span>: <span style="color:var(--accent)">"POST"</span>,
+      <span style="color:var(--blue)">"endpoint"</span>: <span style="color:var(--accent)">"/avp/handshake"</span>,
+      <span style="color:var(--blue)">"status_code"</span>: <span style="color:var(--signal)">200</span>,
+      <span style="color:var(--blue)">"latency_ms"</span>: <span style="color:var(--signal)">45</span>,
+      <span style="color:var(--blue)">"timestamp"</span>: <span style="color:var(--accent)">"2026-03-22T14:30:05Z"</span>
+    },
+    {
+      <span style="color:var(--blue)">"sequence"</span>: <span style="color:var(--signal)">2</span>,
+      <span style="color:var(--blue)">"method"</span>: <span style="color:var(--accent)">"POST"</span>,
+      <span style="color:var(--blue)">"endpoint"</span>: <span style="color:var(--accent)">"/avp/rfp"</span>,
+      <span style="color:var(--blue)">"status_code"</span>: <span style="color:var(--signal)">201</span>,
+      <span style="color:var(--blue)">"latency_ms"</span>: <span style="color:var(--signal)">1200</span>,
+      <span style="color:var(--blue)">"timestamp"</span>: <span style="color:var(--accent)">"2026-03-22T14:30:10Z"</span>
+    },
+    {
+      <span style="color:var(--blue)">"sequence"</span>: <span style="color:var(--signal)">3</span>,
+      <span style="color:var(--blue)">"method"</span>: <span style="color:var(--accent)">"GET"</span>,
+      <span style="color:var(--blue)">"endpoint"</span>: <span style="color:var(--accent)">"/avp/rfp/rfp_sandbox_001/proposal"</span>,
+      <span style="color:var(--blue)">"status_code"</span>: <span style="color:var(--signal)">200</span>,
+      <span style="color:var(--blue)">"latency_ms"</span>: <span style="color:var(--signal)">32</span>,
+      <span style="color:var(--blue)">"timestamp"</span>: <span style="color:var(--accent)">"2026-03-22T14:30:15Z"</span>
+    },
+    {
+      <span style="color:var(--blue)">"sequence"</span>: <span style="color:var(--signal)">4</span>,
+      <span style="color:var(--blue)">"method"</span>: <span style="color:var(--accent)">"POST"</span>,
+      <span style="color:var(--blue)">"endpoint"</span>: <span style="color:var(--accent)">"/avp/negotiate"</span>,
+      <span style="color:var(--blue)">"status_code"</span>: <span style="color:var(--signal)">200</span>,
+      <span style="color:var(--blue)">"latency_ms"</span>: <span style="color:var(--signal)">280</span>,
+      <span style="color:var(--blue)">"timestamp"</span>: <span style="color:var(--accent)">"2026-03-22T14:30:20Z"</span>
+    },
+    {
+      <span style="color:var(--blue)">"sequence"</span>: <span style="color:var(--signal)">5</span>,
+      <span style="color:var(--blue)">"method"</span>: <span style="color:var(--accent)">"POST"</span>,
+      <span style="color:var(--blue)">"endpoint"</span>: <span style="color:var(--accent)">"/avp/negotiate/accept"</span>,
+      <span style="color:var(--blue)">"status_code"</span>: <span style="color:var(--signal)">200</span>,
+      <span style="color:var(--blue)">"latency_ms"</span>: <span style="color:var(--signal)">95</span>,
+      <span style="color:var(--blue)">"timestamp"</span>: <span style="color:var(--accent)">"2026-03-22T14:30:25Z"</span>
+    },
+    {
+      <span style="color:var(--blue)">"sequence"</span>: <span style="color:var(--signal)">6</span>,
+      <span style="color:var(--blue)">"method"</span>: <span style="color:var(--accent)">"POST"</span>,
+      <span style="color:var(--blue)">"endpoint"</span>: <span style="color:var(--accent)">"/avp/settle"</span>,
+      <span style="color:var(--blue)">"status_code"</span>: <span style="color:var(--signal)">200</span>,
+      <span style="color:var(--blue)">"latency_ms"</span>: <span style="color:var(--signal)">410</span>,
+      <span style="color:var(--blue)">"timestamp"</span>: <span style="color:var(--accent)">"2026-03-22T14:30:30Z"</span>
+    }
+  ],
+  <span style="color:var(--blue)">"total_latency_ms"</span>: <span style="color:var(--signal)">2062</span>
+}</pre>
+    </div>
+  </div>
+
+  <!-- ==================== WEBHOOKS ==================== -->
+  <div class="api-section" id="webhooks-section">
+    <span class="section-anchor" id="webhooks-events"></span>
+    <h2><span class="material-icons-outlined">webhook</span> Webhooks</h2>
+    <p>Webhooks provide real-time notifications for AVP events. Configure a webhook URL during agent registration or in the handshake to receive push notifications about session changes, negotiation updates, and settlement confirmations.</p>
+
+    <h3 style="font-size:1.1rem;font-weight:600;margin:1.5rem 0 1rem">Event Types</h3>
+    <p style="color:var(--text-dim);font-size:0.875rem;margin-bottom:1rem">The following event types can be delivered to your webhook endpoint.</p>
+
+    <ul class="event-list" style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:8px;overflow:hidden">
+      <li><span class="event-type">session.created</span><span class="event-desc">A new session has been established via handshake</span></li>
+      <li><span class="event-type">session.expired</span><span class="event-desc">A session has expired due to inactivity or timeout</span></li>
+      <li><span class="event-type">rfp.received</span><span class="event-desc">A new RFP has been submitted to your agent</span></li>
+      <li><span class="event-type">proposal.ready</span><span class="event-desc">A proposal has been generated and is ready for review</span></li>
+      <li><span class="event-type">negotiation.counter</span><span class="event-desc">A counter-proposal has been submitted</span></li>
+      <li><span class="event-type">negotiation.accepted</span><span class="event-desc">A proposal has been accepted by the buyer</span></li>
+      <li><span class="event-type">negotiation.rejected</span><span class="event-desc">A proposal has been rejected by the buyer</span></li>
+      <li><span class="event-type">negotiation.escalated</span><span class="event-desc">A negotiation has been escalated to human review</span></li>
+      <li><span class="event-type">settlement.completed</span><span class="event-desc">A settlement has been finalized successfully</span></li>
+      <li><span class="event-type">settlement.failed</span><span class="event-desc">A settlement attempt has failed (e.g., payment issue)</span></li>
+      <li><span class="event-type">dispute.opened</span><span class="event-desc">A new dispute has been filed against a settlement</span></li>
+      <li><span class="event-type">dispute.resolved</span><span class="event-desc">A dispute has been resolved</span></li>
+      <li><span class="event-type">trust.review_received</span><span class="event-desc">A new trust review has been published for your agent</span></li>
+    </ul>
+
+    <span class="section-anchor" id="webhooks-payload"></span>
+    <h3 style="font-size:1.1rem;font-weight:600;margin:2rem 0 1rem">Payload Format</h3>
+    <p style="color:var(--text-dim);font-size:0.875rem;margin-bottom:1rem">All webhook payloads follow a consistent envelope format. The payload is signed with the sender's private key, and the signature is included in the <code>AVP-Signature</code> header.</p>
+
+    <div class="endpoint-block">
+      <div class="response-label">Webhook Payload Example</div>
+      <pre style="font-family:var(--mono);font-size:0.78rem;line-height:1.7;color:var(--text-dim);background:var(--bg);padding:1rem;border-radius:6px;overflow-x:auto;border:1px solid var(--border)">{
+  <span style="color:var(--blue)">"webhook_id"</span>: <span style="color:var(--accent)">"wh_8c9d0e1f2a3b"</span>,
+  <span style="color:var(--blue)">"event_type"</span>: <span style="color:var(--accent)">"negotiation.accepted"</span>,
+  <span style="color:var(--blue)">"created_at"</span>: <span style="color:var(--accent)">"2026-03-22T14:37:00Z"</span>,
+  <span style="color:var(--blue)">"agent_id"</span>: <span style="color:var(--accent)">"agent://vendor.example.com/sales-agent-v3"</span>,
+  <span style="color:var(--blue)">"data"</span>: {
+    <span style="color:var(--blue)">"session_id"</span>: <span style="color:var(--accent)">"ses_7f2a3b8c1d4e5f6a"</span>,
+    <span style="color:var(--blue)">"negotiation_id"</span>: <span style="color:var(--accent)">"neg_4d5e6f7a8b9c"</span>,
+    <span style="color:var(--blue)">"proposal_id"</span>: <span style="color:var(--accent)">"prop_8c1d2e3f4a5b"</span>,
+    <span style="color:var(--blue)">"final_amount"</span>: <span style="color:var(--signal)">11250.00</span>,
+    <span style="color:var(--blue)">"currency"</span>: <span style="color:var(--accent)">"USD"</span>,
+    <span style="color:var(--blue)">"buyer_agent"</span>: <span style="color:var(--accent)">"agent://buyer.example.com/procurement-v2"</span>
+  },
+  <span style="color:var(--blue)">"idempotency_key"</span>: <span style="color:var(--accent)">"idk_a1b2c3d4e5f6"</span>
+}</pre>
+    </div>
+
+    <span class="section-anchor" id="webhooks-retry"></span>
+    <h3 style="font-size:1.1rem;font-weight:600;margin:2rem 0 1rem">Retry Policy</h3>
+    <p style="color:var(--text-dim);font-size:0.875rem;margin-bottom:1rem">Webhook deliveries that fail (non-2xx response or timeout) are retried with exponential backoff.</p>
+
+    <div class="info-box tip">
+      <strong>Retry Schedule:</strong> Attempts are made at 0s, 30s, 2m, 15m, 1h, 4h, and 24h after the initial failure (7 retries total). After all retries are exhausted, the event is marked as failed and the agent is notified via the status endpoint.
+    </div>
+
+    <div class="info-box info">
+      <strong>Idempotency:</strong> Every webhook payload includes an <code>idempotency_key</code>. Use this to deduplicate events if your endpoint receives the same webhook more than once. Your endpoint should return <code>200</code> within 10 seconds to be considered successful.
+    </div>
+
+    <table class="param-table">
+      <thead><tr><th>Attempt</th><th>Delay</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td><span class="type">Immediate</span></td><td>First delivery attempt</td></tr>
+        <tr><td>2</td><td><span class="type">30 seconds</span></td><td>First retry</td></tr>
+        <tr><td>3</td><td><span class="type">2 minutes</span></td><td>Second retry</td></tr>
+        <tr><td>4</td><td><span class="type">15 minutes</span></td><td>Third retry</td></tr>
+        <tr><td>5</td><td><span class="type">1 hour</span></td><td>Fourth retry</td></tr>
+        <tr><td>6</td><td><span class="type">4 hours</span></td><td>Fifth retry</td></tr>
+        <tr><td>7</td><td><span class="type">24 hours</span></td><td>Final retry</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</main>
+
+<!-- CODE PANEL (right side) -->
+<aside class="code-panel" id="codePanel">
+
+  <!-- Getting Started code -->
+  <div class="code-section-label">Authentication</div>
+  <div class="code-example">
+    <div class="code-tabs">
+      <button class="code-tab active" onclick="switchTab(this,'auth')">cURL</button>
+      <button class="code-tab" onclick="switchTab(this,'auth')">Node.js</button>
+      <button class="code-tab" onclick="switchTab(this,'auth')">Python</button>
+    </div>
+    <div class="code-body" data-group="auth" data-lang="curl"><span class="flag">curl</span> <span class="flag">-X</span> POST https://vendor.example.com/avp/handshake \
+  <span class="flag">-H</span> <span class="str">"Content-Type: application/json"</span> \
+  <span class="flag">-H</span> <span class="str">"AVP-Version: 0.1.0"</span> \
+  <span class="flag">-H</span> <span class="str">"AVP-Agent-ID: agent://buyer.example.com/procurement-v2"</span> \
+  <span class="flag">-H</span> <span class="str">"AVP-Timestamp: 2026-03-22T14:30:00Z"</span> \
+  <span class="flag">-H</span> <span class="str">"AVP-Signature: sha256=a1b2c3d4..."</span></div>
+    <div class="code-body" data-group="auth" data-lang="node" style="display:none"><span class="kw">const</span> <span class="var">response</span> = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">'https://vendor.example.com/avp/handshake'</span>, {
+  <span class="key">method</span>: <span class="str">'POST'</span>,
+  <span class="key">headers</span>: {
+    <span class="str">'Content-Type'</span>: <span class="str">'application/json'</span>,
+    <span class="str">'AVP-Version'</span>: <span class="str">'0.1.0'</span>,
+    <span class="str">'AVP-Agent-ID'</span>: <span class="str">'agent://buyer.example.com/procurement-v2'</span>,
+    <span class="str">'AVP-Timestamp'</span>: <span class="kw">new</span> <span class="fn">Date</span>().<span class="fn">toISOString</span>(),
+    <span class="str">'AVP-Signature'</span>: <span class="fn">signRequest</span>(payload),
+  },
+});</div>
+    <div class="code-body" data-group="auth" data-lang="python" style="display:none"><span class="kw">import</span> requests
+<span class="kw">from</span> datetime <span class="kw">import</span> datetime
+
+headers = {
+    <span class="str">"Content-Type"</span>: <span class="str">"application/json"</span>,
+    <span class="str">"AVP-Version"</span>: <span class="str">"0.1.0"</span>,
+    <span class="str">"AVP-Agent-ID"</span>: <span class="str">"agent://buyer.example.com/procurement-v2"</span>,
+    <span class="str">"AVP-Timestamp"</span>: datetime.utcnow().isoformat() + <span class="str">"Z"</span>,
+    <span class="str">"AVP-Signature"</span>: sign_request(payload),
+}
+
+response = requests.post(
+    <span class="str">"https://vendor.example.com/avp/handshake"</span>,
+    headers=headers,
+)</div>
+  </div>
+
+  <!-- Handshake code -->
+  <div class="code-section-label">Handshake</div>
+  <div class="code-example">
+    <div class="code-tabs">
+      <button class="code-tab active" onclick="switchTab(this,'handshake')">cURL</button>
+      <button class="code-tab" onclick="switchTab(this,'handshake')">Node.js</button>
+      <button class="code-tab" onclick="switchTab(this,'handshake')">Python</button>
+    </div>
+    <div class="code-body" data-group="handshake" data-lang="curl"><span class="flag">curl</span> <span class="flag">-X</span> POST https://vendor.example.com/avp/handshake \
+  <span class="flag">-H</span> <span class="str">"Content-Type: application/json"</span> \
+  <span class="flag">-H</span> <span class="str">"AVP-Version: 0.1.0"</span> \
+  <span class="flag">-H</span> <span class="str">"AVP-Agent-ID: agent://buyer.example.com/procurement-v2"</span> \
+  <span class="flag">-d</span> <span class="str">'{
+    "agent_id": "agent://buyer.example.com/procurement-v2",
+    "capabilities": ["compute", "storage"],
+    "public_key": "-----BEGIN PUBLIC KEY-----\nMFkwEwYH...",
+    "session_preferences": {
+      "timeout": 3600,
+      "language": "en"
+    }
+  }'</span></div>
+    <div class="code-body" data-group="handshake" data-lang="node" style="display:none"><span class="kw">const</span> <span class="var">response</span> = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">'https://vendor.example.com/avp/handshake'</span>, {
+  <span class="key">method</span>: <span class="str">'POST'</span>,
+  <span class="key">headers</span>: avpHeaders,
+  <span class="key">body</span>: JSON.<span class="fn">stringify</span>({
+    <span class="key">agent_id</span>: <span class="str">'agent://buyer.example.com/procurement-v2'</span>,
+    <span class="key">capabilities</span>: [<span class="str">'compute'</span>, <span class="str">'storage'</span>],
+    <span class="key">public_key</span>: publicKeyPem,
+    <span class="key">session_preferences</span>: {
+      <span class="key">timeout</span>: <span class="num">3600</span>,
+      <span class="key">language</span>: <span class="str">'en'</span>,
+    },
+  }),
+});
+
+<span class="kw">const</span> { <span class="var">session_id</span>, <span class="var">session_token</span> } = <span class="kw">await</span> response.<span class="fn">json</span>();
+console.<span class="fn">log</span>(<span class="str">`Session: ${session_id}`</span>);</div>
+    <div class="code-body" data-group="handshake" data-lang="python" style="display:none">response = requests.post(
+    <span class="str">"https://vendor.example.com/avp/handshake"</span>,
+    headers=headers,
+    json={
+        <span class="str">"agent_id"</span>: <span class="str">"agent://buyer.example.com/procurement-v2"</span>,
+        <span class="str">"capabilities"</span>: [<span class="str">"compute"</span>, <span class="str">"storage"</span>],
+        <span class="str">"public_key"</span>: public_key_pem,
+        <span class="str">"session_preferences"</span>: {
+            <span class="str">"timeout"</span>: <span class="num">3600</span>,
+            <span class="str">"language"</span>: <span class="str">"en"</span>,
+        },
+    },
+)
+
+data = response.json()
+session_id = data[<span class="str">"session_id"</span>]
+<span class="fn">print</span>(f<span class="str">"Session: {session_id}"</span>)</div>
+  </div>
+
+  <!-- RFP code -->
+  <div class="code-section-label">Submit RFP</div>
+  <div class="code-example">
+    <div class="code-tabs">
+      <button class="code-tab active" onclick="switchTab(this,'rfp')">cURL</button>
+      <button class="code-tab" onclick="switchTab(this,'rfp')">Node.js</button>
+      <button class="code-tab" onclick="switchTab(this,'rfp')">Python</button>
+    </div>
+    <div class="code-body" data-group="rfp" data-lang="curl"><span class="flag">curl</span> <span class="flag">-X</span> POST https://vendor.example.com/avp/rfp \
+  <span class="flag">-H</span> <span class="str">"Content-Type: application/json"</span> \
+  <span class="flag">-H</span> <span class="str">"AVP-Version: 0.1.0"</span> \
+  <span class="flag">-H</span> <span class="str">"AVP-Agent-ID: agent://buyer.example.com/procurement-v2"</span> \
+  <span class="flag">-d</span> <span class="str">'{
+    "session_id": "ses_7f2a3b8c1d4e5f6a",
+    "requirements": [
+      {
+        "type": "compute",
+        "specs": {"gpu": "A100", "memory_gb": 80},
+        "quantity": 10,
+        "priority": "high"
+      },
+      {
+        "type": "storage",
+        "specs": {"class": "standard", "size_tb": 50},
+        "quantity": 1,
+        "priority": "medium"
+      }
+    ],
+    "budget": {
+      "max_monthly": 15000,
+      "currency": "USD"
+    },
+    "timeline": {
+      "start_date": "2026-04-01",
+      "duration_months": 12
+    }
+  }'</span></div>
+    <div class="code-body" data-group="rfp" data-lang="node" style="display:none"><span class="kw">const</span> <span class="var">rfpResponse</span> = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">'https://vendor.example.com/avp/rfp'</span>, {
+  <span class="key">method</span>: <span class="str">'POST'</span>,
+  <span class="key">headers</span>: avpHeaders,
+  <span class="key">body</span>: JSON.<span class="fn">stringify</span>({
+    <span class="key">session_id</span>: <span class="str">'ses_7f2a3b8c1d4e5f6a'</span>,
+    <span class="key">requirements</span>: [
+      {
+        <span class="key">type</span>: <span class="str">'compute'</span>,
+        <span class="key">specs</span>: { <span class="key">gpu</span>: <span class="str">'A100'</span>, <span class="key">memory_gb</span>: <span class="num">80</span> },
+        <span class="key">quantity</span>: <span class="num">10</span>,
+        <span class="key">priority</span>: <span class="str">'high'</span>,
+      },
+      {
+        <span class="key">type</span>: <span class="str">'storage'</span>,
+        <span class="key">specs</span>: { <span class="key">class</span>: <span class="str">'standard'</span>, <span class="key">size_tb</span>: <span class="num">50</span> },
+        <span class="key">quantity</span>: <span class="num">1</span>,
+        <span class="key">priority</span>: <span class="str">'medium'</span>,
+      },
+    ],
+    <span class="key">budget</span>: { <span class="key">max_monthly</span>: <span class="num">15000</span>, <span class="key">currency</span>: <span class="str">'USD'</span> },
+    <span class="key">timeline</span>: { <span class="key">start_date</span>: <span class="str">'2026-04-01'</span>, <span class="key">duration_months</span>: <span class="num">12</span> },
+  }),
+});
+
+<span class="kw">const</span> { <span class="var">rfp_id</span>, <span class="var">proposal_url</span> } = <span class="kw">await</span> rfpResponse.<span class="fn">json</span>();</div>
+    <div class="code-body" data-group="rfp" data-lang="python" style="display:none">rfp_response = requests.post(
+    <span class="str">"https://vendor.example.com/avp/rfp"</span>,
+    headers=headers,
+    json={
+        <span class="str">"session_id"</span>: <span class="str">"ses_7f2a3b8c1d4e5f6a"</span>,
+        <span class="str">"requirements"</span>: [
+            {
+                <span class="str">"type"</span>: <span class="str">"compute"</span>,
+                <span class="str">"specs"</span>: {<span class="str">"gpu"</span>: <span class="str">"A100"</span>, <span class="str">"memory_gb"</span>: <span class="num">80</span>},
+                <span class="str">"quantity"</span>: <span class="num">10</span>,
+                <span class="str">"priority"</span>: <span class="str">"high"</span>,
+            },
+            {
+                <span class="str">"type"</span>: <span class="str">"storage"</span>,
+                <span class="str">"specs"</span>: {<span class="str">"class"</span>: <span class="str">"standard"</span>, <span class="str">"size_tb"</span>: <span class="num">50</span>},
+                <span class="str">"quantity"</span>: <span class="num">1</span>,
+                <span class="str">"priority"</span>: <span class="str">"medium"</span>,
+            },
+        ],
+        <span class="str">"budget"</span>: {<span class="str">"max_monthly"</span>: <span class="num">15000</span>, <span class="str">"currency"</span>: <span class="str">"USD"</span>},
+        <span class="str">"timeline"</span>: {<span class="str">"start_date"</span>: <span class="str">"2026-04-01"</span>, <span class="str">"duration_months"</span>: <span class="num">12</span>},
+    },
+)
+
+rfp_data = rfp_response.json()
+rfp_id = rfp_data[<span class="str">"rfp_id"</span>]</div>
+  </div>
+
+  <!-- Negotiate code -->
+  <div class="code-section-label">Negotiate</div>
+  <div class="code-example">
+    <div class="code-tabs">
+      <button class="code-tab active" onclick="switchTab(this,'negotiate')">cURL</button>
+      <button class="code-tab" onclick="switchTab(this,'negotiate')">Node.js</button>
+      <button class="code-tab" onclick="switchTab(this,'negotiate')">Python</button>
+    </div>
+    <div class="code-body" data-group="negotiate" data-lang="curl"><span class="flag">curl</span> <span class="flag">-X</span> POST https://vendor.example.com/avp/negotiate \
+  <span class="flag">-H</span> <span class="str">"Content-Type: application/json"</span> \
+  <span class="flag">-H</span> <span class="str">"AVP-Version: 0.1.0"</span> \
+  <span class="flag">-d</span> <span class="str">'{
+    "session_id": "ses_7f2a3b8c1d4e5f6a",
+    "proposal_id": "prop_8c1d2e3f4a5b",
+    "counter_terms": {
+      "line_items": [
+        {
+          "item_id": "li_001",
+          "proposed_price": 2.80,
+          "proposed_quantity": 15
+        }
+      ],
+      "requested_sla": {
+        "uptime": "99.99%"
+      }
+    },
+    "justification": "Volume commitment for 12 months"
+  }'</span></div>
+    <div class="code-body" data-group="negotiate" data-lang="node" style="display:none"><span class="kw">const</span> <span class="var">negotiation</span> = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">'https://vendor.example.com/avp/negotiate'</span>, {
+  <span class="key">method</span>: <span class="str">'POST'</span>,
+  <span class="key">headers</span>: avpHeaders,
+  <span class="key">body</span>: JSON.<span class="fn">stringify</span>({
+    <span class="key">session_id</span>: <span class="str">'ses_7f2a3b8c1d4e5f6a'</span>,
+    <span class="key">proposal_id</span>: <span class="str">'prop_8c1d2e3f4a5b'</span>,
+    <span class="key">counter_terms</span>: {
+      <span class="key">line_items</span>: [{
+        <span class="key">item_id</span>: <span class="str">'li_001'</span>,
+        <span class="key">proposed_price</span>: <span class="num">2.80</span>,
+        <span class="key">proposed_quantity</span>: <span class="num">15</span>,
+      }],
+      <span class="key">requested_sla</span>: { <span class="key">uptime</span>: <span class="str">'99.99%'</span> },
+    },
+    <span class="key">justification</span>: <span class="str">'Volume commitment for 12 months'</span>,
+  }),
+});
+
+<span class="kw">const</span> <span class="var">result</span> = <span class="kw">await</span> negotiation.<span class="fn">json</span>();
+console.<span class="fn">log</span>(<span class="str">`Round ${result.round}: ${result.status}`</span>);</div>
+    <div class="code-body" data-group="negotiate" data-lang="python" style="display:none">neg_response = requests.post(
+    <span class="str">"https://vendor.example.com/avp/negotiate"</span>,
+    headers=headers,
+    json={
+        <span class="str">"session_id"</span>: <span class="str">"ses_7f2a3b8c1d4e5f6a"</span>,
+        <span class="str">"proposal_id"</span>: <span class="str">"prop_8c1d2e3f4a5b"</span>,
+        <span class="str">"counter_terms"</span>: {
+            <span class="str">"line_items"</span>: [{
+                <span class="str">"item_id"</span>: <span class="str">"li_001"</span>,
+                <span class="str">"proposed_price"</span>: <span class="num">2.80</span>,
+                <span class="str">"proposed_quantity"</span>: <span class="num">15</span>,
+            }],
+            <span class="str">"requested_sla"</span>: {<span class="str">"uptime"</span>: <span class="str">"99.99%"</span>},
+        },
+        <span class="str">"justification"</span>: <span class="str">"Volume commitment for 12 months"</span>,
+    },
+)
+
+result = neg_response.json()
+<span class="fn">print</span>(f<span class="str">"Round {result['round']}: {result['status']}"</span>)</div>
+  </div>
+
+  <!-- Accept code -->
+  <div class="code-section-label">Accept &amp; Settle</div>
+  <div class="code-example">
+    <div class="code-tabs">
+      <button class="code-tab active" onclick="switchTab(this,'settle')">cURL</button>
+      <button class="code-tab" onclick="switchTab(this,'settle')">Node.js</button>
+      <button class="code-tab" onclick="switchTab(this,'settle')">Python</button>
+    </div>
+    <div class="code-body" data-group="settle" data-lang="curl"><span class="cmt"># Accept the negotiation</span>
+<span class="flag">curl</span> <span class="flag">-X</span> POST https://vendor.example.com/avp/negotiate/accept \
+  <span class="flag">-H</span> <span class="str">"Content-Type: application/json"</span> \
+  <span class="flag">-d</span> <span class="str">'{
+    "session_id": "ses_7f2a3b8c1d4e5f6a",
+    "negotiation_id": "neg_4d5e6f7a8b9c",
+    "proposal_id": "prop_8c1d2e3f4a5b",
+    "buyer_signature": "sig_buyer_a1b2c3d4..."
+  }'</span>
+
+<span class="cmt"># Then settle the deal</span>
+<span class="flag">curl</span> <span class="flag">-X</span> POST https://vendor.example.com/avp/settle \
+  <span class="flag">-H</span> <span class="str">"Content-Type: application/json"</span> \
+  <span class="flag">-d</span> <span class="str">'{
+    "session_id": "ses_7f2a3b8c1d4e5f6a",
+    "negotiation_id": "neg_4d5e6f7a8b9c",
+    "payment_method": {
+      "type": "invoice",
+      "billing_email": "ap@buyer.example.com"
+    },
+    "auto_renew": false
+  }'</span></div>
+    <div class="code-body" data-group="settle" data-lang="node" style="display:none"><span class="cmt">// Accept the negotiation</span>
+<span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">'https://vendor.example.com/avp/negotiate/accept'</span>, {
+  <span class="key">method</span>: <span class="str">'POST'</span>,
+  <span class="key">headers</span>: avpHeaders,
+  <span class="key">body</span>: JSON.<span class="fn">stringify</span>({
+    <span class="key">session_id</span>: sessionId,
+    <span class="key">negotiation_id</span>: negotiationId,
+    <span class="key">proposal_id</span>: proposalId,
+    <span class="key">buyer_signature</span>: <span class="fn">signAcceptance</span>(proposalId),
+  }),
+});
+
+<span class="cmt">// Then settle the deal</span>
+<span class="kw">const</span> <span class="var">settlement</span> = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">'https://vendor.example.com/avp/settle'</span>, {
+  <span class="key">method</span>: <span class="str">'POST'</span>,
+  <span class="key">headers</span>: avpHeaders,
+  <span class="key">body</span>: JSON.<span class="fn">stringify</span>({
+    <span class="key">session_id</span>: sessionId,
+    <span class="key">negotiation_id</span>: negotiationId,
+    <span class="key">payment_method</span>: {
+      <span class="key">type</span>: <span class="str">'invoice'</span>,
+      <span class="key">billing_email</span>: <span class="str">'ap@buyer.example.com'</span>,
+    },
+    <span class="key">auto_renew</span>: <span class="num">false</span>,
+  }),
+});
+
+<span class="kw">const</span> <span class="var">contract</span> = <span class="kw">await</span> settlement.<span class="fn">json</span>();
+console.<span class="fn">log</span>(<span class="str">`Contract: ${contract.contract.contract_id}`</span>);</div>
+    <div class="code-body" data-group="settle" data-lang="python" style="display:none"><span class="cmt"># Accept the negotiation</span>
+requests.post(
+    <span class="str">"https://vendor.example.com/avp/negotiate/accept"</span>,
+    headers=headers,
+    json={
+        <span class="str">"session_id"</span>: session_id,
+        <span class="str">"negotiation_id"</span>: negotiation_id,
+        <span class="str">"proposal_id"</span>: proposal_id,
+        <span class="str">"buyer_signature"</span>: sign_acceptance(proposal_id),
+    },
+)
+
+<span class="cmt"># Then settle the deal</span>
+settlement = requests.post(
+    <span class="str">"https://vendor.example.com/avp/settle"</span>,
+    headers=headers,
+    json={
+        <span class="str">"session_id"</span>: session_id,
+        <span class="str">"negotiation_id"</span>: negotiation_id,
+        <span class="str">"payment_method"</span>: {
+            <span class="str">"type"</span>: <span class="str">"invoice"</span>,
+            <span class="str">"billing_email"</span>: <span class="str">"ap@buyer.example.com"</span>,
+        },
+        <span class="str">"auto_renew"</span>: <span class="kw">False</span>,
+    },
+)
+
+contract = settlement.json()
+<span class="fn">print</span>(f<span class="str">"Contract: {contract['contract']['contract_id']}"</span>)</div>
+  </div>
+
+  <!-- Registry code -->
+  <div class="code-section-label">Registry Search</div>
+  <div class="code-example">
+    <div class="code-tabs">
+      <button class="code-tab active" onclick="switchTab(this,'registry')">cURL</button>
+      <button class="code-tab" onclick="switchTab(this,'registry')">Node.js</button>
+      <button class="code-tab" onclick="switchTab(this,'registry')">Python</button>
+    </div>
+    <div class="code-body" data-group="registry" data-lang="curl"><span class="cmt"># Search for compute vendors</span>
+<span class="flag">curl</span> <span class="str">"https://registry.avp-protocol.org/v1/search?capabilities=compute,storage&min_trust_score=0.8&limit=10"</span>
+
+<span class="cmt"># Register a new agent</span>
+<span class="flag">curl</span> <span class="flag">-X</span> POST https://registry.avp-protocol.org/v1/agents/register \
+  <span class="flag">-H</span> <span class="str">"Content-Type: application/json"</span> \
+  <span class="flag">-d</span> <span class="str">'{
+    "agent_id": "agent://mycompany.com/vendor-bot",
+    "display_name": "My Vendor Agent",
+    "description": "SaaS tools for developers",
+    "domain": "mycompany.com",
+    "public_key": {"kty":"EC","crv":"P-256",...},
+    "capabilities": ["saas", "devtools", "api"]
+  }'</span></div>
+    <div class="code-body" data-group="registry" data-lang="node" style="display:none"><span class="cmt">// Search for compute vendors</span>
+<span class="kw">const</span> <span class="var">params</span> = <span class="kw">new</span> <span class="fn">URLSearchParams</span>({
+  <span class="key">capabilities</span>: <span class="str">'compute,storage'</span>,
+  <span class="key">min_trust_score</span>: <span class="str">'0.8'</span>,
+  <span class="key">limit</span>: <span class="str">'10'</span>,
+});
+
+<span class="kw">const</span> <span class="var">results</span> = <span class="kw">await</span> <span class="fn">fetch</span>(
+  <span class="str">`https://registry.avp-protocol.org/v1/search?${params}`</span>
+);
+
+<span class="kw">const</span> { <span class="var">results</span>: <span class="var">agents</span> } = <span class="kw">await</span> results.<span class="fn">json</span>();
+
+<span class="cmt">// Register a new agent</span>
+<span class="kw">const</span> <span class="var">registration</span> = <span class="kw">await</span> <span class="fn">fetch</span>(
+  <span class="str">'https://registry.avp-protocol.org/v1/agents/register'</span>,
+  {
+    <span class="key">method</span>: <span class="str">'POST'</span>,
+    <span class="key">headers</span>: { <span class="str">'Content-Type'</span>: <span class="str">'application/json'</span> },
+    <span class="key">body</span>: JSON.<span class="fn">stringify</span>({
+      <span class="key">agent_id</span>: <span class="str">'agent://mycompany.com/vendor-bot'</span>,
+      <span class="key">display_name</span>: <span class="str">'My Vendor Agent'</span>,
+      <span class="key">description</span>: <span class="str">'SaaS tools for developers'</span>,
+      <span class="key">domain</span>: <span class="str">'mycompany.com'</span>,
+      <span class="key">public_key</span>: jwkPublicKey,
+      <span class="key">capabilities</span>: [<span class="str">'saas'</span>, <span class="str">'devtools'</span>, <span class="str">'api'</span>],
+    }),
+  }
+);</div>
+    <div class="code-body" data-group="registry" data-lang="python" style="display:none"><span class="cmt"># Search for compute vendors</span>
+results = requests.get(
+    <span class="str">"https://registry.avp-protocol.org/v1/search"</span>,
+    params={
+        <span class="str">"capabilities"</span>: <span class="str">"compute,storage"</span>,
+        <span class="str">"min_trust_score"</span>: <span class="num">0.8</span>,
+        <span class="str">"limit"</span>: <span class="num">10</span>,
+    },
+)
+
+agents = results.json()[<span class="str">"results"</span>]
+
+<span class="cmt"># Register a new agent</span>
+registration = requests.post(
+    <span class="str">"https://registry.avp-protocol.org/v1/agents/register"</span>,
+    json={
+        <span class="str">"agent_id"</span>: <span class="str">"agent://mycompany.com/vendor-bot"</span>,
+        <span class="str">"display_name"</span>: <span class="str">"My Vendor Agent"</span>,
+        <span class="str">"description"</span>: <span class="str">"SaaS tools for developers"</span>,
+        <span class="str">"domain"</span>: <span class="str">"mycompany.com"</span>,
+        <span class="str">"public_key"</span>: jwk_public_key,
+        <span class="str">"capabilities"</span>: [<span class="str">"saas"</span>, <span class="str">"devtools"</span>, <span class="str">"api"</span>],
+    },
+)</div>
+  </div>
+
+  <!-- Disputes code -->
+  <div class="code-section-label">Disputes</div>
+  <div class="code-example">
+    <div class="code-tabs">
+      <button class="code-tab active" onclick="switchTab(this,'disputes')">cURL</button>
+      <button class="code-tab" onclick="switchTab(this,'disputes')">Node.js</button>
+      <button class="code-tab" onclick="switchTab(this,'disputes')">Python</button>
+    </div>
+    <div class="code-body" data-group="disputes" data-lang="curl"><span class="cmt"># Open a dispute</span>
+<span class="flag">curl</span> <span class="flag">-X</span> POST https://vendor.example.com/avp/dispute \
+  <span class="flag">-H</span> <span class="str">"Content-Type: application/json"</span> \
+  <span class="flag">-d</span> <span class="str">'{
+    "settlement_id": "stl_1a2b3c4d5e6f",
+    "category": "sla_violation",
+    "severity": "high",
+    "description": "Uptime below 99.95% SLA for 72 hours",
+    "evidence": [{
+      "type": "metrics",
+      "description": "Monitoring data",
+      "url": "https://monitoring.buyer.com/report/abc"
+    }],
+    "requested_resolution": "credit"
+  }'</span>
+
+<span class="cmt"># Get dispute status</span>
+<span class="flag">curl</span> https://vendor.example.com/avp/dispute/dsp_3e4f5a6b7c8d</div>
+    <div class="code-body" data-group="disputes" data-lang="node" style="display:none"><span class="cmt">// Open a dispute</span>
+<span class="kw">const</span> <span class="var">dispute</span> = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">'https://vendor.example.com/avp/dispute'</span>, {
+  <span class="key">method</span>: <span class="str">'POST'</span>,
+  <span class="key">headers</span>: avpHeaders,
+  <span class="key">body</span>: JSON.<span class="fn">stringify</span>({
+    <span class="key">settlement_id</span>: <span class="str">'stl_1a2b3c4d5e6f'</span>,
+    <span class="key">category</span>: <span class="str">'sla_violation'</span>,
+    <span class="key">severity</span>: <span class="str">'high'</span>,
+    <span class="key">description</span>: <span class="str">'Uptime below 99.95% SLA for 72 hours'</span>,
+    <span class="key">evidence</span>: [{
+      <span class="key">type</span>: <span class="str">'metrics'</span>,
+      <span class="key">description</span>: <span class="str">'Monitoring data'</span>,
+      <span class="key">url</span>: <span class="str">'https://monitoring.buyer.com/report/abc'</span>,
+    }],
+    <span class="key">requested_resolution</span>: <span class="str">'credit'</span>,
+  }),
+});
+
+<span class="kw">const</span> { <span class="var">dispute_id</span> } = <span class="kw">await</span> dispute.<span class="fn">json</span>();
+
+<span class="cmt">// Get dispute status</span>
+<span class="kw">const</span> <span class="var">status</span> = <span class="kw">await</span> <span class="fn">fetch</span>(
+  <span class="str">`https://vendor.example.com/avp/dispute/${dispute_id}`</span>,
+  { <span class="key">headers</span>: avpHeaders }
+);</div>
+    <div class="code-body" data-group="disputes" data-lang="python" style="display:none"><span class="cmt"># Open a dispute</span>
+dispute = requests.post(
+    <span class="str">"https://vendor.example.com/avp/dispute"</span>,
+    headers=headers,
+    json={
+        <span class="str">"settlement_id"</span>: <span class="str">"stl_1a2b3c4d5e6f"</span>,
+        <span class="str">"category"</span>: <span class="str">"sla_violation"</span>,
+        <span class="str">"severity"</span>: <span class="str">"high"</span>,
+        <span class="str">"description"</span>: <span class="str">"Uptime below 99.95% SLA for 72 hours"</span>,
+        <span class="str">"evidence"</span>: [{
+            <span class="str">"type"</span>: <span class="str">"metrics"</span>,
+            <span class="str">"description"</span>: <span class="str">"Monitoring data"</span>,
+            <span class="str">"url"</span>: <span class="str">"https://monitoring.buyer.com/report/abc"</span>,
+        }],
+        <span class="str">"requested_resolution"</span>: <span class="str">"credit"</span>,
+    },
+)
+
+dispute_id = dispute.json()[<span class="str">"dispute_id"</span>]
+
+<span class="cmt"># Get dispute status</span>
+status = requests.get(
+    f<span class="str">"https://vendor.example.com/avp/dispute/{dispute_id}"</span>,
+    headers=headers,
+)</div>
+  </div>
+
+  <!-- Sandbox code -->
+  <div class="code-section-label">Sandbox</div>
+  <div class="code-example">
+    <div class="code-tabs">
+      <button class="code-tab active" onclick="switchTab(this,'sandbox')">cURL</button>
+      <button class="code-tab" onclick="switchTab(this,'sandbox')">Node.js</button>
+      <button class="code-tab" onclick="switchTab(this,'sandbox')">Python</button>
+    </div>
+    <div class="code-body" data-group="sandbox" data-lang="curl"><span class="cmt"># Create a sandbox session</span>
+<span class="flag">curl</span> <span class="flag">-X</span> POST https://sandbox.avp-protocol.org/avp/sandbox/session \
+  <span class="flag">-H</span> <span class="str">"Content-Type: application/json"</span> \
+  <span class="flag">-d</span> <span class="str">'{
+    "scenario": "happy_path",
+    "max_duration_minutes": 60,
+    "record_interactions": true
+  }'</span>
+
+<span class="cmt"># View session log</span>
+<span class="flag">curl</span> https://sandbox.avp-protocol.org/avp/sandbox/session/sbx_2a3b4c5d6e7f/log</div>
+    <div class="code-body" data-group="sandbox" data-lang="node" style="display:none"><span class="cmt">// Create a sandbox session</span>
+<span class="kw">const</span> <span class="var">sandbox</span> = <span class="kw">await</span> <span class="fn">fetch</span>(
+  <span class="str">'https://sandbox.avp-protocol.org/avp/sandbox/session'</span>,
+  {
+    <span class="key">method</span>: <span class="str">'POST'</span>,
+    <span class="key">headers</span>: { <span class="str">'Content-Type'</span>: <span class="str">'application/json'</span> },
+    <span class="key">body</span>: JSON.<span class="fn">stringify</span>({
+      <span class="key">scenario</span>: <span class="str">'happy_path'</span>,
+      <span class="key">max_duration_minutes</span>: <span class="num">60</span>,
+      <span class="key">record_interactions</span>: <span class="num">true</span>,
+    }),
+  }
+);
+
+<span class="kw">const</span> { <span class="var">sandbox_session_id</span>, <span class="var">base_url</span> } = <span class="kw">await</span> sandbox.<span class="fn">json</span>();
+
+<span class="cmt">// Use base_url for all subsequent calls</span>
+<span class="kw">const</span> <span class="var">handshake</span> = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">`${base_url}/avp/handshake`</span>, {
+  <span class="key">method</span>: <span class="str">'POST'</span>,
+  <span class="key">headers</span>: avpHeaders,
+  <span class="key">body</span>: handshakeBody,
+});
+
+<span class="cmt">// View session log</span>
+<span class="kw">const</span> <span class="var">log</span> = <span class="kw">await</span> <span class="fn">fetch</span>(
+  <span class="str">`https://sandbox.avp-protocol.org/avp/sandbox/session/${sandbox_session_id}/log`</span>
+);</div>
+    <div class="code-body" data-group="sandbox" data-lang="python" style="display:none"><span class="cmt"># Create a sandbox session</span>
+sandbox = requests.post(
+    <span class="str">"https://sandbox.avp-protocol.org/avp/sandbox/session"</span>,
+    json={
+        <span class="str">"scenario"</span>: <span class="str">"happy_path"</span>,
+        <span class="str">"max_duration_minutes"</span>: <span class="num">60</span>,
+        <span class="str">"record_interactions"</span>: <span class="kw">True</span>,
+    },
+)
+
+sandbox_data = sandbox.json()
+base_url = sandbox_data[<span class="str">"base_url"</span>]
+
+<span class="cmt"># Use base_url for all subsequent calls</span>
+handshake = requests.post(
+    f<span class="str">"{base_url}/avp/handshake"</span>,
+    headers=headers,
+    json=handshake_body,
+)
+
+<span class="cmt"># View session log</span>
+log = requests.get(
+    f<span class="str">"https://sandbox.avp-protocol.org/avp/sandbox/session/{sandbox_data['sandbox_session_id']}/log"</span>
+)</div>
+  </div>
+
+  <!-- Webhook verification code -->
+  <div class="code-section-label">Webhook Verification</div>
+  <div class="code-example">
+    <div class="code-tabs">
+      <button class="code-tab active" onclick="switchTab(this,'webhook')">Node.js</button>
+      <button class="code-tab" onclick="switchTab(this,'webhook')">Python</button>
+    </div>
+    <div class="code-body" data-group="webhook" data-lang="node"><span class="kw">const</span> crypto = <span class="fn">require</span>(<span class="str">'crypto'</span>);
+
+<span class="kw">function</span> <span class="fn">verifyWebhook</span>(payload, signature, secret) {
+  <span class="kw">const</span> <span class="var">expected</span> = <span class="str">'sha256='</span> +
+    crypto.<span class="fn">createHmac</span>(<span class="str">'sha256'</span>, secret)
+      .<span class="fn">update</span>(payload)
+      .<span class="fn">digest</span>(<span class="str">'hex'</span>);
+
+  <span class="kw">return</span> crypto.<span class="fn">timingSafeEqual</span>(
+    Buffer.<span class="fn">from</span>(signature),
+    Buffer.<span class="fn">from</span>(expected)
+  );
+}
+
+<span class="cmt">// Express.js handler</span>
+app.<span class="fn">post</span>(<span class="str">'/webhooks/avp'</span>, (req, res) => {
+  <span class="kw">const</span> <span class="var">sig</span> = req.headers[<span class="str">'avp-signature'</span>];
+  <span class="kw">const</span> <span class="var">body</span> = JSON.<span class="fn">stringify</span>(req.body);
+
+  <span class="kw">if</span> (!<span class="fn">verifyWebhook</span>(body, sig, <span class="var">WEBHOOK_SECRET</span>)) {
+    <span class="kw">return</span> res.<span class="fn">status</span>(<span class="num">401</span>).<span class="fn">send</span>(<span class="str">'Invalid signature'</span>);
+  }
+
+  <span class="kw">const</span> { <span class="var">event_type</span>, <span class="var">data</span> } = req.body;
+  console.<span class="fn">log</span>(<span class="str">`Received: ${event_type}`</span>);
+
+  res.<span class="fn">status</span>(<span class="num">200</span>).<span class="fn">json</span>({ <span class="key">received</span>: <span class="num">true</span> });
+});</div>
+    <div class="code-body" data-group="webhook" data-lang="python" style="display:none"><span class="kw">import</span> hmac
+<span class="kw">import</span> hashlib
+<span class="kw">from</span> flask <span class="kw">import</span> Flask, request, jsonify
+
+app = Flask(__name__)
+
+<span class="kw">def</span> <span class="fn">verify_webhook</span>(payload, signature, secret):
+    expected = <span class="str">"sha256="</span> + hmac.new(
+        secret.encode(),
+        payload.encode(),
+        hashlib.sha256
+    ).hexdigest()
+    <span class="kw">return</span> hmac.compare_digest(signature, expected)
+
+@app.route(<span class="str">"/webhooks/avp"</span>, methods=[<span class="str">"POST"</span>])
+<span class="kw">def</span> <span class="fn">handle_webhook</span>():
+    sig = request.headers.get(<span class="str">"AVP-Signature"</span>)
+    body = request.get_data(as_text=<span class="kw">True</span>)
+
+    <span class="kw">if not</span> verify_webhook(body, sig, WEBHOOK_SECRET):
+        <span class="kw">return</span> jsonify({<span class="str">"error"</span>: <span class="str">"Invalid signature"</span>}), <span class="num">401</span>
+
+    event = request.json
+    <span class="fn">print</span>(f<span class="str">"Received: {event['event_type']}"</span>)
+
+    <span class="kw">return</span> jsonify({<span class="str">"received"</span>: <span class="kw">True</span>}), <span class="num">200</span></div>
+  </div>
+
+</aside>
+
+<script>
+// Toggle sidebar (mobile)
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  sidebar.classList.toggle('open');
+  overlay.classList.toggle('active');
+}
+
+// Toggle nav group collapse
+function toggleGroup(el) {
+  el.parentElement.classList.toggle('collapsed');
+}
+
+// Code tab switching
+function switchTab(tab, group) {
+  const parent = tab.closest('.code-example');
+  const tabs = parent.querySelectorAll('.code-tab');
+  const bodies = parent.querySelectorAll('.code-body');
+  const langs = ['curl', 'node', 'python'];
+  const idx = Array.from(tabs).indexOf(tab);
+
+  tabs.forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+
+  bodies.forEach(b => b.style.display = 'none');
+  if (bodies[idx]) bodies[idx].style.display = 'block';
+}
+
+// Sidebar search/filter
+function filterNav(query) {
+  const q = query.toLowerCase().trim();
+  const items = document.querySelectorAll('.nav-item');
+  const groups = document.querySelectorAll('.nav-group');
+
+  if (!q) {
+    items.forEach(i => i.style.display = '');
+    groups.forEach(g => {
+      g.style.display = '';
+      g.classList.remove('collapsed');
+    });
+    return;
+  }
+
+  groups.forEach(g => {
+    const groupItems = g.querySelectorAll('.nav-item');
+    let hasVisible = false;
+    groupItems.forEach(item => {
+      const text = item.textContent.toLowerCase();
+      if (text.includes(q)) {
+        item.style.display = '';
+        hasVisible = true;
+      } else {
+        item.style.display = 'none';
+      }
+    });
+    g.style.display = hasVisible ? '' : 'none';
+    if (hasVisible) g.classList.remove('collapsed');
+  });
+}
+
+// Active section highlighting on scroll
+function updateActiveNav() {
+  const anchors = document.querySelectorAll('.section-anchor');
+  const navItems = document.querySelectorAll('.nav-item');
+  let currentId = '';
+
+  anchors.forEach(anchor => {
+    const rect = anchor.getBoundingClientRect();
+    if (rect.top <= 120) {
+      currentId = anchor.id;
+    }
+  });
+
+  navItems.forEach(item => {
+    item.classList.remove('active');
+    const href = item.getAttribute('href');
+    if (href === '#' + currentId) {
+      item.classList.add('active');
+    }
+  });
+}
+
+let scrollTimeout;
+window.addEventListener('scroll', () => {
+  if (scrollTimeout) cancelAnimationFrame(scrollTimeout);
+  scrollTimeout = requestAnimationFrame(updateActiveNav);
+});
+
+// Init
+document.addEventListener('DOMContentLoaded', updateActiveNav);
+</script>
+
+</body>
+</html>
