@@ -337,6 +337,46 @@ nav{
 .feature-card h4{font-size:1.05rem;font-weight:600;margin-bottom:0.6rem}
 .feature-card p{font-size:0.85rem;color:var(--text-dim);font-weight:300;line-height:1.6}
 
+/* ---- VERIFICATION ---- */
+.verification{padding:8rem 0}
+.verify-tiers{
+  display:flex;gap:1rem;margin-top:3rem;align-items:stretch;
+}
+.verify-tier{
+  flex:1;background:var(--bg-card);border:1px solid var(--border);
+  border-radius:12px;padding:1.8rem;transition:all 0.3s;
+  display:flex;flex-direction:column;
+}
+.verify-tier:hover{border-color:var(--border-bright);transform:translateY(-2px)}
+.verify-tier-badge{
+  width:36px;height:36px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1rem;margin-bottom:0.8rem;
+}
+.verify-tier:nth-child(1) .verify-tier-badge{background:rgba(205,127,50,0.15);color:#cd7f32;border:1px solid rgba(205,127,50,0.3)}
+.verify-tier:nth-child(2) .verify-tier-badge{background:rgba(192,192,192,0.15);color:#c0c0c0;border:1px solid rgba(192,192,192,0.3)}
+.verify-tier:nth-child(3) .verify-tier-badge{background:rgba(255,215,0,0.15);color:#ffd700;border:1px solid rgba(255,215,0,0.3)}
+.verify-tier:nth-child(4) .verify-tier-badge{background:rgba(0,212,170,0.15);color:var(--accent);border:1px solid rgba(0,212,170,0.3)}
+.verify-tier h4{font-size:0.9rem;font-weight:600;margin-bottom:0.3rem}
+.verify-tier .tier-level{font-family:var(--mono);font-size:0.6rem;color:var(--text-muted);margin-bottom:0.6rem;text-transform:uppercase;letter-spacing:0.08em}
+.verify-tier p{font-size:0.75rem;color:var(--text-dim);font-weight:300;line-height:1.5;margin-bottom:0.8rem}
+.verify-tier ul{list-style:none;margin:0;padding:0;margin-top:auto}
+.verify-tier ul li{font-size:0.7rem;color:var(--text-dim);padding:0.2rem 0;display:flex;align-items:center;gap:0.4rem;font-weight:300}
+.verify-tier ul li .material-icons-outlined{font-size:0.8rem;color:var(--accent)}
+.verify-breakdown{
+  margin-top:2rem;background:var(--bg-card);border:1px solid var(--border);
+  border-radius:12px;padding:2rem;
+}
+.verify-breakdown h4{font-size:1rem;font-weight:600;margin-bottom:1rem}
+.verify-breakdown-code{
+  background:var(--bg);border:1px solid var(--border);border-radius:8px;
+  padding:1.2rem;font-family:var(--mono);font-size:0.72rem;line-height:1.7;
+  white-space:pre;overflow-x:auto;
+}
+@media(max-width:900px){
+  .verify-tiers{flex-direction:column}
+}
+
 /* ---- INTEGRATIONS ---- */
 .integrations{padding:8rem 0}
 .integrations-categories{margin-top:3rem}
@@ -809,6 +849,7 @@ footer{
     <a href="#benefits">Benefits</a>
     <a href="#how-it-works">How It Works</a>
     <a href="#features">Features</a>
+    <a href="#verification">Verification</a>
     <a href="#integrations">Integrations</a>
     <a href="#deploy">Deploy</a>
     <a href="api-docs.html">API Docs</a>
@@ -1062,6 +1103,74 @@ footer{
         <h4>SDK & Integrations</h4>
         <p>Node.js, Python, and Go SDKs. Plug into Salesforce, HubSpot, Slack. WordPress plugin. Chrome extension. Embeddable widget.</p>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- VERIFICATION -->
+<section class="verification" id="verification">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label reveal">Trust</div>
+      <h2 class="section-title reveal reveal-delay-1">Proof of Capability</h2>
+      <p class="section-desc reveal reveal-delay-2">How do you know a vendor is telling the truth? AVP verifies claims through multiple layers — not just self-reported profiles.</p>
+    </div>
+    <div class="verify-tiers">
+      <div class="verify-tier reveal">
+        <div class="verify-tier-badge"><span class="material-icons-outlined">verified_user</span></div>
+        <h4>Domain Verified</h4>
+        <div class="tier-level">Bronze</div>
+        <p>Proves the vendor owns their domain and is a registered business.</p>
+        <ul>
+          <li><span class="material-icons-outlined">check</span> DNS TXT record verification</li>
+          <li><span class="material-icons-outlined">check</span> Business registration docs</li>
+          <li><span class="material-icons-outlined">check</span> Website existence &amp; age</li>
+        </ul>
+      </div>
+      <div class="verify-tier reveal reveal-delay-1">
+        <div class="verify-tier-badge"><span class="material-icons-outlined">workspace_premium</span></div>
+        <h4>Certified</h4>
+        <div class="tier-level">Silver</div>
+        <p>Credentials auto-verified against issuing authorities via API.</p>
+        <ul>
+          <li><span class="material-icons-outlined">check</span> AWS / GCP / Azure partner status</li>
+          <li><span class="material-icons-outlined">check</span> ISO 27001, SOC2 attestations</li>
+          <li><span class="material-icons-outlined">check</span> Cryptographic verification stamp</li>
+        </ul>
+      </div>
+      <div class="verify-tier reveal reveal-delay-2">
+        <div class="verify-tier-badge"><span class="material-icons-outlined">military_tech</span></div>
+        <h4>Proven</h4>
+        <div class="tier-level">Gold</div>
+        <p>Portfolio independently verified — live projects, repos, case studies.</p>
+        <ul>
+          <li><span class="material-icons-outlined">check</span> Live project URL crawling</li>
+          <li><span class="material-icons-outlined">check</span> GitHub repo ownership &amp; activity</li>
+          <li><span class="material-icons-outlined">check</span> App store listing verification</li>
+        </ul>
+      </div>
+      <div class="verify-tier reveal reveal-delay-3">
+        <div class="verify-tier-badge"><span class="material-icons-outlined">diamond</span></div>
+        <h4>Attested</h4>
+        <div class="tier-level">Platinum</div>
+        <p>Past clients cryptographically sign attestations proving delivery.</p>
+        <ul>
+          <li><span class="material-icons-outlined">check</span> Ed25519-signed client attestations</li>
+          <li><span class="material-icons-outlined">check</span> Tamper-proof delivery records</li>
+          <li><span class="material-icons-outlined">check</span> On-protocol track record</li>
+        </ul>
+      </div>
+    </div>
+    <div class="verify-breakdown reveal">
+      <h4>Transparent Trust Score Breakdown</h4>
+      <div class="verify-breakdown-code"><span class="json-key">"trust_score"</span>: <span class="json-val">0.82</span>,
+<span class="json-key">"breakdown"</span>: {
+  <span class="json-key">"domain_verified"</span>: <span class="json-val">true</span>,
+  <span class="json-key">"credentials"</span>: { <span class="json-key">"score"</span>: <span class="json-val">0.9</span>, <span class="json-key">"verified"</span>: [<span class="json-str">"aws-partner"</span>, <span class="json-str">"iso-27001"</span>] },
+  <span class="json-key">"portfolio"</span>: { <span class="json-key">"score"</span>: <span class="json-val">0.75</span>, <span class="json-key">"verified_projects"</span>: <span class="json-val">8</span> },
+  <span class="json-key">"client_attestations"</span>: { <span class="json-key">"score"</span>: <span class="json-val">0.85</span>, <span class="json-key">"count"</span>: <span class="json-val">5</span>, <span class="json-key">"avg_satisfaction"</span>: <span class="json-val">4.3</span> },
+  <span class="json-key">"on_protocol"</span>: { <span class="json-key">"acceptance_rate"</span>: <span class="json-val">0.34</span>, <span class="json-key">"avg_response_hours"</span>: <span class="json-val">2.1</span> }
+}</div>
     </div>
   </div>
 </section>
