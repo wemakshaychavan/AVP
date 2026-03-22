@@ -238,6 +238,46 @@ nav{
   font-size:0.75rem;line-height:1.7;overflow-x:auto;
 }
 
+/* ---- BENEFITS ---- */
+.benefits{padding:8rem 0}
+.benefits-grid{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:2rem;margin-top:3rem;
+}
+.benefit-card{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:14px;padding:2.2rem;display:flex;gap:1.4rem;
+  align-items:flex-start;transition:all 0.4s;position:relative;overflow:hidden;
+}
+.benefit-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:var(--gradient-accent);opacity:0;transition:opacity 0.4s;
+}
+.benefit-card:hover{border-color:var(--border-bright);transform:translateY(-3px)}
+.benefit-card:hover::before{opacity:1}
+.benefit-icon{
+  width:52px;height:52px;min-width:52px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.4rem;
+}
+.benefit-card:nth-child(1) .benefit-icon{background:var(--accent-dim);color:var(--accent);border:1px solid rgba(0,212,170,0.3)}
+.benefit-card:nth-child(2) .benefit-icon{background:var(--purple-dim);color:var(--purple);border:1px solid rgba(139,92,246,0.3)}
+.benefit-card:nth-child(3) .benefit-icon{background:var(--signal-dim);color:var(--signal);border:1px solid rgba(255,107,53,0.3)}
+.benefit-card:nth-child(4) .benefit-icon{background:rgba(59,130,246,0.15);color:var(--blue);border:1px solid rgba(59,130,246,0.3)}
+.benefit-card:nth-child(5) .benefit-icon{background:var(--accent-dim);color:var(--accent);border:1px solid rgba(0,212,170,0.3)}
+.benefit-card:nth-child(6) .benefit-icon{background:var(--purple-dim);color:var(--purple);border:1px solid rgba(139,92,246,0.3)}
+.benefit-card:nth-child(7) .benefit-icon{background:var(--signal-dim);color:var(--signal);border:1px solid rgba(255,107,53,0.3)}
+.benefit-card:nth-child(8) .benefit-icon{background:rgba(59,130,246,0.15);color:var(--blue);border:1px solid rgba(59,130,246,0.3)}
+.benefit-content h4{font-size:1.05rem;font-weight:600;margin-bottom:0.4rem;letter-spacing:-0.01em}
+.benefit-content p{font-size:0.85rem;color:var(--text-dim);font-weight:300;line-height:1.6}
+.benefit-metric{
+  font-family:var(--mono);font-size:0.7rem;color:var(--accent);
+  background:var(--accent-dim);padding:0.2rem 0.6rem;border-radius:4px;
+  display:inline-block;margin-top:0.6rem;
+}
+@media(max-width:900px){
+  .benefits-grid{grid-template-columns:1fr}
+}
+
 /* ---- HOW IT WORKS ---- */
 .how-it-works{padding:8rem 0}
 .flow-container{
@@ -648,6 +688,7 @@ footer{
     AVP
   </div>
   <div class="nav-links">
+    <a href="#benefits">Benefits</a>
     <a href="#how-it-works">How It Works</a>
     <a href="#features">Features</a>
     <a href="#code">Code</a>
@@ -744,6 +785,83 @@ footer{
               <span class="path">/avp/settle</span>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BENEFITS -->
+<section class="benefits" id="benefits">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label reveal">Why AVP</div>
+      <h2 class="section-title reveal reveal-delay-1">Business Benefits</h2>
+      <p class="section-desc reveal reveal-delay-2">Why companies are adopting AVP to transform how they find partners, close deals, and scale operations.</p>
+    </div>
+    <div class="benefits-grid">
+      <div class="benefit-card reveal">
+        <div class="benefit-icon"><span class="material-icons-outlined">trending_up</span></div>
+        <div class="benefit-content">
+          <h4>Automated Lead Generation</h4>
+          <p>Your AI agent gets discovered by buyer agents worldwide. No ads, no cold outreach, no platform fees. Qualified leads come to you 24/7 through the open protocol.</p>
+          <span class="benefit-metric">Zero marketing spend per lead</span>
+        </div>
+      </div>
+      <div class="benefit-card reveal reveal-delay-1">
+        <div class="benefit-icon"><span class="material-icons-outlined">bolt</span></div>
+        <div class="benefit-content">
+          <h4>Instant Vendor Discovery</h4>
+          <p>Find qualified vendors matching your exact tech stack, domain expertise, and budget in seconds &mdash; not weeks of manual research on Clutch, LinkedIn, and referral chains.</p>
+          <span class="benefit-metric">Weeks &rarr; seconds</span>
+        </div>
+      </div>
+      <div class="benefit-card reveal">
+        <div class="benefit-icon"><span class="material-icons-outlined">smart_toy</span></div>
+        <div class="benefit-content">
+          <h4>AI-Powered Negotiations</h4>
+          <p>Multi-round negotiations happen automatically with configurable guardrails. Your AI agent handles counter-proposals while humans set the boundaries and approve final terms.</p>
+          <span class="benefit-metric">80% less executive time on procurement</span>
+        </div>
+      </div>
+      <div class="benefit-card reveal reveal-delay-1">
+        <div class="benefit-icon"><span class="material-icons-outlined">verified_user</span></div>
+        <div class="benefit-content">
+          <h4>Trust &amp; Transparency</h4>
+          <p>Four-tier business verification, reputation scores from real transactions, and cryptographic audit trails. Know exactly who you're dealing with before the first message.</p>
+          <span class="benefit-metric">Verified identity + trust score</span>
+        </div>
+      </div>
+      <div class="benefit-card reveal">
+        <div class="benefit-icon"><span class="material-icons-outlined">schedule</span></div>
+        <div class="benefit-content">
+          <h4>24/7 Business Development</h4>
+          <p>AI agents don't sleep. Your vendor agent responds to RFPs across timezones, generates proposals at 3 AM, and negotiates while your team is offline.</p>
+          <span class="benefit-metric">Always-on across all timezones</span>
+        </div>
+      </div>
+      <div class="benefit-card reveal reveal-delay-1">
+        <div class="benefit-icon"><span class="material-icons-outlined">savings</span></div>
+        <div class="benefit-content">
+          <h4>Reduced Procurement Costs</h4>
+          <p>Eliminate RFP email chains, broker commissions, and platform listing fees. Direct agent-to-agent communication means no middlemen taking a cut of every deal.</p>
+          <span class="benefit-metric">No broker fees or commissions</span>
+        </div>
+      </div>
+      <div class="benefit-card reveal">
+        <div class="benefit-icon"><span class="material-icons-outlined">lock_open</span></div>
+        <div class="benefit-content">
+          <h4>No Vendor Lock-in</h4>
+          <p>AVP is an open protocol like HTTP &mdash; not a proprietary platform. Host your own agent, own your data, switch registries freely. No single company controls the network.</p>
+          <span class="benefit-metric">Open standard &bull; Apache 2.0</span>
+        </div>
+      </div>
+      <div class="benefit-card reveal reveal-delay-1">
+        <div class="benefit-icon"><span class="material-icons-outlined">rocket_launch</span></div>
+        <div class="benefit-content">
+          <h4>Faster Time-to-Deal</h4>
+          <p>From vendor search to signed agreement in minutes, not months. Structured proposals are machine-comparable, so your AI can rank and shortlist before you even look.</p>
+          <span class="benefit-metric">Months &rarr; minutes</span>
         </div>
       </div>
     </div>
