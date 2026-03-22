@@ -20,8 +20,14 @@ Date: 2026-03-18
 9. [Registry API](#9-registry-api)
 10. [Trust API](#10-trust-api)
 11. [Webhook Events](#11-webhook-events)
-12. [Rate Limits](#12-rate-limits)
-13. [SDK Quick Reference](#13-sdk-quick-reference)
+12. [Analytics API](#12-analytics-api)
+13. [Dispute Resolution API](#13-dispute-resolution-api)
+14. [Audit Trail API](#14-audit-trail-api)
+15. [GDPR & Data Management API](#15-gdpr--data-management-api)
+16. [Sandbox API](#16-sandbox-api)
+17. [Contract Templates API](#17-contract-templates-api)
+18. [Rate Limits](#18-rate-limits)
+19. [SDK Quick Reference](#19-sdk-quick-reference)
 
 ---
 
@@ -744,9 +750,363 @@ All webhook payloads follow this structure:
 
 ---
 
-## 12. Rate Limits
+## 12. Analytics API
 
-### 12.1 Default Rate Limits
+### 12.1 GET /avp/analytics/usage
+
+Returns usage metrics for the agent.
+
+**Request:**
+```http
+AVP-Session-ID: ses_abc123def456
+```
+
+**Query params:** `period` (7d, 30d, 90d), `metric` (rfps_received, proposals_sent, negotiations, settlements)
+
+**Response: 200 OK**
+```json
+{
+  "type": "analytics_usage",
+  "period": "30d",
+  "metrics": {
+    "rfps_received": 142,
+    "proposals_sent": 128,
+    "negotiations_started": 89,
+    "settlements_completed": 34,
+    "avg_response_time_ms": 12400,
+    "avg_negotiation_rounds": 2.3
+  },
+  "trend": {
+    "rfps_received_change": "+12%",
+    "settlements_change": "+8%"
+  }
+}
+```
+
+### 12.2 GET /avp/analytics/conversion
+
+Returns conversion funnel metrics.
+
+**Response: 200 OK**
+```json
+{
+  "type": "analytics_conversion",
+  "period": "30d",
+  "funnel": {
+    "rfps_received": 142,
+    "proposals_sent": 128,
+    "negotiations_entered": 89,
+    "settlements_completed": 34
+  },
+  "conversion_rates": {
+    "rfp_to_proposal": 0.90,
+    "proposal_to_negotiation": 0.70,
+    "negotiation_to_settlement": 0.38,
+    "overall": 0.24
+  }
+}
+```
+
+### 12.3 GET /avp/analytics/latency
+
+Returns response time percentiles.
+
+**Response: 200 OK**
+```json
+{
+  "type": "analytics_latency",
+  "period": "7d",
+  "endpoints": {
+    "discovery": {"p50": 45, "p95": 120, "p99": 340},
+    "handshake": {"p50": 180, "p95": 450, "p99": 980},
+    "rfp": {"p50": 8500, "p95": 22000, "p99": 28000},
+    "negotiate": {"p50": 3200, "p95": 8500, "p99": 15000}
+  }
+}
+```
+
+---
+
+## 13. Dispute Resolution API
+
+### 13.1 POST /avp/dispute
+
+Open a dispute on a settlement.
+
+**Request:**
+```json
+{
+  "type": "dispute_open",
+  "settlement_id": "stl_xyz789",
+  "reason": "deliverable_mismatch",
+  "description": "Delivered solution does not match agreed specifications in section 3.2",
+  "evidence": [
+    {
+      "type": "document",
+      "url": "https://buyer.com/evidence/spec-comparison.pdf",
+      "hash": "sha256:abc123..."
+    }
+  ],
+  "requested_resolution": "partial_refund",
+  "requested_amount": {"value": "50000", "currency": "USD"}
+}
+```
+
+**Response: 201 Created**
+```json
+{
+  "type": "dispute_opened",
+  "dispute_id": "dsp_abc123",
+  "status": "open",
+  "stage": "direct_resolution",
+  "response_deadline": "2026-04-01T23:59:59Z",
+  "escalation_available_after": "2026-04-05T00:00:00Z"
+}
+```
+
+### 13.2 GET /avp/dispute/{dispute_id}
+
+Get dispute status and history.
+
+### 13.3 POST /avp/dispute/{dispute_id}/respond
+
+Respond to a dispute (by the other party).
+
+### 13.4 POST /avp/dispute/{dispute_id}/escalate
+
+Escalate dispute to mediation or arbitration.
+
+**Request:**
+```json
+{
+  "type": "dispute_escalate",
+  "dispute_id": "dsp_abc123",
+  "escalate_to": "mediation",
+  "reason": "Unable to reach resolution within direct resolution period"
+}
+```
+
+---
+
+## 14. Audit Trail API
+
+### 14.1 GET /avp/audit
+
+Retrieve audit log entries for compliance.
+
+**Query params:** `from` (ISO date), `to` (ISO date), `event_type`, `session_id`, `format` (json, csv, jsonl)
+
+**Response: 200 OK**
+```json
+{
+  "type": "audit_log",
+  "entries": [
+    {
+      "id": "aud_001",
+      "timestamp": "2026-03-18T10:00:00Z",
+      "event_type": "handshake.completed",
+      "agent_id": "avp:buyer:globex:e5f6g7h8",
+      "session_id": "ses_abc123",
+      "ip_address": "203.0.113.42",
+      "user_agent": "AVP-SDK-Node/1.0",
+      "details": {"auth_method": "ed25519"},
+      "integrity_hash": "sha256:def456..."
+    }
+  ],
+  "pagination": {
+    "total": 1240,
+    "page": 1,
+    "per_page": 100,
+    "next_cursor": "cur_abc123"
+  }
+}
+```
+
+### 14.2 POST /avp/audit/export
+
+Request a bulk audit export for compliance.
+
+**Request:**
+```json
+{
+  "type": "audit_export_request",
+  "from": "2026-01-01T00:00:00Z",
+  "to": "2026-03-31T23:59:59Z",
+  "format": "jsonl",
+  "include_integrity_checksums": true
+}
+```
+
+**Response: 202 Accepted**
+```json
+{
+  "type": "audit_export_started",
+  "export_id": "exp_abc123",
+  "status": "processing",
+  "estimated_ready": "2026-03-22T12:00:00Z",
+  "download_url_when_ready": "/avp/audit/export/exp_abc123/download"
+}
+```
+
+---
+
+## 15. GDPR & Data Management API
+
+### 15.1 DELETE /avp/negotiations/{negotiation_id}/data
+
+Request erasure of all personal data from a negotiation (GDPR Article 17).
+
+**Request:**
+```json
+{
+  "type": "erasure_request",
+  "subject_id": "eu-resident-ref-001",
+  "reason": "gdpr_article_17",
+  "requested_at": "2026-03-22T10:00:00Z"
+}
+```
+
+**Response: 202 Accepted**
+```json
+{
+  "type": "erasure_accepted",
+  "negotiation_id": "neg_abc123",
+  "erasure_completion_eta": "P7D",
+  "confirmation_callback": "https://buyer.com/avp/erasure-confirm"
+}
+```
+
+### 15.2 GET /avp/data/export/{agent_id}
+
+Export all data associated with an agent (GDPR Article 20 - data portability).
+
+**Response: 200 OK**
+```json
+{
+  "type": "data_export",
+  "agent_id": "avp:buyer:globex:e5f6g7h8",
+  "format": "application/zip",
+  "download_url": "/avp/data/export/exp_xyz/download",
+  "expires": "2026-03-29T10:00:00Z",
+  "contents": ["negotiations", "proposals", "settlements", "audit_logs"]
+}
+```
+
+---
+
+## 16. Sandbox API
+
+### 16.1 POST /avp/sandbox/session
+
+Create a sandbox session for testing.
+
+**Request:**
+```json
+{
+  "type": "sandbox_session_create",
+  "test_agent_id": "avp:test:your-company:test001",
+  "mock_vendor": "responsive",
+  "scenario": "full_negotiation"
+}
+```
+
+**Response: 201 Created**
+```json
+{
+  "type": "sandbox_session",
+  "sandbox_session_id": "sbx_abc123",
+  "test_agent_id": "avp:test:your-company:test001",
+  "mock_vendor_id": "avp:test:mock-vendor:responsive",
+  "endpoints": {
+    "handshake": "https://sandbox.avp-protocol.org/avp/handshake",
+    "rfp": "https://sandbox.avp-protocol.org/avp/rfp",
+    "negotiate": "https://sandbox.avp-protocol.org/avp/negotiate",
+    "settle": "https://sandbox.avp-protocol.org/avp/settle"
+  },
+  "expires": "2026-03-22T22:00:00Z"
+}
+```
+
+**Available mock vendors:** `responsive` (instant replies), `slow` (delayed), `negotiator` (counter-proposes 3 times), `rejector` (always rejects), `escalator` (escalates to human), `error` (returns errors).
+
+### 16.2 GET /avp/sandbox/session/{sandbox_session_id}/log
+
+Get all interactions within a sandbox session for debugging.
+
+---
+
+## 17. Contract Templates API
+
+### 17.1 GET /v1/templates
+
+List available contract templates from the registry.
+
+**Response: 200 OK**
+```json
+{
+  "type": "template_list",
+  "templates": [
+    {
+      "id": "tpl_software_dev_v1",
+      "name": "Software Development Agreement",
+      "version": "1.0",
+      "category": "development",
+      "jurisdiction": "international",
+      "sections": ["scope", "timeline", "pricing", "ip_ownership", "warranty", "termination"]
+    },
+    {
+      "id": "tpl_consulting_v1",
+      "name": "Consulting Services Agreement",
+      "version": "1.0",
+      "category": "consulting",
+      "jurisdiction": "international"
+    }
+  ]
+}
+```
+
+### 17.2 GET /v1/templates/{template_id}
+
+Get full contract template with fillable fields.
+
+### 17.3 POST /avp/contract/sign
+
+Digitally sign a contract derived from a settlement.
+
+**Request:**
+```json
+{
+  "type": "contract_sign",
+  "settlement_id": "stl_xyz789",
+  "template_id": "tpl_software_dev_v1",
+  "terms_overrides": {},
+  "signature": {
+    "algorithm": "Ed25519",
+    "value": "base64_signature...",
+    "signed_at": "2026-03-22T10:00:00Z",
+    "human_approved": true,
+    "approver": "john@buyer.com"
+  }
+}
+```
+
+**Response: 200 OK**
+```json
+{
+  "type": "contract_signed",
+  "contract_id": "ctr_abc123",
+  "status": "fully_executed",
+  "parties_signed": ["avp:buyer:globex:e5f6g7h8", "avp:vendor:acme:a1b2c3d4"],
+  "document_url": "/avp/contract/ctr_abc123/document",
+  "registry_record_id": "rec_xyz789"
+}
+```
+
+---
+
+## 18. Rate Limits
+
+### 18.1 Default Rate Limits
 
 | Endpoint | Limit | Window |
 |----------|-------|--------|
@@ -758,7 +1118,7 @@ All webhook payloads follow this structure:
 | `/avp/status` | 60 requests | per hour |
 | Registry search | 100 requests | per hour |
 
-### 12.2 Rate Limit Headers
+### 18.2 Rate Limit Headers
 
 ```http
 X-RateLimit-Limit: 10
@@ -769,9 +1129,9 @@ Retry-After: 1800
 
 ---
 
-## 13. SDK Quick Reference
+## 19. SDK Quick Reference
 
-### 13.1 Node.js (Vendor)
+### 19.1 Node.js (Vendor)
 
 ```javascript
 const { AVPVendor } = require('@avp/vendor-sdk');
@@ -782,7 +1142,7 @@ vendor.on('settle', handler);
 vendor.listen(3000);
 ```
 
-### 13.2 Node.js (Buyer)
+### 19.2 Node.js (Buyer)
 
 ```javascript
 const { AVPBuyer } = require('@avp/buyer-sdk');
@@ -794,7 +1154,7 @@ await buyer.negotiate(ranked[0], strategy);
 await buyer.settle(ranked[0]);
 ```
 
-### 13.3 Python (Vendor)
+### 19.3 Python (Vendor)
 
 ```python
 from avp_vendor import AVPVendor
@@ -809,7 +1169,7 @@ async def handle_negotiate(counter, session): ...
 vendor.run(port=3000)
 ```
 
-### 13.4 cURL
+### 19.4 cURL
 
 ```bash
 # Discover
