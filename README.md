@@ -79,6 +79,8 @@ AVP defines a standard way for any website to expose an AI agent endpoint that c
 | [Governance](docs/GOVERNANCE.md) | Protocol governance, decision-making, evolution |
 | [Project Plan](docs/PROJECT-PLAN.md) | Comprehensive project plan with phases and milestones |
 | [Business Adoption](docs/BUSINESS-ADOPTION.md) | Compliance, SLA, webhooks, contracts, sandbox, analytics |
+| [Integrations](docs/INTEGRATIONS.md) | Integration ecosystem roadmap (CRM, payments, AI, CMS) |
+| [Strategy](docs/STRATEGY.md) | Feasibility analysis, market opportunity, go-to-market plan |
 
 ---
 
