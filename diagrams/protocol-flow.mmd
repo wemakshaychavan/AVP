@@ -1,0 +1,42 @@
+sequenceDiagram
+    participant B as Buyer Agent
+    participant R as AVP Registry
+    participant T as Trust Authority
+    participant V as Vendor Agent
+
+    Note over B: User searches for "Java + Travel dev companies"
+
+    B->>R: Search(technologies=java, domains=travel)
+    R-->>B: List of matching vendors
+
+    loop For each vendor
+        B->>V: GET /.well-known/avp.json
+        V-->>B: Discovery Document
+
+        B->>T: Verify vendor trust score
+        T-->>B: Trust score + verification level
+    end
+
+    Note over B: Filter by trust score threshold
+
+    B->>V: POST /avp/handshake (signed)
+    V->>T: Verify buyer identity
+    T-->>V: Buyer verified
+    V-->>B: Session token + policies
+
+    B->>V: POST /avp/rfp (with requirements)
+    Note over V: AI generates proposal
+    V-->>B: Proposal (pricing, timeline, team)
+
+    Note over B: AI analyzes and ranks proposals
+
+    opt Negotiation
+        B->>V: POST /avp/negotiate (counter-proposal)
+        V-->>B: Adjusted proposal
+        B->>V: POST /avp/negotiate/accept
+        V-->>B: Acceptance confirmed
+    end
+
+    B->>V: POST /avp/settle (final terms)
+    V-->>B: Settlement confirmation
+    V->>R: Record transaction

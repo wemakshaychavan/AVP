@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AVP — AI Vendor Protocol</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Outfit:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#07080a;
+  --bg-elevated:#0d0f13;
+  --bg-card:#111318;
+  --border:#1a1d25;
+  --border-bright:#2a2e3a;
+  --text:#e8eaed;
+  --text-dim:#7a7f8e;
+  --text-muted:#4a4f5e;
+  --accent:#00d4aa;
+  --accent-dim:#00d4aa33;
+  --accent-bright:#00ffcc;
+  --signal:#ff6b35;
+  --signal-dim:#ff6b3522;
+  --purple:#8b5cf6;
+  --purple-dim:#8b5cf622;
+  --blue:#3b82f6;
+  --gradient-accent:linear-gradient(135deg,#00d4aa,#3b82f6);
+  --gradient-warm:linear-gradient(135deg,#ff6b35,#ff3366);
+  --mono:'DM Mono',monospace;
+  --sans:'Outfit',sans-serif;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--sans);
+  line-height:1.6;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--accent);color:var(--bg)}
+
+/* ---- NOISE OVERLAY ---- */
+body::before{
+  content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
+  background:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  opacity:0.4;
+}
+
+/* ---- GRID BACKGROUND ---- */
+.grid-bg{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size:80px 80px;
+  opacity:0.15;
+  mask-image:radial-gradient(ellipse 60% 50% at 50% 30%,black 20%,transparent 70%);
+}
+
+/* ---- LAYOUT ---- */
+.container{max-width:1200px;margin:0 auto;padding:0 2rem}
+section{position:relative;z-index:1}
+
+/* ---- NAV ---- */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  padding:1.2rem 2rem;
+  background:rgba(7,8,10,0.8);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.nav-logo{
+  font-family:var(--mono);font-weight:500;font-size:1.1rem;
+  letter-spacing:0.05em;color:var(--accent);
+  display:flex;align-items:center;gap:0.6rem;
+}
+.nav-logo .dot{
+  width:8px;height:8px;border-radius:50%;background:var(--accent);
+  box-shadow:0 0 12px var(--accent),0 0 30px var(--accent-dim);
+  animation:pulse 2s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.8)}}
+.nav-links{display:flex;gap:2rem;align-items:center}
+.nav-links a{
+  color:var(--text-dim);text-decoration:none;font-size:0.875rem;font-weight:400;
+  letter-spacing:0.02em;transition:color 0.3s;
+}
+.nav-links a:hover{color:var(--text)}
+.nav-cta{
+  background:var(--accent);color:var(--bg);
+  padding:0.5rem 1.2rem;border-radius:6px;font-weight:600;font-size:0.8rem;
+  text-transform:uppercase;letter-spacing:0.06em;transition:all 0.3s;
+  text-decoration:none;
+}
+.nav-cta:hover{background:var(--accent-bright);color:var(--bg) !important;transform:translateY(-1px);box-shadow:0 4px 20px var(--accent-dim)}
+
+/* ---- HERO ---- */
+.hero{
+  min-height:100vh;display:flex;flex-direction:column;
+  justify-content:center;align-items:center;text-align:center;
+  padding:8rem 2rem 6rem;position:relative;
+}
+.hero-glow{
+  position:absolute;top:10%;left:50%;transform:translateX(-50%);
+  width:800px;height:600px;
+  background:radial-gradient(ellipse,var(--accent-dim) 0%,transparent 60%);
+  filter:blur(80px);pointer-events:none;opacity:0.5;
+}
+.hero-glow-2{
+  position:absolute;top:30%;right:10%;
+  width:400px;height:400px;
+  background:radial-gradient(ellipse,var(--purple-dim) 0%,transparent 60%);
+  filter:blur(80px);pointer-events:none;opacity:0.4;
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:0.5rem;
+  font-family:var(--mono);font-size:0.75rem;color:var(--accent);
+  background:var(--accent-dim);border:1px solid rgba(0,212,170,0.2);
+  padding:0.4rem 1rem;border-radius:100px;margin-bottom:2rem;
+  letter-spacing:0.04em;
+}
+.hero-badge .v{color:var(--text-dim)}
+.hero h1{
+  font-size:clamp(2.8rem,7vw,5.5rem);font-weight:800;
+  line-height:1.05;letter-spacing:-0.03em;
+  max-width:900px;margin-bottom:1.5rem;
+  background:linear-gradient(180deg,var(--text) 40%,var(--text-dim) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.hero h1 em{
+  font-style:normal;
+  background:var(--gradient-accent);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.hero-sub{
+  font-size:clamp(1rem,2vw,1.25rem);color:var(--text-dim);
+  max-width:600px;margin-bottom:3rem;font-weight:300;line-height:1.7;
+}
+.hero-actions{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center}
+.btn-primary{
+  background:var(--accent);color:var(--bg);
+  padding:0.8rem 2rem;border-radius:8px;font-weight:600;font-size:0.9rem;
+  text-decoration:none;letter-spacing:0.02em;
+  transition:all 0.3s;display:inline-flex;align-items:center;gap:0.5rem;
+}
+.btn-primary:hover{background:var(--accent-bright);transform:translateY(-2px);box-shadow:0 8px 30px var(--accent-dim)}
+.btn-secondary{
+  background:transparent;color:var(--text);
+  padding:0.8rem 2rem;border-radius:8px;font-weight:500;font-size:0.9rem;
+  text-decoration:none;border:1px solid var(--border-bright);
+  transition:all 0.3s;display:inline-flex;align-items:center;gap:0.5rem;
+}
+.btn-secondary:hover{border-color:var(--text-dim);background:var(--bg-elevated)}
+.hero-terminal{
+  margin-top:4rem;width:100%;max-width:700px;
+  background:var(--bg-elevated);border:1px solid var(--border);
+  border-radius:12px;overflow:hidden;text-align:left;
+  box-shadow:0 20px 60px rgba(0,0,0,0.4);
+}
+.terminal-header{
+  padding:0.8rem 1rem;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:0.5rem;
+}
+.terminal-dot{width:10px;height:10px;border-radius:50%;background:var(--border-bright)}
+.terminal-dot.r{background:#ff5f57}.terminal-dot.y{background:#febc2e}.terminal-dot.g{background:#28c840}
+.terminal-title{margin-left:0.8rem;font-family:var(--mono);font-size:0.7rem;color:var(--text-muted)}
+.terminal-body{padding:1.5rem;font-family:var(--mono);font-size:0.8rem;line-height:1.8}
+.terminal-body .prompt{color:var(--accent)}
+.terminal-body .cmd{color:var(--text)}
+.terminal-body .comment{color:var(--text-muted)}
+.terminal-body .url{color:var(--blue)}
+.terminal-body .json-key{color:var(--purple)}
+.terminal-body .json-val{color:var(--signal)}
+.terminal-body .json-str{color:var(--accent)}
+.terminal-body .resp{color:var(--text-dim)}
+
+/* ---- SECTION STYLING ---- */
+.section-header{text-align:center;margin-bottom:4rem}
+.section-label{
+  font-family:var(--mono);font-size:0.7rem;color:var(--accent);
+  text-transform:uppercase;letter-spacing:0.15em;margin-bottom:0.8rem;
+  display:flex;align-items:center;justify-content:center;gap:0.6rem;
+}
+.section-label::before,.section-label::after{
+  content:'';width:30px;height:1px;background:var(--border-bright);
+}
+.section-title{
+  font-size:clamp(2rem,4vw,3rem);font-weight:700;
+  letter-spacing:-0.02em;line-height:1.15;margin-bottom:1rem;
+}
+.section-desc{color:var(--text-dim);max-width:600px;margin:0 auto;font-weight:300;font-size:1.05rem}
+
+/* ---- WHAT IS AVP ---- */
+.what-is{padding:8rem 0}
+.what-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:4rem;
+  align-items:center;margin-top:3rem;
+}
+.what-text h3{font-size:1.5rem;font-weight:600;margin-bottom:1rem;letter-spacing:-0.01em}
+.what-text p{color:var(--text-dim);font-weight:300;line-height:1.8;margin-bottom:1.5rem}
+.what-text .analogy{
+  font-family:var(--mono);font-size:0.85rem;
+  background:var(--bg-elevated);border:1px solid var(--border);
+  padding:1rem 1.5rem;border-radius:8px;color:var(--accent);
+  display:inline-block;
+}
+.what-visual{position:relative}
+.what-visual .protocol-box{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:12px;padding:2rem;position:relative;overflow:hidden;
+}
+.what-visual .protocol-box::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:var(--gradient-accent);
+}
+.endpoint-display{font-family:var(--mono);margin-bottom:1.5rem}
+.endpoint-display .method{
+  display:inline-block;background:var(--accent-dim);color:var(--accent);
+  padding:0.2rem 0.6rem;border-radius:4px;font-size:0.7rem;font-weight:500;
+  margin-right:0.5rem;
+}
+.endpoint-display .path{color:var(--text);font-size:0.85rem}
+.json-preview{
+  background:var(--bg);border:1px solid var(--border);
+  border-radius:8px;padding:1.2rem;font-family:var(--mono);
+  font-size:0.75rem;line-height:1.7;overflow-x:auto;
+}
+
+/* ---- HOW IT WORKS ---- */
+.how-it-works{padding:8rem 0}
+.flow-container{
+  display:flex;align-items:stretch;gap:0;margin-top:3rem;
+  position:relative;
+}
+.flow-step{
+  flex:1;text-align:center;padding:2rem 1.5rem;position:relative;
+}
+.flow-step::after{
+  content:'';position:absolute;top:2.8rem;right:-12px;
+  width:24px;height:2px;background:var(--border-bright);z-index:2;
+}
+.flow-step:last-child::after{display:none}
+.flow-icon{
+  width:56px;height:56px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 1.2rem;font-size:1.3rem;
+  border:1px solid var(--border);background:var(--bg-card);
+  position:relative;
+}
+.flow-step:nth-child(1) .flow-icon{border-color:rgba(0,212,170,0.3);box-shadow:0 0 20px var(--accent-dim)}
+.flow-step:nth-child(2) .flow-icon{border-color:rgba(59,130,246,0.3);box-shadow:0 0 20px rgba(59,130,246,0.1)}
+.flow-step:nth-child(3) .flow-icon{border-color:rgba(139,92,246,0.3);box-shadow:0 0 20px var(--purple-dim)}
+.flow-step:nth-child(4) .flow-icon{border-color:rgba(255,107,53,0.3);box-shadow:0 0 20px var(--signal-dim)}
+.flow-step:nth-child(5) .flow-icon{border-color:rgba(0,212,170,0.3);box-shadow:0 0 20px var(--accent-dim)}
+.flow-num{
+  font-family:var(--mono);font-size:0.6rem;color:var(--text-muted);
+  margin-bottom:0.5rem;letter-spacing:0.1em;
+}
+.flow-step h4{font-size:0.95rem;font-weight:600;margin-bottom:0.5rem}
+.flow-step p{font-size:0.8rem;color:var(--text-dim);font-weight:300;line-height:1.5}
+.flow-endpoint{
+  font-family:var(--mono);font-size:0.65rem;color:var(--accent);
+  background:var(--accent-dim);padding:0.2rem 0.5rem;border-radius:4px;
+  display:inline-block;margin-top:0.6rem;
+}
+
+/* ---- FEATURES ---- */
+.features{padding:8rem 0}
+.features-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:3rem;
+}
+.feature-card{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:12px;padding:2rem;transition:all 0.4s;
+  position:relative;overflow:hidden;
+}
+.feature-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:var(--gradient-accent);opacity:0;transition:opacity 0.4s;
+}
+.feature-card:hover{border-color:var(--border-bright);transform:translateY(-4px)}
+.feature-card:hover::before{opacity:1}
+.feature-icon{
+  font-size:1.5rem;margin-bottom:1rem;display:block;
+}
+.feature-card h4{font-size:1.05rem;font-weight:600;margin-bottom:0.6rem}
+.feature-card p{font-size:0.85rem;color:var(--text-dim);font-weight:300;line-height:1.6}
+
+/* ---- FOR VENDORS / BUYERS ---- */
+.for-section{padding:8rem 0}
+.for-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:3rem;margin-top:3rem;
+}
+.for-card{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:16px;padding:3rem;position:relative;overflow:hidden;
+}
+.for-card.vendor::before{
+  content:'';position:absolute;top:0;left:0;bottom:0;width:3px;
+  background:var(--gradient-accent);
+}
+.for-card.buyer::before{
+  content:'';position:absolute;top:0;left:0;bottom:0;width:3px;
+  background:var(--gradient-warm);
+}
+.for-card .label{
+  font-family:var(--mono);font-size:0.7rem;text-transform:uppercase;
+  letter-spacing:0.12em;margin-bottom:1rem;
+}
+.for-card.vendor .label{color:var(--accent)}
+.for-card.buyer .label{color:var(--signal)}
+.for-card h3{font-size:1.6rem;font-weight:700;margin-bottom:1rem;letter-spacing:-0.01em}
+.for-card p{color:var(--text-dim);font-weight:300;line-height:1.7;margin-bottom:1.5rem}
+.for-list{list-style:none;margin-bottom:2rem}
+.for-list li{
+  padding:0.5rem 0;font-size:0.9rem;color:var(--text-dim);
+  display:flex;align-items:flex-start;gap:0.6rem;font-weight:300;
+}
+.for-list .check{color:var(--accent);font-size:0.8rem;margin-top:0.15rem}
+.for-card.buyer .check{color:var(--signal)}
+
+/* ---- CODE EXAMPLES ---- */
+.code-section{padding:8rem 0}
+.code-tabs{
+  display:flex;gap:0;margin-bottom:0;margin-top:3rem;
+}
+.code-tab{
+  padding:0.7rem 1.5rem;font-family:var(--mono);font-size:0.8rem;
+  background:var(--bg-elevated);color:var(--text-dim);
+  border:1px solid var(--border);cursor:pointer;
+  transition:all 0.3s;border-bottom:none;
+  border-radius:8px 8px 0 0;
+}
+.code-tab.active{background:var(--bg-card);color:var(--accent);border-color:var(--border-bright)}
+.code-block{
+  background:var(--bg-card);border:1px solid var(--border-bright);
+  border-radius:0 12px 12px 12px;padding:2rem;
+  font-family:var(--mono);font-size:0.8rem;line-height:1.8;
+  overflow-x:auto;display:none;
+}
+.code-block.active{display:block}
+.code-block .kw{color:var(--purple)}
+.code-block .fn{color:var(--blue)}
+.code-block .str{color:var(--accent)}
+.code-block .cm{color:var(--text-muted)}
+.code-block .num{color:var(--signal)}
+.code-block .op{color:var(--text-dim)}
+.code-block .prop{color:var(--text)}
+.code-block .br{color:var(--text-dim)}
+
+/* ---- ARCHITECTURE ---- */
+.architecture{padding:8rem 0}
+.arch-diagram{
+  margin-top:3rem;background:var(--bg-card);border:1px solid var(--border);
+  border-radius:16px;padding:3rem;position:relative;overflow:hidden;
+}
+.arch-layers{display:flex;flex-direction:column;gap:1rem}
+.arch-layer{
+  display:flex;align-items:center;gap:1rem;
+  padding:1rem 1.5rem;border-radius:8px;
+  border:1px solid var(--border);background:var(--bg-elevated);
+  transition:all 0.3s;
+}
+.arch-layer:hover{border-color:var(--border-bright);background:var(--bg-card)}
+.arch-layer-name{
+  font-family:var(--mono);font-size:0.7rem;text-transform:uppercase;
+  letter-spacing:0.1em;min-width:140px;
+}
+.arch-layer:nth-child(1) .arch-layer-name{color:var(--accent)}
+.arch-layer:nth-child(2) .arch-layer-name{color:var(--blue)}
+.arch-layer:nth-child(3) .arch-layer-name{color:var(--purple)}
+.arch-layer:nth-child(4) .arch-layer-name{color:var(--signal)}
+.arch-layer:nth-child(5) .arch-layer-name{color:var(--accent)}
+.arch-layer:nth-child(6) .arch-layer-name{color:var(--blue)}
+.arch-layer-items{
+  display:flex;flex-wrap:wrap;gap:0.5rem;
+}
+.arch-item{
+  font-size:0.75rem;padding:0.3rem 0.8rem;border-radius:4px;
+  background:var(--bg);border:1px solid var(--border);color:var(--text-dim);
+}
+
+/* ---- ROADMAP ---- */
+.roadmap{padding:8rem 0}
+.timeline{
+  margin-top:3rem;position:relative;
+  padding-left:3rem;
+}
+.timeline::before{
+  content:'';position:absolute;left:11px;top:0;bottom:0;
+  width:2px;background:var(--border);
+}
+.timeline-item{
+  position:relative;margin-bottom:3rem;padding-left:2rem;
+}
+.timeline-item::before{
+  content:'';position:absolute;left:-3rem;top:0.4rem;
+  width:24px;height:24px;border-radius:50%;
+  border:2px solid var(--border-bright);background:var(--bg-card);
+  z-index:1;
+}
+.timeline-item.active::before{
+  border-color:var(--accent);background:var(--accent);
+  box-shadow:0 0 16px var(--accent-dim);
+}
+.timeline-item .year{
+  font-family:var(--mono);font-size:0.7rem;color:var(--accent);
+  text-transform:uppercase;letter-spacing:0.12em;margin-bottom:0.3rem;
+}
+.timeline-item h4{font-size:1.1rem;font-weight:600;margin-bottom:0.4rem}
+.timeline-item p{font-size:0.85rem;color:var(--text-dim);font-weight:300;line-height:1.6}
+.timeline-tags{display:flex;flex-wrap:wrap;gap:0.4rem;margin-top:0.6rem}
+.timeline-tag{
+  font-family:var(--mono);font-size:0.65rem;
+  padding:0.2rem 0.5rem;border-radius:4px;
+  background:var(--bg-elevated);border:1px solid var(--border);color:var(--text-muted);
+}
+
+/* ---- COMMUNITY ---- */
+.community{padding:8rem 0}
+.community-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:3rem;
+}
+.community-card{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:12px;padding:2rem;text-align:center;
+  transition:all 0.3s;
+}
+.community-card:hover{border-color:var(--border-bright);transform:translateY(-2px)}
+.community-card .icon{font-size:2rem;margin-bottom:1rem}
+.community-card h4{font-size:1rem;font-weight:600;margin-bottom:0.5rem}
+.community-card p{font-size:0.8rem;color:var(--text-dim);font-weight:300;margin-bottom:1.2rem;line-height:1.5}
+.community-link{
+  font-family:var(--mono);font-size:0.75rem;color:var(--accent);
+  text-decoration:none;display:inline-flex;align-items:center;gap:0.3rem;
+  transition:color 0.3s;
+}
+.community-link:hover{color:var(--accent-bright)}
+
+/* ---- STATS BAR ---- */
+.stats-bar{
+  padding:4rem 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);
+}
+.stats-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:2rem;text-align:center;
+}
+.stat-num{
+  font-size:2.5rem;font-weight:800;letter-spacing:-0.02em;
+  background:var(--gradient-accent);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.stat-label{font-size:0.8rem;color:var(--text-dim);font-weight:300;margin-top:0.3rem}
+
+/* ---- CTA ---- */
+.cta{padding:8rem 0;text-align:center;position:relative}
+.cta-glow{
+  position:absolute;bottom:0;left:50%;transform:translateX(-50%);
+  width:600px;height:400px;
+  background:radial-gradient(ellipse,var(--accent-dim) 0%,transparent 60%);
+  filter:blur(80px);pointer-events:none;opacity:0.3;
+}
+.cta h2{
+  font-size:clamp(2rem,4vw,3.5rem);font-weight:800;
+  letter-spacing:-0.03em;margin-bottom:1rem;
+}
+.cta h2 em{
+  font-style:normal;
+  background:var(--gradient-accent);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.cta p{color:var(--text-dim);font-weight:300;font-size:1.1rem;margin-bottom:2rem;max-width:500px;margin-left:auto;margin-right:auto}
+
+/* ---- FOOTER ---- */
+footer{
+  padding:4rem 0 2rem;border-top:1px solid var(--border);
+}
+.footer-grid{
+  display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;margin-bottom:3rem;
+}
+.footer-brand .logo{
+  font-family:var(--mono);font-weight:500;font-size:1rem;
+  color:var(--accent);margin-bottom:0.8rem;
+}
+.footer-brand p{font-size:0.8rem;color:var(--text-muted);font-weight:300;line-height:1.6;max-width:280px}
+.footer-col h5{
+  font-family:var(--mono);font-size:0.7rem;text-transform:uppercase;
+  letter-spacing:0.12em;color:var(--text-dim);margin-bottom:1rem;
+}
+.footer-col a{
+  display:block;font-size:0.85rem;color:var(--text-muted);
+  text-decoration:none;padding:0.25rem 0;transition:color 0.3s;font-weight:300;
+}
+.footer-col a:hover{color:var(--text)}
+.footer-bottom{
+  display:flex;justify-content:space-between;align-items:center;
+  padding-top:2rem;border-top:1px solid var(--border);
+  font-size:0.75rem;color:var(--text-muted);font-weight:300;
+}
+
+/* ---- ANIMATIONS ---- */
+.reveal{opacity:0;transform:translateY(30px);transition:all 0.8s cubic-bezier(0.16,1,0.3,1)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-delay-1{transition-delay:0.1s}
+.reveal-delay-2{transition-delay:0.2s}
+.reveal-delay-3{transition-delay:0.3s}
+.reveal-delay-4{transition-delay:0.4s}
+.reveal-delay-5{transition-delay:0.5s}
+
+/* ---- RESPONSIVE ---- */
+@media(max-width:900px){
+  .what-grid,.for-grid{grid-template-columns:1fr}
+  .features-grid,.community-grid{grid-template-columns:1fr 1fr}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .flow-container{flex-direction:column}
+  .flow-step::after{display:none}
+  .footer-grid{grid-template-columns:1fr 1fr}
+  .arch-layer{flex-direction:column;align-items:flex-start}
+}
+@media(max-width:600px){
+  .features-grid,.community-grid{grid-template-columns:1fr}
+  .footer-grid{grid-template-columns:1fr}
+  .stats-grid{grid-template-columns:1fr 1fr}
+  .nav-links{display:none}
+  .hero{padding:7rem 1.5rem 4rem}
+  .code-tabs{overflow-x:auto}
+}
+</style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <span class="dot"></span>
+    AVP
+  </div>
+  <div class="nav-links">
+    <a href="#how-it-works">How It Works</a>
+    <a href="#features">Features</a>
+    <a href="#code">Code</a>
+    <a href="#architecture">Architecture</a>
+    <a href="#roadmap">Roadmap</a>
+    <a href="https://github.com/avp-protocol" class="nav-cta">GitHub</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-glow-2"></div>
+  <div class="hero-badge reveal">
+    <span class="v">v1.0-draft</span> Protocol Specification Published
+  </div>
+  <h1 class="reveal reveal-delay-1">The Open Standard for <em>AI-to-AI</em> Business Communication</h1>
+  <p class="hero-sub reveal reveal-delay-2">AVP enables AI agents on different websites to discover, communicate, negotiate, and transact&nbsp;&mdash; creating the protocol layer for the AI-native economy.</p>
+  <div class="hero-actions reveal reveal-delay-3">
+    <a href="#code" class="btn-primary">Get Started &rarr;</a>
+    <a href="#how-it-works" class="btn-secondary">Read the Spec</a>
+  </div>
+  <div class="hero-terminal reveal reveal-delay-4">
+    <div class="terminal-header">
+      <span class="terminal-dot r"></span>
+      <span class="terminal-dot y"></span>
+      <span class="terminal-dot g"></span>
+      <span class="terminal-title">discovery &mdash; /.well-known/avp.json</span>
+    </div>
+    <div class="terminal-body">
+      <div><span class="prompt">$</span> <span class="cmd">curl</span> <span class="url">https://acmetech.com/.well-known/avp.json</span></div>
+      <br>
+      <div class="resp">{</div>
+      <div class="resp">&nbsp;&nbsp;<span class="json-key">"avp_version"</span>: <span class="json-str">"1.0"</span>,</div>
+      <div class="resp">&nbsp;&nbsp;<span class="json-key">"agent"</span>: {</div>
+      <div class="resp">&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"name"</span>: <span class="json-str">"Acme Tech Solutions"</span>,</div>
+      <div class="resp">&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"type"</span>: <span class="json-str">"vendor"</span></div>
+      <div class="resp">&nbsp;&nbsp;},</div>
+      <div class="resp">&nbsp;&nbsp;<span class="json-key">"capabilities"</span>: {</div>
+      <div class="resp">&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"technologies"</span>: [<span class="json-str">"java"</span>, <span class="json-str">"spring-boot"</span>, <span class="json-str">"react"</span>],</div>
+      <div class="resp">&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"domains"</span>: [<span class="json-str">"travel"</span>, <span class="json-str">"e-commerce"</span>]</div>
+      <div class="resp">&nbsp;&nbsp;},</div>
+      <div class="resp">&nbsp;&nbsp;<span class="json-key">"trust"</span>: { <span class="json-key">"score"</span>: <span class="json-val">0.87</span>, <span class="json-key">"status"</span>: <span class="json-str">"verified"</span> }</div>
+      <div class="resp">}</div>
+    </div>
+  </div>
+</section>
+
+<!-- WHAT IS AVP -->
+<section class="what-is" id="what">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label reveal">Protocol</div>
+      <h2 class="section-title reveal reveal-delay-1">What is AVP?</h2>
+      <p class="section-desc reveal reveal-delay-2">A standard way for any website to expose an AI agent that can be discovered, queried, and negotiated with by other AI agents.</p>
+    </div>
+    <div class="what-grid">
+      <div class="what-text reveal">
+        <h3>The Problem</h3>
+        <p>Finding and evaluating technology vendors is manual, slow, and opaque. Businesses spend weeks researching on Clutch and LinkedIn. RFPs go via email. Responses are inconsistent. Pricing is hidden behind "contact us" walls.</p>
+        <h3>The Solution</h3>
+        <p>AVP defines a protocol so AI agents can handle the entire vendor discovery and negotiation cycle automatically &mdash; from finding matching vendors to comparing proposals to closing deals.</p>
+        <div class="analogy">Think of it as DNS + HTTP + OAuth, but for AI business agents</div>
+      </div>
+      <div class="what-visual reveal reveal-delay-2">
+        <div class="protocol-box">
+          <div class="endpoint-display">
+            <span class="method">GET</span>
+            <span class="path">/.well-known/avp.json</span>
+          </div>
+          <div class="json-preview">
+<span class="json-key">"capabilities"</span>: {
+  <span class="json-key">"technologies"</span>: [
+    { <span class="json-key">"name"</span>: <span class="json-str">"java"</span>, <span class="json-key">"proficiency"</span>: <span class="json-str">"expert"</span>, <span class="json-key">"years"</span>: <span class="json-val">10</span> }
+  ],
+  <span class="json-key">"domains"</span>: [
+    { <span class="json-key">"name"</span>: <span class="json-str">"travel"</span>, <span class="json-key">"experience_years"</span>: <span class="json-val">8</span> }
+  ],
+  <span class="json-key">"services"</span>: [<span class="json-str">"custom-development"</span>, <span class="json-str">"consulting"</span>]
+}
+          </div>
+          <div style="margin-top:1.5rem">
+            <div class="endpoint-display">
+              <span class="method" style="background:var(--purple-dim);color:var(--purple)">POST</span>
+              <span class="path">/avp/rfp</span>
+            </div>
+            <div class="endpoint-display" style="margin-top:0.5rem">
+              <span class="method" style="background:var(--signal-dim);color:var(--signal)">POST</span>
+              <span class="path">/avp/negotiate</span>
+            </div>
+            <div class="endpoint-display" style="margin-top:0.5rem">
+              <span class="method" style="background:var(--accent-dim);color:var(--accent)">POST</span>
+              <span class="path">/avp/settle</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how-it-works" id="how-it-works">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label reveal">Flow</div>
+      <h2 class="section-title reveal reveal-delay-1">How It Works</h2>
+      <p class="section-desc reveal reveal-delay-2">Five phases from discovery to deal &mdash; fully automated, with human override at any stage.</p>
+    </div>
+    <div class="flow-container">
+      <div class="flow-step reveal">
+        <div class="flow-icon">&#x1f50d;</div>
+        <div class="flow-num">01</div>
+        <h4>Discovery</h4>
+        <p>Buyer agent finds vendors via the registry or well-known URIs</p>
+        <span class="flow-endpoint">/.well-known/avp.json</span>
+      </div>
+      <div class="flow-step reveal reveal-delay-1">
+        <div class="flow-icon">&#x1f91d;</div>
+        <div class="flow-num">02</div>
+        <h4>Handshake</h4>
+        <p>Mutual authentication with Ed25519 signatures and session tokens</p>
+        <span class="flow-endpoint">/avp/handshake</span>
+      </div>
+      <div class="flow-step reveal reveal-delay-2">
+        <div class="flow-icon">&#x1f4e8;</div>
+        <div class="flow-num">03</div>
+        <h4>Request</h4>
+        <p>Buyer sends structured RFP with requirements, budget, and timeline</p>
+        <span class="flow-endpoint">/avp/rfp</span>
+      </div>
+      <div class="flow-step reveal reveal-delay-3">
+        <div class="flow-icon">&#x1f4ac;</div>
+        <div class="flow-num">04</div>
+        <h4>Negotiate</h4>
+        <p>Multi-round AI negotiation with counter-proposals and human escalation</p>
+        <span class="flow-endpoint">/avp/negotiate</span>
+      </div>
+      <div class="flow-step reveal reveal-delay-4">
+        <div class="flow-icon">&#x2705;</div>
+        <div class="flow-num">05</div>
+        <h4>Settle</h4>
+        <p>Finalize agreement with signed settlement recorded on the registry</p>
+        <span class="flow-endpoint">/avp/settle</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features" id="features">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label reveal">Features</div>
+      <h2 class="section-title reveal reveal-delay-1">Protocol Features</h2>
+      <p class="section-desc reveal reveal-delay-2">Everything needed for secure, intelligent AI-to-AI business communication.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card reveal">
+        <span class="feature-icon">&#x1f310;</span>
+        <h4>Decentralized Discovery</h4>
+        <p>Vendors host their own agents. No single point of failure. Registry is an index, not a gateway. Direct peer-to-peer communication.</p>
+      </div>
+      <div class="feature-card reveal reveal-delay-1">
+        <span class="feature-icon">&#x1f512;</span>
+        <h4>Zero-Trust Security</h4>
+        <p>Ed25519 request signing, JWT sessions, mutual authentication. Every message is cryptographically verified. No trust assumptions.</p>
+      </div>
+      <div class="feature-card reveal reveal-delay-2">
+        <span class="feature-icon">&#x1f3af;</span>
+        <h4>Structured Negotiation</h4>
+        <p>Formal state machine for multi-round negotiation. Counter-proposals, acceptance, rejection, and human escalation built into the protocol.</p>
+      </div>
+      <div class="feature-card reveal reveal-delay-1">
+        <span class="feature-icon">&#x1f91d;</span>
+        <h4>Business Verification</h4>
+        <p>Four-tier trust system: unverified, domain-verified, business-verified, and premium. Real document verification with human review.</p>
+      </div>
+      <div class="feature-card reveal reveal-delay-2">
+        <span class="feature-icon">&#x1f4ca;</span>
+        <h4>Trust Scoring</h4>
+        <p>Reputation computed from transaction history, response quality, dispute rate, peer reviews, and protocol compliance. Transparent algorithm.</p>
+      </div>
+      <div class="feature-card reveal reveal-delay-3">
+        <span class="feature-icon">&#x1f527;</span>
+        <h4>SDK & Integrations</h4>
+        <p>Node.js, Python, and Go SDKs. Plug into Salesforce, HubSpot, Slack, Stripe. WordPress plugin. Chrome extension. Embeddable widget.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOR VENDORS / BUYERS -->
+<section class="for-section">
+  <div class="container">
+    <div class="for-grid">
+      <div class="for-card vendor reveal">
+        <div class="label">For Vendors</div>
+        <h3>Get discovered by AI</h3>
+        <p>Install the AVP SDK and your services become discoverable by every buyer agent on the internet. Receive qualified RFPs automatically.</p>
+        <ul class="for-list">
+          <li><span class="check">&#10003;</span> Automated lead generation from AI agents</li>
+          <li><span class="check">&#10003;</span> AI-powered proposal generation</li>
+          <li><span class="check">&#10003;</span> Configurable auto-response policies</li>
+          <li><span class="check">&#10003;</span> CRM integration (Salesforce, HubSpot)</li>
+          <li><span class="check">&#10003;</span> Trust badge for verified businesses</li>
+          <li><span class="check">&#10003;</span> Full control over pricing and negotiation</li>
+        </ul>
+        <a href="#code" class="btn-primary" style="font-size:0.8rem;padding:0.6rem 1.5rem">Install Vendor SDK &rarr;</a>
+      </div>
+      <div class="for-card buyer reveal reveal-delay-2">
+        <div class="label">For Buyers</div>
+        <h3>Find vendors in seconds</h3>
+        <p>Search for vendors matching your exact requirements. AI compares proposals, ranks vendors, and can even negotiate terms on your behalf.</p>
+        <ul class="for-list">
+          <li><span class="check">&#10003;</span> Search by technology, domain, budget</li>
+          <li><span class="check">&#10003;</span> AI-powered proposal comparison</li>
+          <li><span class="check">&#10003;</span> Automated multi-vendor RFP distribution</li>
+          <li><span class="check">&#10003;</span> Chrome extension for instant search</li>
+          <li><span class="check">&#10003;</span> Trust scores and verified reviews</li>
+          <li><span class="check">&#10003;</span> AI negotiation agent</li>
+        </ul>
+        <a href="#code" class="btn-primary" style="font-size:0.8rem;padding:0.6rem 1.5rem;background:var(--signal)" onmouseover="this.style.background='#ff8355'" onmouseout="this.style.background='var(--signal)'">Install Buyer SDK &rarr;</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CODE EXAMPLES -->
+<section class="code-section" id="code">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label reveal">Integration</div>
+      <h2 class="section-title reveal reveal-delay-1">Ship in Minutes</h2>
+      <p class="section-desc reveal reveal-delay-2">Simple SDKs that add AVP to any application. Install, configure, go live.</p>
+    </div>
+    <div class="code-tabs reveal reveal-delay-3">
+      <div class="code-tab active" data-tab="vendor-js">vendor.js</div>
+      <div class="code-tab" data-tab="buyer-js">buyer.js</div>
+      <div class="code-tab" data-tab="vendor-py">vendor.py</div>
+      <div class="code-tab" data-tab="curl">cURL</div>
+    </div>
+    <div class="code-block active reveal reveal-delay-3" id="vendor-js">
+<span class="kw">const</span> { <span class="fn">AVPVendor</span> } = <span class="fn">require</span>(<span class="str">'@avp/vendor-sdk'</span>);
+
+<span class="kw">const</span> vendor = <span class="kw">new</span> <span class="fn">AVPVendor</span>({
+  <span class="prop">agentId</span>: <span class="str">'avp:vendor:your-company:a1b2c3d4'</span>,
+  <span class="prop">capabilities</span>: {
+    <span class="prop">technologies</span>: [
+      { <span class="prop">name</span>: <span class="str">'java'</span>, <span class="prop">proficiency</span>: <span class="str">'expert'</span>, <span class="prop">years</span>: <span class="num">10</span> }
+    ],
+    <span class="prop">domains</span>: [
+      { <span class="prop">name</span>: <span class="str">'travel'</span>, <span class="prop">experience_years</span>: <span class="num">8</span> }
+    ],
+    <span class="prop">services</span>: [<span class="str">'custom-development'</span>, <span class="str">'consulting'</span>]
+  }
+});
+
+<span class="cm">// Handle incoming RFPs with your AI</span>
+vendor.<span class="fn">on</span>(<span class="str">'rfp'</span>, <span class="kw">async</span> (rfp, session) <span class="op">=></span> {
+  <span class="kw">const</span> proposal = <span class="kw">await</span> <span class="fn">generateProposal</span>(rfp);
+  <span class="kw">return</span> proposal;
+});
+
+vendor.<span class="fn">listen</span>(<span class="num">3000</span>);
+<span class="cm">// &#x2713; Now discoverable at /.well-known/avp.json</span>
+    </div>
+    <div class="code-block" id="buyer-js">
+<span class="kw">const</span> { <span class="fn">AVPBuyer</span> } = <span class="fn">require</span>(<span class="str">'@avp/buyer-sdk'</span>);
+
+<span class="kw">const</span> buyer = <span class="kw">new</span> <span class="fn">AVPBuyer</span>({
+  <span class="prop">agentId</span>: <span class="str">'avp:buyer:your-company:e5f6g7h8'</span>,
+  <span class="prop">registryUrl</span>: <span class="str">'https://registry.avp-protocol.org'</span>
+});
+
+<span class="cm">// Search for vendors matching your needs</span>
+<span class="kw">const</span> vendors = <span class="kw">await</span> buyer.<span class="fn">search</span>({
+  <span class="prop">technologies</span>: [<span class="str">'java'</span>, <span class="str">'spring-boot'</span>],
+  <span class="prop">domains</span>: [<span class="str">'travel'</span>],
+  <span class="prop">minTrustScore</span>: <span class="num">0.7</span>,
+  <span class="prop">budget</span>: { <span class="prop">max</span>: <span class="num">200000</span>, <span class="prop">currency</span>: <span class="str">'USD'</span> }
+});
+
+<span class="cm">// Send RFP to top vendors, get ranked proposals</span>
+<span class="kw">const</span> proposals = <span class="kw">await</span> buyer.<span class="fn">sendRfp</span>(rfp, vendors);
+<span class="kw">const</span> ranked = <span class="kw">await</span> buyer.<span class="fn">compareProposals</span>(proposals);
+
+console.<span class="fn">log</span>(ranked[<span class="num">0</span>]);
+<span class="cm">// &#x2192; { vendor: "Acme Tech", score: 0.92, price: $175K }</span>
+    </div>
+    <div class="code-block" id="vendor-py">
+<span class="kw">from</span> avp_vendor <span class="kw">import</span> <span class="fn">AVPVendor</span>
+
+vendor = <span class="fn">AVPVendor</span>(
+    <span class="prop">agent_id</span>=<span class="str">"avp:vendor:your-company:a1b2c3d4"</span>,
+    <span class="prop">capabilities</span>={
+        <span class="str">"technologies"</span>: [
+            {<span class="str">"name"</span>: <span class="str">"java"</span>, <span class="str">"proficiency"</span>: <span class="str">"expert"</span>}
+        ],
+        <span class="str">"domains"</span>: [
+            {<span class="str">"name"</span>: <span class="str">"travel"</span>, <span class="str">"experience_years"</span>: <span class="num">8</span>}
+        ],
+        <span class="str">"services"</span>: [<span class="str">"custom-development"</span>]
+    }
+)
+
+<span class="kw">@vendor.on_rfp</span>
+<span class="kw">async def</span> <span class="fn">handle_rfp</span>(rfp, session):
+    proposal = <span class="kw">await</span> <span class="fn">generate_proposal</span>(rfp)
+    <span class="kw">return</span> proposal
+
+vendor.<span class="fn">run</span>(<span class="prop">port</span>=<span class="num">3000</span>)
+<span class="cm"># &#x2713; Now discoverable at /.well-known/avp.json</span>
+    </div>
+    <div class="code-block" id="curl">
+<span class="cm"># Discover a vendor</span>
+<span class="prompt">$</span> curl <span class="str">https://vendor.com/.well-known/avp.json</span>
+
+<span class="cm"># Handshake (initiate session)</span>
+<span class="prompt">$</span> curl -X POST <span class="str">https://vendor.com/avp/handshake</span> \
+  -H <span class="str">"AVP-Version: 1.0"</span> \
+  -H <span class="str">"AVP-Agent-ID: avp:buyer:you:e5f6g7h8"</span> \
+  -H <span class="str">"AVP-Signature: ed25519:..."</span> \
+  -d <span class="str">'{"type": "handshake_request"}'</span>
+
+<span class="cm"># Send an RFP</span>
+<span class="prompt">$</span> curl -X POST <span class="str">https://vendor.com/avp/rfp</span> \
+  -H <span class="str">"AVP-Session-ID: ses_abc123"</span> \
+  -d <span class="str">'{"type": "rfp", "title": "Travel Platform"}'</span>
+
+<span class="cm"># &#x2192; Receive structured proposal with pricing</span>
+    </div>
+  </div>
+</section>
+
+<!-- ARCHITECTURE -->
+<section class="architecture" id="architecture">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label reveal">Architecture</div>
+      <h2 class="section-title reveal reveal-delay-1">Protocol Stack</h2>
+      <p class="section-desc reveal reveal-delay-2">Six layers from transport to application, each designed for AI-native communication.</p>
+    </div>
+    <div class="arch-diagram reveal reveal-delay-3">
+      <div class="arch-layers">
+        <div class="arch-layer">
+          <div class="arch-layer-name">Application</div>
+          <div class="arch-layer-items">
+            <span class="arch-item">Business Logic</span>
+            <span class="arch-item">AI Models</span>
+            <span class="arch-item">Proposal Generation</span>
+            <span class="arch-item">Pricing Engine</span>
+          </div>
+        </div>
+        <div class="arch-layer">
+          <div class="arch-layer-name">Negotiation</div>
+          <div class="arch-layer-items">
+            <span class="arch-item">State Machine</span>
+            <span class="arch-item">Multi-Round</span>
+            <span class="arch-item">Counter-Proposals</span>
+            <span class="arch-item">Human Escalation</span>
+          </div>
+        </div>
+        <div class="arch-layer">
+          <div class="arch-layer-name">Message</div>
+          <div class="arch-layer-items">
+            <span class="arch-item">JSON Messages</span>
+            <span class="arch-item">Schema Validation</span>
+            <span class="arch-item">16 Message Types</span>
+            <span class="arch-item">Idempotency</span>
+          </div>
+        </div>
+        <div class="arch-layer">
+          <div class="arch-layer-name">Auth</div>
+          <div class="arch-layer-items">
+            <span class="arch-item">Ed25519 Signatures</span>
+            <span class="arch-item">JWT Sessions</span>
+            <span class="arch-item">Key Rotation</span>
+            <span class="arch-item">Trust Scores</span>
+          </div>
+        </div>
+        <div class="arch-layer">
+          <div class="arch-layer-name">Transport</div>
+          <div class="arch-layer-items">
+            <span class="arch-item">HTTPS (TLS 1.2+)</span>
+            <span class="arch-item">HTTP/2</span>
+            <span class="arch-item">WebSocket</span>
+            <span class="arch-item">Rate Limiting</span>
+          </div>
+        </div>
+        <div class="arch-layer">
+          <div class="arch-layer-name">Discovery</div>
+          <div class="arch-layer-items">
+            <span class="arch-item">Well-Known URI</span>
+            <span class="arch-item">Registry Index</span>
+            <span class="arch-item">DNS TXT Records</span>
+            <span class="arch-item">Federation</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS BAR -->
+<section class="stats-bar">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="reveal">
+        <div class="stat-num">6</div>
+        <div class="stat-label">Protocol Layers</div>
+      </div>
+      <div class="reveal reveal-delay-1">
+        <div class="stat-num">16</div>
+        <div class="stat-label">Message Types</div>
+      </div>
+      <div class="reveal reveal-delay-2">
+        <div class="stat-num">5</div>
+        <div class="stat-label">API Endpoints</div>
+      </div>
+      <div class="reveal reveal-delay-3">
+        <div class="stat-num">3</div>
+        <div class="stat-label">SDK Languages</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ROADMAP -->
+<section class="roadmap" id="roadmap">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label reveal">Standardization</div>
+      <h2 class="section-title reveal reveal-delay-1">Roadmap</h2>
+      <p class="section-desc reveal reveal-delay-2">From open-source protocol to internet standard.</p>
+    </div>
+    <div class="timeline">
+      <div class="timeline-item active reveal">
+        <div class="year">Year 1 &mdash; Now</div>
+        <h4>Community Standard</h4>
+        <p>Open spec published. Reference implementations in Node.js and Python. First 10-20 vendors onboarded. AEP process for protocol evolution.</p>
+        <div class="timeline-tags">
+          <span class="timeline-tag">v1.0-draft</span>
+          <span class="timeline-tag">Node.js SDK</span>
+          <span class="timeline-tag">Python SDK</span>
+          <span class="timeline-tag">Alpha Network</span>
+        </div>
+      </div>
+      <div class="timeline-item reveal">
+        <div class="year">Year 2</div>
+        <h4>Industry Adoption</h4>
+        <p>1,000+ vendors. Platform integrations with Clutch, WordPress, Salesforce. SDKs in 5+ languages. Chrome extension public launch.</p>
+        <div class="timeline-tags">
+          <span class="timeline-tag">Go SDK</span>
+          <span class="timeline-tag">Chrome Extension</span>
+          <span class="timeline-tag">WordPress Plugin</span>
+          <span class="timeline-tag">Trust System v2</span>
+        </div>
+      </div>
+      <div class="timeline-item reveal">
+        <div class="year">Year 3</div>
+        <h4>De Facto Standard</h4>
+        <p>10,000+ vendors. Multiple registries (global, regional, industry). Protocol recognized by industry analysts. Begin formal standardization.</p>
+        <div class="timeline-tags">
+          <span class="timeline-tag">Federation</span>
+          <span class="timeline-tag">EU Registry</span>
+          <span class="timeline-tag">API Economy</span>
+        </div>
+      </div>
+      <div class="timeline-item reveal">
+        <div class="year">Year 4+</div>
+        <h4>Formal Standard</h4>
+        <p>Submit to IETF as RFC. W3C recommendation for discovery. IANA registration for well-known URI and headers. AVP Foundation established.</p>
+        <div class="timeline-tags">
+          <span class="timeline-tag">IETF RFC</span>
+          <span class="timeline-tag">W3C</span>
+          <span class="timeline-tag">IANA</span>
+          <span class="timeline-tag">ISO</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMMUNITY -->
+<section class="community" id="community">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label reveal">Open Source</div>
+      <h2 class="section-title reveal reveal-delay-1">Join the Community</h2>
+      <p class="section-desc reveal reveal-delay-2">AVP is open-source and community-driven. Build the protocol layer for the AI-native economy with us.</p>
+    </div>
+    <div class="community-grid">
+      <div class="community-card reveal">
+        <div class="icon">&#x1f4bb;</div>
+        <h4>GitHub</h4>
+        <p>Star the repo, submit issues, contribute code. All protocol development happens in the open.</p>
+        <a href="https://github.com/avp-protocol" class="community-link">github.com/avp-protocol &rarr;</a>
+      </div>
+      <div class="community-card reveal reveal-delay-1">
+        <div class="icon">&#x1f4ac;</div>
+        <h4>Discord</h4>
+        <p>Join the conversation. Ask questions, share ideas, get help with implementation.</p>
+        <a href="#" class="community-link">Join Discord &rarr;</a>
+      </div>
+      <div class="community-card reveal reveal-delay-2">
+        <div class="icon">&#x1f4d6;</div>
+        <h4>Documentation</h4>
+        <p>Complete protocol spec, API reference, SDK guides, tutorials, and architecture docs.</p>
+        <a href="#" class="community-link">Read the Docs &rarr;</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta">
+  <div class="container">
+    <div class="cta-glow"></div>
+    <h2 class="reveal">Build the <em>infrastructure</em> for the AI-native economy</h2>
+    <p class="reveal reveal-delay-1">AVP is not just software &mdash; it's the protocol layer that lets AI agents do business across the internet.</p>
+    <div class="hero-actions reveal reveal-delay-2">
+      <a href="#code" class="btn-primary">Start Building &rarr;</a>
+      <a href="https://github.com/avp-protocol" class="btn-secondary">View on GitHub</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="logo">&#x25CF; AVP</div>
+        <p>The AI Vendor Protocol. An open standard for AI-to-AI business discovery, communication, and negotiation.</p>
+      </div>
+      <div class="footer-col">
+        <h5>Protocol</h5>
+        <a href="#">Specification</a>
+        <a href="#">API Reference</a>
+        <a href="#">JSON Schemas</a>
+        <a href="#">OpenAPI Spec</a>
+      </div>
+      <div class="footer-col">
+        <h5>SDKs</h5>
+        <a href="#">Node.js</a>
+        <a href="#">Python</a>
+        <a href="#">Go</a>
+        <a href="#">Chrome Extension</a>
+      </div>
+      <div class="footer-col">
+        <h5>Community</h5>
+        <a href="#">GitHub</a>
+        <a href="#">Discord</a>
+        <a href="#">Blog</a>
+        <a href="#">Governance</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&#169; 2026 AVP Protocol. Apache 2.0 + CC BY 4.0</span>
+      <span>v1.0-draft</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Scroll reveal
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// Code tabs
+document.querySelectorAll('.code-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.code-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.code-block').forEach(b => b.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById(tab.dataset.tab).classList.add('active');
+  });
+});
+
+// Smooth nav highlight
+const navLinks = document.querySelectorAll('.nav-links a[href^="#"]');
+const sections = document.querySelectorAll('section[id]');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(section => {
+    const sectionTop = section.offsetTop - 100;
+    if (scrollY >= sectionTop) current = section.getAttribute('id');
+  });
+  navLinks.forEach(link => {
+    link.style.color = link.getAttribute('href') === '#' + current ? 'var(--text)' : '';
+  });
+});
+</script>
+</body>
+</html>

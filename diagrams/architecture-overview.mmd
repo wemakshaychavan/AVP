@@ -1,0 +1,66 @@
+graph TB
+    subgraph "Buyer Side"
+        CE[Chrome Extension]
+        BD[Buyer Dashboard]
+        BA[Buyer Agent Core]
+        BAI[AI Analysis Engine]
+    end
+
+    subgraph "AVP Core Infrastructure"
+        REG[AVP Registry]
+        TA[Trust Authority]
+        SR[Schema Registry]
+        MON[Monitoring]
+    end
+
+    subgraph "Vendor Side"
+        VD[Vendor Dashboard]
+        VA[Vendor Agent Core]
+        PE[Proposal Engine]
+        VP[Vendor Policies]
+    end
+
+    subgraph "Integrations"
+        CRM[CRM Systems]
+        SL[Slack/Teams]
+        PAY[Payment Platforms]
+        EMAIL[Email]
+    end
+
+    CE --> BA
+    BD --> BA
+    BA --> REG
+    BA --> TA
+    BA --> VA
+    BAI --> BA
+
+    VA --> REG
+    VA --> TA
+    VD --> VA
+    PE --> VA
+    VP --> VA
+
+    VA --> CRM
+    VA --> SL
+    VA --> PAY
+    VA --> EMAIL
+
+    REG --> SR
+    REG --> MON
+
+    style CE fill:#4A90D9,color:#fff
+    style BD fill:#4A90D9,color:#fff
+    style BA fill:#2E7D32,color:#fff
+    style BAI fill:#2E7D32,color:#fff
+    style REG fill:#F57C00,color:#fff
+    style TA fill:#F57C00,color:#fff
+    style SR fill:#F57C00,color:#fff
+    style MON fill:#F57C00,color:#fff
+    style VA fill:#7B1FA2,color:#fff
+    style VD fill:#7B1FA2,color:#fff
+    style PE fill:#7B1FA2,color:#fff
+    style VP fill:#7B1FA2,color:#fff
+    style CRM fill:#607D8B,color:#fff
+    style SL fill:#607D8B,color:#fff
+    style PAY fill:#607D8B,color:#fff
+    style EMAIL fill:#607D8B,color:#fff

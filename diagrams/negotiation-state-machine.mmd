@@ -1,0 +1,31 @@
+stateDiagram-v2
+    [*] --> Start
+    Start --> Handshake: initiate
+
+    Handshake --> Active: accepted
+    Handshake --> Closed: rejected
+
+    Active --> RFP_Sent: send_rfp
+
+    RFP_Sent --> Proposal_Received: proposal_received
+    RFP_Sent --> Closed: timeout
+
+    Proposal_Received --> Negotiating: counter_proposal
+    Proposal_Received --> Settling: accept
+    Proposal_Received --> Closed: reject
+
+    Negotiating --> Negotiating: counter_proposal
+    Negotiating --> Settling: accept
+    Negotiating --> Closed: reject
+    Negotiating --> Escalated: escalate
+    Negotiating --> Closed: max_rounds_exceeded
+
+    Escalated --> Negotiating: resume
+    Escalated --> Settling: accept
+    Escalated --> Closed: reject
+
+    Settling --> Settled: settlement_confirmed
+    Settling --> Closed: settlement_failed
+
+    Settled --> [*]
+    Closed --> [*]

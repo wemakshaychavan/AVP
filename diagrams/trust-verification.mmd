@@ -1,0 +1,39 @@
+graph TD
+    A[New Agent Registers] --> B{Email Verified?}
+    B -->|No| C[Send Verification Email]
+    C --> B
+    B -->|Yes| D[Level 0: Unverified]
+
+    D --> E{Domain Verification?}
+    E -->|DNS TXT Record| F[Verify DNS]
+    E -->|Meta Tag| G[Verify HTML]
+    E -->|Well-Known File| H[Verify File]
+    F --> I{Valid?}
+    G --> I
+    H --> I
+    I -->|No| J[Retry / Support]
+    I -->|Yes| K[Level 1: Domain Verified]
+
+    K --> L{Business Verification?}
+    L --> M[Upload Documents]
+    M --> N[AI Document Extraction]
+    N --> O[Public Registry Check]
+    O --> P[Sanctions Screening]
+    P --> Q[Human Review]
+    Q --> R{Approved?}
+    R -->|No| S[Feedback + Retry]
+    R -->|Yes| T[Level 2: Business Verified]
+
+    T --> U{Premium Verification?}
+    U --> V[Financial Audit]
+    V --> W[Client References]
+    W --> X[Portfolio Review]
+    X --> Y[Team Verification]
+    Y --> Z{Approved?}
+    Z -->|No| AA[Feedback]
+    Z -->|Yes| AB[Level 3: Premium Verified]
+
+    style D fill:#E0E0E0,color:#000
+    style K fill:#BBDEFB,color:#000
+    style T fill:#C8E6C9,color:#000
+    style AB fill:#FFD54F,color:#000

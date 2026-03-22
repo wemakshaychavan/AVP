@@ -1,0 +1,58 @@
+graph TB
+    subgraph "Edge Layer"
+        CF[Cloudflare CDN + WAF]
+    end
+
+    subgraph "API Layer"
+        KONG[API Gateway - Kong]
+    end
+
+    subgraph "Services - Kubernetes Cluster"
+        REG_SVC[Registry Service]
+        TRUST_SVC[Trust Service]
+        SEARCH_SVC[Search Service]
+        AUTH_SVC[Auth Service]
+        WEBHOOK_SVC[Webhook Service]
+        VERIFY_SVC[Verification Service]
+    end
+
+    subgraph "Data Layer"
+        PG[(PostgreSQL)]
+        REDIS[(Redis Cluster)]
+        ES[(Elasticsearch)]
+        S3[(S3 Object Storage)]
+        SQS[SQS Message Queue]
+    end
+
+    subgraph "External"
+        VENDORS[Vendor Agents]
+        BUYERS[Buyer Agents]
+        LLM[LLM APIs]
+    end
+
+    BUYERS --> CF
+    VENDORS --> CF
+    CF --> KONG
+    KONG --> REG_SVC
+    KONG --> TRUST_SVC
+    KONG --> SEARCH_SVC
+    KONG --> AUTH_SVC
+    KONG --> WEBHOOK_SVC
+    KONG --> VERIFY_SVC
+
+    REG_SVC --> PG
+    REG_SVC --> REDIS
+    TRUST_SVC --> PG
+    TRUST_SVC --> REDIS
+    SEARCH_SVC --> ES
+    AUTH_SVC --> REDIS
+    WEBHOOK_SVC --> SQS
+    VERIFY_SVC --> S3
+    VERIFY_SVC --> LLM
+
+    style CF fill:#F57C00,color:#fff
+    style KONG fill:#003459,color:#fff
+    style PG fill:#336791,color:#fff
+    style REDIS fill:#DC382D,color:#fff
+    style ES fill:#005571,color:#fff
+    style S3 fill:#569A31,color:#fff
